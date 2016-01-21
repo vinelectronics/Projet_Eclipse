@@ -58,21 +58,7 @@ Nous utilisons la sonde ARM-USB-TINY de chez Olimex, mais les 2 méthodes d'inst
 
 Si aucun problème le serveur GDB se lance et la carte est reconnue. Voici le résultat obtenu :
 
-	C:\Users\Kévin>cd c:\olimexods\openocd-0.6.1\bin-x64
-
-	c:\OlimexODS\openocd-0.6.1\bin-x64>openocd-x64-0.6.1.exe -f /interface/olimex-jtag-tiny.cfg -f /target/lpc1766.cfg
-	Open On-Chip Debugger 0.6.1 (2012-10-07-10:39)
-	Licensed under GNU GPL v2
-	For bug reports, read
-       		http://openocd.sourceforge.net/doc/doxygen/bugs.html
-	Info : only one transport option; autoselect 'jtag'
-	adapter_nsrst_delay: 200
-	jtag_ntrst_delay: 200
-	adapter speed: 10 kHz
-	cortex_m3 reset_config vectreset
-	Info : clock speed 10 kHz
-	Info : JTAG tap: lpc1766.cpu tap/device found: 0x4ba00477 (mfg: 0x23b, part: 0xba00, ver: 0x4)
-	Info : lpc1766.cpu: hardware has 6 breakpoints, 4 watchpoints
+![alt text](C:\Users\Kévin\Documents\GitHub\Projet_Eclipse\images\CMD.png)
 
 ### 5.2 Configuration de Eclipse
 	
