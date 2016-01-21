@@ -58,7 +58,7 @@ Nous utilisons la sonde ARM-USB-TINY de chez Olimex, mais les 2 méthodes d'inst
 
 Si aucun problème le serveur GDB se lance et la carte est reconnue. Voici le résultat obtenu :
 
-![alt text](images\CMD.png)
+![Alt Text](/images/CMD.png)
 
 ### 5.2 Configuration de Eclipse
 	
@@ -100,7 +100,7 @@ Maintenant cette technique est utilisée pour programmer et débugger les circui
 En mettant plusieurs composants en série compatible avec le JTAG (appelé chaine JTAG) on peut choisir de les programmer individuellement ou simultanément, mais aussi de faire reconnaître cette chaine par les logiciels de programmation.
 </p>
 
-Exemple de chaine JTAG : ![alt text](images\jtag-chain.png)
+Exemple de chaine JTAG : ![Alt Text](/images/jtag-chain.png)
 
 ## 8. Problèmes rencontrés :
 
