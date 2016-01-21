@@ -12,7 +12,7 @@ Pour cela nous devons utiliser Eclipse qui est un IDE (Integrated Development En
 
 Afin de rendre opérationnel l'environnement de travail nous devons utiliser plusieurs logiciels car Eclipse n'est qu'un IDE, et n'intègre pas nativement la compilation, le débuggage et la liaison PC/µC.
 
-Voici les différents logiciels à utiliser :
+Voici les différents logiciels à utiliser
 
 	* Eclipse CDT : Environnement de développement 
 	* OpenOCD : On-Chip Debugger
