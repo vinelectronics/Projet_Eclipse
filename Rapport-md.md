@@ -14,11 +14,11 @@ Afin de rendre opérationnel l'environnement de travail nous devons utiliser plus
 
 Voici les différents logiciels à utiliser :
 
-	- Eclipse CDT : Environnement de développement 
-	- OpenOCD : On-Chip Debugger
-	- Yagarto : Chaine de compilation ARM (Toolchain)
-	- Zylin : Extension eclipse pour le GDB server
-	- Zadig : Logiciel d'installation de drivers pour la sonde JTAG
+	* Eclipse CDT : Environnement de développement 
+	* OpenOCD : On-Chip Debugger
+	* Yagarto : Chaine de compilation ARM (Toolchain)
+	* Zylin : Extension eclipse pour le GDB server
+	* Zadig : Logiciel d'installation de drivers pour la sonde JTAG
 
 ## 3. Installation des logiciels :
 
