@@ -21,7 +21,7 @@ Voici les différents logiciels à utiliser :
  - Eclipse CDT : Environnement de développement 
  - OpenOCD : On-Chip Debugger
  - Yagarto : Chaine de compilation ARM (Toolchain)
- - Zylin : Extension eclipse pour le GDB server
+ - Zylin : Extension Eclipse pour le GDB server
  - Zadig : Logiciel d'installation de drivers pour la sonde JTAG
 
 ## 3. Installation des logiciels :
@@ -36,7 +36,7 @@ Cette version intègre tout les logiciels cités ci-dessus, sauf Zadig.
 Nous utilisons la sonde ARM-USB-TINY de chez Olimex, mais les 2 méthodes d'installation reste valable pour d'autres sondes JTAG.
 </p>
 
- - 1ere méthode : Lancer le logiciel Zadig puis connecter la sonde JTAG, et installer le driver WinUSB(LibUSB) pour l'interface 0 et 1.
+ - 1ere méthode : Lancer le logiciel Zadig, connecter la sonde JTAG, et installer le driver WinUSB(LibUSB) pour l'interface 0 et 1.
  - 2nd méthode : 
   - Connecter la sonde JTAG
   - Ouvrir le gestionnaire de périphériques 
@@ -45,7 +45,7 @@ Nous utilisons la sonde ARM-USB-TINY de chez Olimex, mais les 2 méthodes d'inst
 
   /!\ Si windows détecte une erreur de signature de pilote, voir partie 6. /!\
 
-## 5. Débug de la carte avec eclipse:
+## 5. Débug de la carte avec Eclipse:
 
 ### 5.1 Lancement d'Openocd
 
@@ -65,8 +65,8 @@ Si aucun problème le serveur GDB se lance et la carte est reconnue. Voici le r�
 - Run->Debug configuration
 - Sélectionner l’add-on Zylin Embedded debug (Native)
 - Dans l’onglet Main, sélectionner le projet et l’application
-- Dans l’onglet Debugger, sélectionner Embedded GDB et l’exécutable du GDB debugger est arm-none-eabi-gdb.exe situé dans le dossier \OlimexODS\yagarto\bin
-- Dans l’onglet Commande, compléter le champ run comme ci-dessous :
+- Dans l’onglet Debugger, sélectionner Embedded GDB et l’exécutable du GDB debugger est "arm-none-eabi-gdb.exe" situé dans le dossier \OlimexODS\yagarto\bin
+- Dans l’onglet Commande, complétez le champ "run" comme ci-dessous :
 
 	target remote localhost:3333  
 	monitor reset halt  
@@ -89,14 +89,14 @@ Si aucun problème le serveur GDB se lance et la carte est reconnue. Voici le r�
 
 <p style='text-align: justify;'>
 Keil est un logiciel propriétaire qui intégre l'IDE, le compilateur et le débug.  
-En mode débug, il permet de vérifier rapidement si les différents registres sont correctement configurés, en nous indiquant par exemple, la vitesse d'une liaison série, si les interruptions sont activées ou non, les configurations des convertisseurs AN et autres ...  
-On peut aussi via l'écriture de scripts simuler par exemple une EEPROM, cela peut être très pratique si nous disposont pas de la carte de développement.  
+En mode débug, il permet de vérifier rapidement si les différents registres sont correctements configurés, en nous indiquant par exemple, la vitesse d'une liaison série, si les interruptions sont activées ou non, les configurations des convertisseurs AN et autres ...  
+On peut aussi, via l'écriture de scripts, simuler par exemple une EEPROM, cela peut être très pratique si nous disposons pas de la carte de développement.  
 </p>
 
 ## 7. JTAG :
 <p style='text-align: justify;'>
 JTAG pour Joint Test Action Group, est utilisé à la base pour faire des tests de court-circuit et de continuité entre puces compatibles pour vérifier la qualité des pistes et des soudures.  
-Maintenant cette technique est utilisée pour programmer et débugger les circuits numérique telle que les FPGA et les µC (ICD : In-Circuit-Debugger), mais aussi de vérifier et/ou de programmer des mémoires non volatile (EEPROM, ...).  
+Maintenant cette technique est aussi utilisée pour programmer et débugger les circuits numérique telle que les FPGA et les µC (ICD : In-Circuit-Debugger), mais également pour vérifier et/ou pour programmer des mémoires non volatile (EEPROM, ...).  
 En mettant plusieurs composants en série compatible avec le JTAG (appelé chaine JTAG) on peut choisir de les programmer individuellement ou simultanément, mais aussi de faire reconnaître cette chaine par les logiciels de programmation.
 </p>
 
@@ -105,6 +105,8 @@ Exemple de chaine JTAG : ![Alt Text](/images/jtag-chain.png)
 ## 8. Problèmes rencontrés :
 
 ### 8.1 Problème d'installation des pilotes de la sonde JTAG
+
+L'installation des pilotes de la sonde JTAG était bloquée par Windows, voici la méthode pour désactiver le contrôle de la signature des pilotes :
 
 - "menu Démarrer" puis "Paramètres".
 - mise à jour et la sécurité.
@@ -119,14 +121,14 @@ Exemple de chaine JTAG : ![Alt Text](/images/jtag-chain.png)
 ### 8.2 Problème de compatibilité avec linux
 
 <p style='text-align: justify;'>
-Certaine sonde JTAG intégré aux cartes de dévellopement ne sont pas compatible avec linux, les drivers sont fournit uniquement pour windows. Il faut donc utiliser une sonde JTAG externe.
+Certaines sondes JTAG intégrées aux cartes de développement ne sont pas compatibles avec linux, les drivers sont destinés uniquement à windows. Il faut donc utiliser une sonde JTAG externe.
 </p>
 
 ### 8.3 Programmes de démo pour la carte LPC1766 incompatible avec Eclipse
 
 <p style='text-align: justify;'>
 Les programmes de démonstration de la carte, téléchargés sur le site Olimex sont des projets IAR Embedded Workbench qui est un logiciel prorpiétaire.   
-Pour rendre les projets compatible avec Eclipse suivre les instructions suivantes :
+Pour rendre les projets compatible avec Eclipse il faut installer le plugin "IAR Embedded Workbench" dans Eclipse :
 </p>
 
 - Ouvrir Eclipse
