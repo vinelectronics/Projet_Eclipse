@@ -1,13 +1,20 @@
-**************************************
-***Programmation de µC avec Eclipse***
-**************************************
+*****************************************************
+*** Sujet : Programmation de µC avec Eclipse ********
+*** UE : Programmation orienté objet ****************
+*** Auteurs : FRANCOIS Kévin/ANICIC Jean-Baptiste ***
+*** Université : INSSET/UPJV - M1SE - Semestre 1 ****
+*****************************************************
 
+*************
 1. Objectif :
+*************
 
 Nous devons programmer et débugger un µC ARM, sur la carte LPC1766 de chez Olimex.
 Pour cela nous devons utiliser Eclipse qui est un IDE (Integrated Development Environment) open source.
 
+*******************************
 2. Logiciels de développement :
+*******************************
 
 Afin de rendre opérationnel l'environnement de travail nous devons utiliser plusieurs logiciels car Eclipse n'est qu'un IDE, et n'intègre pas nativement la compilation, le débuggage et la liaison PC/µC.
 
@@ -19,13 +26,17 @@ Voici les différents logiciels à utiliser :
 	-Zylin : Extension eclipse pour le GDB server
 	-Zadig : Logiciel d'installation de drivers pour la sonde JTAG
 
+*******************************
 3. Installation des logiciels :
+*******************************
 
-	- telecharger et installer la dernière version de "Eclipse for Olimex Openocd development suite" à cette adresse : https://www.olimex.com/Products/ARM/JTAG/_resources/OpenOCD/
+	- Télécharger et installer la dernière version de "Eclipse for Olimex Openocd development suite" à cette adresse : https://www.olimex.com/Products/ARM/JTAG/_resources/OpenOCD/
           Cette version intègre tout les logiciels cités ci-dessus, sauf Zadig.
-	- Telecharger et installer Zadig à cette adresse : http://zadig.akeo.ie/
+	- Télécharger et installer Zadig à cette adresse : http://zadig.akeo.ie/
 
+************************************************
 4. Installation des drivers pour la sonde JTAG :
+************************************************
 
 Nous utilisons la sonde ARM-USB-TINY de chez Olimex, mais les 2 méthodes d'installation reste valable pour d'autres sondes JTAG.
 
@@ -35,11 +46,17 @@ Nous utilisons la sonde ARM-USB-TINY de chez Olimex, mais les 2 méthodes d'insta
 			- Installer manuellement les drivers, aller dans le répertoire d'installation "C:\OlimexODS\DRIVERS\olimex-libusb-1.2.2.0"*
 			- Opération précèdente à répéter 2 fois pour la sonde ARM-USB-TINY, si une autre sonde est utilisée lire le fichier ReadMe.txt dans le dossier DRIVERS
 
-		/!\ Si windows détecte une erreur de signature de pilote, redémarrer le PC en mode avancé, en désactivant la vérification de signature des pilotes. /!\
+		/!\ Si windows détecte une erreur de signature de pilote, voir partie 6. /!\
 
-5. Débugger la carte :
+**********************
+5. Débug de la carte :
+**********************
+	
+	**************
+	Avec Eclipse :
+	**************
 
-	5.1 Lancement d'Openocd
+	**5.1 Lancement d'Openocd
 
 		- Lancer la fenêtre de commande
 		- Taper : - "cd c:\olimexods\openocd-0.6.1\bin" pour windows 32bits ou 
@@ -65,13 +82,13 @@ Si aucun problème le serveur GDB se lance et la carte est reconnue. Voici le rés
 	Info : JTAG tap: lpc1766.cpu tap/device found: 0x4ba00477 (mfg: 0x23b, part: 0xba00, ver: 0x4)
 	Info : lpc1766.cpu: hardware has 6 breakpoints, 4 watchpoints
 
-	5.2 Configuration de Eclipse
+	**5.2 Configuration de Eclipse
 	
 		- Run->Debug configuration
 		- Sélectionner l’add-on Zylin Embedded debug (Native)
 		- Dans l’onglet Main, sélectionner le projet et l’application
 		- Dans l’onglet Debugger, sélectionner Embedded GDB et l’exécutable du GDB debugger est arm-none-eabi-gdb.exe situé dans le dossier \OlimexODS\yagarto\bin
-		- Dans l’onglet Commands, compléter le champ run comme ci-dessous :
+		- Dans l’onglet Commande, compléter le champ run comme ci-dessous :
 
 			target remote localhost:3333
 			monitor reset halt
@@ -87,9 +104,57 @@ Si aucun problème le serveur GDB se lance et la carte est reconnue. Voici le rés
 			break main
 			continue
 
-		- Cliquer sur "Apply" puis "Debug", si tout se passe bien le programma se met en attendre sur la première ligne
+		- Cliquer sur "Apply" puis "Debug", si tout se passe bien le programme se met en attente sur la première ligne
+
+	** Moyens de débug
+
+	***********
+	Avec Keil :
+	***********
+
+Keil est un logiciel propriétaire qui intégre l'IDE, le compilateur et le débug.
+En mode débug, il permet de vérifier rapidement si les différents registres sont correctement configurés, en nous indiquant par exemple, la vitesse d'une liaison série, si les interruptions sont activées ou non, les configurations des convertisseurs AN et autres ...
+On peut aussi via l'écriture de scripts simuler par exemple une EEPROM, cela peut être très pratique si nous disposont pas de la carte de développement.
 
 
+*********
+6. JTAG :
+*********
+
+JTAG pour Joint Test Action Group, est utilisé à la base pour faire des tests de court-circuit et de continuité entre puces compatibles pour vérifier la qualité des pistes et des soudures.
+Maintenant cette technique est utilisée pour programmer et débugger les circuits numérique telle que les FPGA et les µC (ICD : In-Circuit-Debugger), mais aussi de vérifier et/ou de programmer des mémoires non volatile (EEPROM, ...).
+En mettant plusieurs composants en série compatible avec le JTAG (appelé chaine JTAG) on peut choisir de les programmer individuellement ou simultanément, mais aussi de faire reconnaître cette chaine par les logiciels de programmation.
+Exemple de chaine JTAG : https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Jtag_chain.svg/654px-Jtag_chain.svg.png
+
+*************************
+7. Problèmes rencontrés :
+*************************
+
+	**7.1 Problème d'installation des pilotes de la sonde JTAG
+
+		- "menu Démarrer" puis "Paramètres".
+		- mise à jour et la sécurité.
+		- récupération.
+		- Cliquez sur redémarrer maintenant sous démarrage avancé.
+		- Dépannage.
+		- options avancées.
+		- paramètres.
+		- redémarrer.
+		- Appuyer sur la touche 7 pour désactiver le contrôle de la signature des pilotes, l'ordinateur redémarre.
+
+	**7.2 Problème de compatibilité avec linux
+
+		Certaine sonde JTAG intégré aux cartes de dévellopement ne sont pas compatible avec linux, les drivers sont fournit uniquement pour windows. Il faut donc utiliser une sonde JTAG externe.
+
+	**7.3 Programmes de démo pour la carte LPC1766 incompatible avec Eclipse
+
+Les programmes de démonstration de la carte, téléchargés sur le site Olimex sont des projets IAR Embedded Workbench qui est un logiciel prorpiétaire.
+Pour rendre les projets compatible avec Eclipse suivre les instructions suivantes /
+
+		- Ouvrir Eclipse
+		- Onglet "help" puis "Install new software"
+		- Entrer l'adresse : http://eclipse-update.iar.com/plugin-manager/1.0
+		- Puis installer IAR Systems
 
 
 
