@@ -10,14 +10,14 @@
 [2. Eclipse](#n2)</br>
 [3. Logiciels de développement](#n3)</br>
 [4. Installation des logiciels](#n4)</br>
-[5. Installation des drivers pour la sonde JTAG](#n5)</br>
-[6. Débug de la carte avec Eclipse](#n6)</br>
-&nbsp;&nbsp;&nbsp;&nbsp;[6.1 Lancement d'Openocd](#n6.1)</br>
-&nbsp;&nbsp;&nbsp;&nbsp;[6.2 Configuration de Eclipse](#n6.2)</br>
-&nbsp;&nbsp;&nbsp;&nbsp;[6.3 Moyens de débug](#n6.3)</br>
-[7. Débug de la carte avec Keil](#n7)</br>
-[8. Avantages et inconvénients entre Eclipse et Keil](#n8)</br>
-[9. JTAG](#n9)</br>
+[5. JTAG](#n5)</br>
+[6. Installation des drivers pour la sonde JTAG](#n6)</br>
+[7. Débug de la carte avec Eclipse](#n7)</br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.1 Lancement d'Openocd](#n7.1)</br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.2 Configuration de Eclipse](#n7.2)</br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.3 Moyens de débug](#n7.3)</br>
+[8. Débug de la carte avec Keil](#n8)</br>
+[9. Avantages et inconvénients entre Eclipse et Keil](#n9)</br>
 [10. Problèmes rencontrés](#n10)</br>
 &nbsp;&nbsp;&nbsp;&nbsp;[10.1 Problème d'installation des pilotes de la sonde JTAG](#n10.1)</br>
 &nbsp;&nbsp;&nbsp;&nbsp;[10.2 Problème de compatibilité avec linux](#n10.2)</br>
@@ -77,7 +77,18 @@ Cette version intègre tout les logiciels cités ci-dessus, sauf Zadig.
  - Télécharger et installer Zadig à cette adresse : http://zadig.akeo.ie/
 
 <a id="n5"></a>
-## 5. Installation des drivers pour la sonde JTAG
+## 5. JTAG
+
+<p style='text-align: justify;'>
+JTAG pour Joint Test Action Group, est utilisé à la base pour faire des tests de court-circuit et de continuité entre puces compatibles pour vérifier la qualité des pistes et des soudures.</br>
+Maintenant cette technique est aussi utilisée pour programmer et débugger les circuits numérique telle que les FPGA et les µC (ICD : In-Circuit-Debugger), mais également pour vérifier et/ou pour programmer des mémoires non volatile (EEPROM, ...).</br>
+En mettant plusieurs composants en série compatible avec le JTAG (appelé chaine JTAG) on peut choisir de les programmer individuellement ou simultanément, mais aussi de faire reconnaître cette chaine par les logiciels de programmation.
+</p>
+
+Exemple de chaine JTAG : ![Alt Text](images\jtag-chain.png)
+
+<a id="n6"></a>
+## 6. Installation des drivers pour la sonde JTAG
 
 <p style='text-align: justify;'>
 Nous utilisons la sonde ARM-USB-TINY de chez Olimex, mais les 2 méthodes d'installation reste valable pour d'autres sondes JTAG.
@@ -90,13 +101,13 @@ Nous utilisons la sonde ARM-USB-TINY de chez Olimex, mais les 2 méthodes d'inst
   - Installer manuellement les drivers, aller dans le répertoire d'installation "C:\OlimexODS\DRIVERS\olimex-libusb-1.2.2.0"*
   - Opération précèdente à répéter 2 fois pour la sonde ARM-USB-TINY, si une autre sonde est utilisée lire le fichier ReadMe.txt dans le dossier DRIVERS
 
-  /!\ Si windows détecte une erreur de signature de pilote, voir partie 6. /!\
+  /!\ Si windows détecte une erreur de signature de pilote, voir partie 10.1. /!\
 
-<a id="n6"></a>
-## 6. Débug de la carte avec Eclipse
+<a id="n7"></a>
+## 7. Débug de la carte avec Eclipse
 
-<a id="n6.1"></a>
-### 6.1 Lancement d'Openocd
+<a id="n7.1"></a>
+### 7.1 Lancement d'Openocd
 
  - Lancer la fenêtre de commande
  - Taper :
@@ -109,8 +120,8 @@ Si aucun problème le serveur GDB se lance et la carte est reconnue. Voici le r�
 
 ![Alt Text](images\CMD.png)
 
-<a id="n6.2"></a>
-### 6.2 Configuration de Eclipse
+<a id="n7.2"></a>
+### 7.2 Configuration de Eclipse
 
 - Run->Debug configuration
 - Sélectionner l’add-on Zylin Embedded debug (Native)
@@ -133,15 +144,15 @@ Si aucun problème le serveur GDB se lance et la carte est reconnue. Voici le r�
 
 - Cliquer sur "Apply" puis "Debug", si tout se passe bien le programme se met en attente sur la première ligne
 
-<a id="n6.3"></a>
-### 6.3 Moyens de débug
+<a id="n7.3"></a>
+### 7.3 Moyens de débug
 
 <p style='text-align: justify;'>
 Eclipse nous permet en mode debug de pouvoir voir la configuration des registres, la mémoire ainsi que les variables en RAM.
 </p>
 
-<a id="n7"></a>
-## 7. Débug de la carte avec Keil
+<a id="n8"></a>
+## 8. Débug de la carte avec Keil
 
 <p style='text-align: justify;'>
 Keil est un logiciel propriétaire qui intégre l'IDE, le compilateur et le débug.</br>
@@ -149,21 +160,10 @@ En mode débug, il permet de vérifier rapidement si les différents registres s
 On peut aussi, via l'écriture de scripts, simuler par exemple une EEPROM, cela peut être très pratique si nous disposons pas de la carte de développement.
 </p>
 
-<a id="n8"></a>
-## 8. Avantages et inconvénients entre Eclipse et Keil
+<a id="n9"></a>
+## 9. Avantages et inconvénients entre Eclipse et Keil
 
 ![Alt Text](images\Comparatif.png)
-
-<a id="n9"></a>
-## 9. JTAG
-
-<p style='text-align: justify;'>
-JTAG pour Joint Test Action Group, est utilisé à la base pour faire des tests de court-circuit et de continuité entre puces compatibles pour vérifier la qualité des pistes et des soudures.</br>
-Maintenant cette technique est aussi utilisée pour programmer et débugger les circuits numérique telle que les FPGA et les µC (ICD : In-Circuit-Debugger), mais également pour vérifier et/ou pour programmer des mémoires non volatile (EEPROM, ...).</br>
-En mettant plusieurs composants en série compatible avec le JTAG (appelé chaine JTAG) on peut choisir de les programmer individuellement ou simultanément, mais aussi de faire reconnaître cette chaine par les logiciels de programmation.
-</p>
-
-Exemple de chaine JTAG : ![Alt Text](images\jtag-chain.png)
 
 <a id="n10"></a>
 ## 10. Problèmes rencontrés
