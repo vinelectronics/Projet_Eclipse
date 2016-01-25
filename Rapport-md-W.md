@@ -107,7 +107,7 @@ Nous utilisons la sonde ARM-USB-TINY de chez Olimex, mais les 2 méthodes d'inst
 
 Si aucun problème le serveur GDB se lance et la carte est reconnue. Voici le résultat obtenu :
 
-![Alt Text](/images/CMD.png)
+![Alt Text](images\CMD.png)
 
 <a id="n6.2"></a>
 ### 6.2 Configuration de Eclipse
@@ -152,7 +152,7 @@ On peut aussi, via l'écriture de scripts, simuler par exemple une EEPROM, cela 
 <a id="n8"></a>
 ## 8. Avantages et inconvénients entre Eclipse et Keil
 
-![Alt Text](/images/Comparatif.png)
+![Alt Text](images\Comparatif.png)
 
 <a id="n9"></a>
 ## 9. JTAG
@@ -163,7 +163,7 @@ Maintenant cette technique est aussi utilisée pour programmer et débugger les 
 En mettant plusieurs composants en série compatible avec le JTAG (appelé chaine JTAG) on peut choisir de les programmer individuellement ou simultanément, mais aussi de faire reconnaître cette chaine par les logiciels de programmation.
 </p>
 
-Exemple de chaine JTAG : ![Alt Text](/images/jtag-chain.png)
+Exemple de chaine JTAG : ![Alt Text](images\jtag-chain.png)
 
 <a id="n10"></a>
 ## 10. Problèmes rencontrés
