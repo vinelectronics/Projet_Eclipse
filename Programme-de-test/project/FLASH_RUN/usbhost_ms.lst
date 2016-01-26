@@ -1,0 +1,1425 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"usbhost_ms.c"
+  21              	.Ltext0:
+  22              		.section	.text.Fill_MSCommand,"ax",%progbits
+  23              		.align	2
+  24              		.global	Fill_MSCommand
+  25              		.thumb
+  26              		.thumb_func
+  28              	Fill_MSCommand:
+  29              	.LFB40:
+  30              		.file 1 "Libraries/USBHostLite/usbhost_ms.c"
+   1:Libraries/USBHostLite/usbhost_ms.c **** /*
+   2:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+   3:Libraries/USBHostLite/usbhost_ms.c **** *                                                 NXP USB Host Stack
+   4:Libraries/USBHostLite/usbhost_ms.c **** *
+   5:Libraries/USBHostLite/usbhost_ms.c **** *                                     (c) Copyright 2008, NXP SemiConductors
+   6:Libraries/USBHostLite/usbhost_ms.c **** *                                     (c) Copyright 2008, OnChip  Technologies LLC
+   7:Libraries/USBHostLite/usbhost_ms.c **** *                                                 All Rights Reserved
+   8:Libraries/USBHostLite/usbhost_ms.c **** *
+   9:Libraries/USBHostLite/usbhost_ms.c **** *                                                  www.nxp.com
+  10:Libraries/USBHostLite/usbhost_ms.c **** *                                               www.onchiptech.com
+  11:Libraries/USBHostLite/usbhost_ms.c **** *
+  12:Libraries/USBHostLite/usbhost_ms.c **** * File           : usbhost_ms.c
+  13:Libraries/USBHostLite/usbhost_ms.c **** * Programmer(s)  : Ravikanth.P
+  14:Libraries/USBHostLite/usbhost_ms.c **** * Version        :
+  15:Libraries/USBHostLite/usbhost_ms.c **** *
+  16:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+  17:Libraries/USBHostLite/usbhost_ms.c **** */
+  18:Libraries/USBHostLite/usbhost_ms.c **** 
+  19:Libraries/USBHostLite/usbhost_ms.c **** /*
+  20:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+  21:Libraries/USBHostLite/usbhost_ms.c **** *                                       INCLUDE HEADER FILES
+  22:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+  23:Libraries/USBHostLite/usbhost_ms.c **** */
+  24:Libraries/USBHostLite/usbhost_ms.c **** 
+  25:Libraries/USBHostLite/usbhost_ms.c **** #include  "usbhost_ms.h"
+  26:Libraries/USBHostLite/usbhost_ms.c **** 
+  27:Libraries/USBHostLite/usbhost_ms.c **** /*
+  28:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+  29:Libraries/USBHostLite/usbhost_ms.c **** *                                         GLOBAL VARIABLES
+  30:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+  31:Libraries/USBHostLite/usbhost_ms.c **** */
+  32:Libraries/USBHostLite/usbhost_ms.c **** 
+  33:Libraries/USBHostLite/usbhost_ms.c **** USB_INT32U  MS_BlkSize;
+  34:Libraries/USBHostLite/usbhost_ms.c **** 
+  35:Libraries/USBHostLite/usbhost_ms.c **** /*
+  36:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+  37:Libraries/USBHostLite/usbhost_ms.c **** *                                      INITIALIZE MASS STORAGE INTERFACE
+  38:Libraries/USBHostLite/usbhost_ms.c **** *
+  39:Libraries/USBHostLite/usbhost_ms.c **** * Description: This function initializes the mass storage interface
+  40:Libraries/USBHostLite/usbhost_ms.c **** *
+  41:Libraries/USBHostLite/usbhost_ms.c **** * Arguments  : None
+  42:Libraries/USBHostLite/usbhost_ms.c **** *
+  43:Libraries/USBHostLite/usbhost_ms.c **** * Returns    : OK		              if Success
+  44:Libraries/USBHostLite/usbhost_ms.c **** *              ERR_INVALID_BOOTSIG    if Failed
+  45:Libraries/USBHostLite/usbhost_ms.c **** *
+  46:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+  47:Libraries/USBHostLite/usbhost_ms.c **** */
+  48:Libraries/USBHostLite/usbhost_ms.c **** 
+  49:Libraries/USBHostLite/usbhost_ms.c **** USB_INT32S MS_Init (USB_INT32U *blkSize, USB_INT32U *numBlks, USB_INT08U *inquiryResult)
+  50:Libraries/USBHostLite/usbhost_ms.c **** {
+  51:Libraries/USBHostLite/usbhost_ms.c ****     USB_INT08U  retry;
+  52:Libraries/USBHostLite/usbhost_ms.c ****     USB_INT32S  rc;
+  53:Libraries/USBHostLite/usbhost_ms.c **** 
+  54:Libraries/USBHostLite/usbhost_ms.c ****     MS_GetMaxLUN();                                                    /* Get maximum logical unit 
+  55:Libraries/USBHostLite/usbhost_ms.c ****     retry  = 80;
+  56:Libraries/USBHostLite/usbhost_ms.c ****     while(retry) {
+  57:Libraries/USBHostLite/usbhost_ms.c ****         rc = MS_TestUnitReady();                                       /* Test whether the unit is 
+  58:Libraries/USBHostLite/usbhost_ms.c ****         if (rc == OK) {
+  59:Libraries/USBHostLite/usbhost_ms.c ****             break;
+  60:Libraries/USBHostLite/usbhost_ms.c ****         }
+  61:Libraries/USBHostLite/usbhost_ms.c ****         MS_GetSenseInfo();                                             /* Get sense information    
+  62:Libraries/USBHostLite/usbhost_ms.c ****         retry--;
+  63:Libraries/USBHostLite/usbhost_ms.c ****     }
+  64:Libraries/USBHostLite/usbhost_ms.c ****     if (rc != OK) {
+  65:Libraries/USBHostLite/usbhost_ms.c ****         PRINT_Err(rc);
+  66:Libraries/USBHostLite/usbhost_ms.c ****         return (rc);
+  67:Libraries/USBHostLite/usbhost_ms.c ****     }
+  68:Libraries/USBHostLite/usbhost_ms.c ****     rc = MS_ReadCapacity(numBlks, blkSize);                         /* Read capacity of the disk   
+  69:Libraries/USBHostLite/usbhost_ms.c ****     MS_BlkSize = *blkSize;						// Set global
+  70:Libraries/USBHostLite/usbhost_ms.c ****     rc = MS_Inquire (inquiryResult);
+  71:Libraries/USBHostLite/usbhost_ms.c ****     return (rc);
+  72:Libraries/USBHostLite/usbhost_ms.c **** }
+  73:Libraries/USBHostLite/usbhost_ms.c **** /*
+  74:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+  75:Libraries/USBHostLite/usbhost_ms.c **** *                                         PARSE THE CONFIGURATION
+  76:Libraries/USBHostLite/usbhost_ms.c **** *
+  77:Libraries/USBHostLite/usbhost_ms.c **** * Description: This function is used to parse the configuration
+  78:Libraries/USBHostLite/usbhost_ms.c **** *
+  79:Libraries/USBHostLite/usbhost_ms.c **** * Arguments  : None
+  80:Libraries/USBHostLite/usbhost_ms.c **** *
+  81:Libraries/USBHostLite/usbhost_ms.c **** * Returns    : OK		              if Success
+  82:Libraries/USBHostLite/usbhost_ms.c **** *              ERR_INVALID_BOOTSIG    if Failed
+  83:Libraries/USBHostLite/usbhost_ms.c **** *
+  84:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+  85:Libraries/USBHostLite/usbhost_ms.c **** */
+  86:Libraries/USBHostLite/usbhost_ms.c **** 
+  87:Libraries/USBHostLite/usbhost_ms.c **** USB_INT32S  MS_ParseConfiguration (void)
+  88:Libraries/USBHostLite/usbhost_ms.c **** {
+  89:Libraries/USBHostLite/usbhost_ms.c ****     volatile  USB_INT08U  *desc_ptr;
+  90:Libraries/USBHostLite/usbhost_ms.c ****               USB_INT08U   ms_int_found;
+  91:Libraries/USBHostLite/usbhost_ms.c **** 
+  92:Libraries/USBHostLite/usbhost_ms.c **** 
+  93:Libraries/USBHostLite/usbhost_ms.c ****     desc_ptr     = TDBuffer;
+  94:Libraries/USBHostLite/usbhost_ms.c ****     ms_int_found = 0;
+  95:Libraries/USBHostLite/usbhost_ms.c **** 
+  96:Libraries/USBHostLite/usbhost_ms.c ****     if (desc_ptr[1] != USB_DESCRIPTOR_TYPE_CONFIGURATION) {
+  97:Libraries/USBHostLite/usbhost_ms.c ****         return (ERR_BAD_CONFIGURATION);
+  98:Libraries/USBHostLite/usbhost_ms.c ****     }
+  99:Libraries/USBHostLite/usbhost_ms.c ****     desc_ptr += desc_ptr[0];
+ 100:Libraries/USBHostLite/usbhost_ms.c **** 
+ 101:Libraries/USBHostLite/usbhost_ms.c ****     while (desc_ptr != TDBuffer + ReadLE16U(&TDBuffer[2])) {
+ 102:Libraries/USBHostLite/usbhost_ms.c **** //  while (desc_ptr != TDBuffer + *((USB_INT16U *) &TDBuffer[2])) {
+ 103:Libraries/USBHostLite/usbhost_ms.c **** 
+ 104:Libraries/USBHostLite/usbhost_ms.c ****         switch (desc_ptr[1]) {
+ 105:Libraries/USBHostLite/usbhost_ms.c **** 
+ 106:Libraries/USBHostLite/usbhost_ms.c ****             case USB_DESCRIPTOR_TYPE_INTERFACE:                       /* If it is an interface desc
+ 107:Libraries/USBHostLite/usbhost_ms.c ****                  if (desc_ptr[5] == MASS_STORAGE_CLASS &&             /* check if the class is mass
+ 108:Libraries/USBHostLite/usbhost_ms.c ****                      desc_ptr[6] == MASS_STORAGE_SUBCLASS_SCSI &&     /* check if the subclass is S
+ 109:Libraries/USBHostLite/usbhost_ms.c ****                      desc_ptr[7] == MASS_STORAGE_PROTOCOL_BO) {       /* check if the protocol is B
+ 110:Libraries/USBHostLite/usbhost_ms.c ****                      ms_int_found = 1;
+ 111:Libraries/USBHostLite/usbhost_ms.c ****                      desc_ptr    += desc_ptr[0];                      /* Move to next descriptor st
+ 112:Libraries/USBHostLite/usbhost_ms.c ****                  }
+ 113:Libraries/USBHostLite/usbhost_ms.c ****                  break;
+ 114:Libraries/USBHostLite/usbhost_ms.c **** 
+ 115:Libraries/USBHostLite/usbhost_ms.c ****             case USB_DESCRIPTOR_TYPE_ENDPOINT:                        /* If it is an endpoint descr
+ 116:Libraries/USBHostLite/usbhost_ms.c ****                  if ((desc_ptr[3] & 0x03) == 0x02) {                  /* If it is Bulk endpoint    
+ 117:Libraries/USBHostLite/usbhost_ms.c ****                      if (desc_ptr[2] & 0x80) {                        /* If it is In endpoint      
+ 118:Libraries/USBHostLite/usbhost_ms.c ****                          EDBulkIn->Control =  1                             |      /* USB address  
+ 119:Libraries/USBHostLite/usbhost_ms.c ****                                               ((desc_ptr[2] & 0x7F) << 7)   |      /* Endpoint addr
+ 120:Libraries/USBHostLite/usbhost_ms.c ****                                               (2 << 11)                     |      /* direction    
+ 121:Libraries/USBHostLite/usbhost_ms.c ****                                               (ReadLE16U(&desc_ptr[4]) << 16);     /* MaxPkt Size  
+ 122:Libraries/USBHostLite/usbhost_ms.c ****                          desc_ptr += desc_ptr[0];                     /* Move to next descriptor st
+ 123:Libraries/USBHostLite/usbhost_ms.c ****                      } else {                                         /* If it is Out endpoint     
+ 124:Libraries/USBHostLite/usbhost_ms.c ****                          EDBulkOut->Control = 1                             |      /* USB address  
+ 125:Libraries/USBHostLite/usbhost_ms.c ****                                               ((desc_ptr[2] & 0x7F) << 7)   |      /* Endpoint addr
+ 126:Libraries/USBHostLite/usbhost_ms.c ****                                               (1 << 11)                     |      /* direction    
+ 127:Libraries/USBHostLite/usbhost_ms.c ****                                               (ReadLE16U(&desc_ptr[4]) << 16);     /* MaxPkt Size  
+ 128:Libraries/USBHostLite/usbhost_ms.c ****                          desc_ptr += desc_ptr[0];                     /* Move to next descriptor st
+ 129:Libraries/USBHostLite/usbhost_ms.c ****                      }
+ 130:Libraries/USBHostLite/usbhost_ms.c ****                  } else {                                             /* If it is not bulk end poin
+ 131:Libraries/USBHostLite/usbhost_ms.c ****                      desc_ptr += desc_ptr[0];                         /* Move to next descriptor st
+ 132:Libraries/USBHostLite/usbhost_ms.c ****                  }
+ 133:Libraries/USBHostLite/usbhost_ms.c ****                  break;
+ 134:Libraries/USBHostLite/usbhost_ms.c **** 
+ 135:Libraries/USBHostLite/usbhost_ms.c ****             default:                                 /* If the descriptor is neither interface nor 
+ 136:Libraries/USBHostLite/usbhost_ms.c ****                  desc_ptr += desc_ptr[0];                             /* Move to next descriptor st
+ 137:Libraries/USBHostLite/usbhost_ms.c ****                  break;
+ 138:Libraries/USBHostLite/usbhost_ms.c ****         }
+ 139:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 140:Libraries/USBHostLite/usbhost_ms.c ****     if (ms_int_found) {
+ 141:Libraries/USBHostLite/usbhost_ms.c ****         PRINT_Log("Mass Storage device connected\n");
+ 142:Libraries/USBHostLite/usbhost_ms.c ****         return (OK);
+ 143:Libraries/USBHostLite/usbhost_ms.c ****     } else {
+ 144:Libraries/USBHostLite/usbhost_ms.c ****         PRINT_Log("Not a Mass Storage device\n");
+ 145:Libraries/USBHostLite/usbhost_ms.c ****         return (ERR_NO_MS_INTERFACE);
+ 146:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 147:Libraries/USBHostLite/usbhost_ms.c **** }
+ 148:Libraries/USBHostLite/usbhost_ms.c **** 
+ 149:Libraries/USBHostLite/usbhost_ms.c **** /*
+ 150:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 151:Libraries/USBHostLite/usbhost_ms.c **** *                                         GET MAXIMUM LOGICAL UNIT
+ 152:Libraries/USBHostLite/usbhost_ms.c **** *
+ 153:Libraries/USBHostLite/usbhost_ms.c **** * Description: This function returns the maximum logical unit from the device
+ 154:Libraries/USBHostLite/usbhost_ms.c **** *
+ 155:Libraries/USBHostLite/usbhost_ms.c **** * Arguments  : None
+ 156:Libraries/USBHostLite/usbhost_ms.c **** *
+ 157:Libraries/USBHostLite/usbhost_ms.c **** * Returns    : OK		              if Success
+ 158:Libraries/USBHostLite/usbhost_ms.c **** *              ERR_INVALID_BOOTSIG    if Failed
+ 159:Libraries/USBHostLite/usbhost_ms.c **** *
+ 160:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 161:Libraries/USBHostLite/usbhost_ms.c **** */
+ 162:Libraries/USBHostLite/usbhost_ms.c **** 
+ 163:Libraries/USBHostLite/usbhost_ms.c **** USB_INT32S  MS_GetMaxLUN (void)
+ 164:Libraries/USBHostLite/usbhost_ms.c **** {
+ 165:Libraries/USBHostLite/usbhost_ms.c ****     USB_INT32S  rc;
+ 166:Libraries/USBHostLite/usbhost_ms.c **** 
+ 167:Libraries/USBHostLite/usbhost_ms.c **** 
+ 168:Libraries/USBHostLite/usbhost_ms.c ****     rc = Host_CtrlRecv(USB_DEVICE_TO_HOST | USB_REQUEST_TYPE_CLASS | USB_RECIPIENT_INTERFACE,
+ 169:Libraries/USBHostLite/usbhost_ms.c ****                        MS_GET_MAX_LUN_REQ,
+ 170:Libraries/USBHostLite/usbhost_ms.c ****                        0,
+ 171:Libraries/USBHostLite/usbhost_ms.c ****                        0,
+ 172:Libraries/USBHostLite/usbhost_ms.c ****                        1,
+ 173:Libraries/USBHostLite/usbhost_ms.c ****                        TDBuffer);
+ 174:Libraries/USBHostLite/usbhost_ms.c ****     return (rc); 
+ 175:Libraries/USBHostLite/usbhost_ms.c **** }
+ 176:Libraries/USBHostLite/usbhost_ms.c **** 
+ 177:Libraries/USBHostLite/usbhost_ms.c **** /*
+ 178:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 179:Libraries/USBHostLite/usbhost_ms.c **** *                                          GET SENSE INFORMATION
+ 180:Libraries/USBHostLite/usbhost_ms.c **** *
+ 181:Libraries/USBHostLite/usbhost_ms.c **** * Description: This function is used to get sense information from the device
+ 182:Libraries/USBHostLite/usbhost_ms.c **** *
+ 183:Libraries/USBHostLite/usbhost_ms.c **** * Arguments  : None
+ 184:Libraries/USBHostLite/usbhost_ms.c **** *
+ 185:Libraries/USBHostLite/usbhost_ms.c **** * Returns    : OK       if Success
+ 186:Libraries/USBHostLite/usbhost_ms.c **** *              ERROR    if Failed
+ 187:Libraries/USBHostLite/usbhost_ms.c **** *
+ 188:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 189:Libraries/USBHostLite/usbhost_ms.c **** */
+ 190:Libraries/USBHostLite/usbhost_ms.c **** 
+ 191:Libraries/USBHostLite/usbhost_ms.c **** USB_INT32S  MS_GetSenseInfo (void)
+ 192:Libraries/USBHostLite/usbhost_ms.c **** {
+ 193:Libraries/USBHostLite/usbhost_ms.c ****     USB_INT32S  rc;
+ 194:Libraries/USBHostLite/usbhost_ms.c **** 
+ 195:Libraries/USBHostLite/usbhost_ms.c **** 
+ 196:Libraries/USBHostLite/usbhost_ms.c ****     Fill_MSCommand(0, 0, 0, MS_DATA_DIR_IN, SCSI_CMD_REQUEST_SENSE, 6);
+ 197:Libraries/USBHostLite/usbhost_ms.c ****     rc = Host_ProcessTD(EDBulkOut, TD_OUT, TDBuffer, CBW_SIZE);
+ 198:Libraries/USBHostLite/usbhost_ms.c ****     if (rc == OK) {
+ 199:Libraries/USBHostLite/usbhost_ms.c ****         rc = Host_ProcessTD(EDBulkIn, TD_IN, TDBuffer, 18);
+ 200:Libraries/USBHostLite/usbhost_ms.c ****         if (rc == OK) {
+ 201:Libraries/USBHostLite/usbhost_ms.c ****             rc = Host_ProcessTD(EDBulkIn, TD_IN, TDBuffer, CSW_SIZE);
+ 202:Libraries/USBHostLite/usbhost_ms.c ****             if (rc == OK) {
+ 203:Libraries/USBHostLite/usbhost_ms.c ****                 if (TDBuffer[12] != 0) {
+ 204:Libraries/USBHostLite/usbhost_ms.c ****                     rc = ERR_MS_CMD_FAILED;
+ 205:Libraries/USBHostLite/usbhost_ms.c ****                 }
+ 206:Libraries/USBHostLite/usbhost_ms.c ****             }
+ 207:Libraries/USBHostLite/usbhost_ms.c ****         }
+ 208:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 209:Libraries/USBHostLite/usbhost_ms.c ****     return (rc);
+ 210:Libraries/USBHostLite/usbhost_ms.c **** }
+ 211:Libraries/USBHostLite/usbhost_ms.c **** 
+ 212:Libraries/USBHostLite/usbhost_ms.c **** /*
+ 213:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 214:Libraries/USBHostLite/usbhost_ms.c **** *                                           TEST UNIT READY
+ 215:Libraries/USBHostLite/usbhost_ms.c **** *
+ 216:Libraries/USBHostLite/usbhost_ms.c **** * Description: This function is used to test whether the unit is ready or not
+ 217:Libraries/USBHostLite/usbhost_ms.c **** *
+ 218:Libraries/USBHostLite/usbhost_ms.c **** * Arguments  : None
+ 219:Libraries/USBHostLite/usbhost_ms.c **** *
+ 220:Libraries/USBHostLite/usbhost_ms.c **** * Returns    : OK       if Success
+ 221:Libraries/USBHostLite/usbhost_ms.c **** *              ERROR    if Failed
+ 222:Libraries/USBHostLite/usbhost_ms.c **** *
+ 223:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 224:Libraries/USBHostLite/usbhost_ms.c **** */
+ 225:Libraries/USBHostLite/usbhost_ms.c **** 
+ 226:Libraries/USBHostLite/usbhost_ms.c **** USB_INT32S  MS_TestUnitReady (void)
+ 227:Libraries/USBHostLite/usbhost_ms.c **** {
+ 228:Libraries/USBHostLite/usbhost_ms.c ****     USB_INT32S  rc;
+ 229:Libraries/USBHostLite/usbhost_ms.c **** 
+ 230:Libraries/USBHostLite/usbhost_ms.c **** 
+ 231:Libraries/USBHostLite/usbhost_ms.c ****     Fill_MSCommand(0, 0, 0, MS_DATA_DIR_NONE, SCSI_CMD_TEST_UNIT_READY, 6);
+ 232:Libraries/USBHostLite/usbhost_ms.c ****     rc = Host_ProcessTD(EDBulkOut, TD_OUT, TDBuffer, CBW_SIZE);
+ 233:Libraries/USBHostLite/usbhost_ms.c ****     if (rc == OK) {
+ 234:Libraries/USBHostLite/usbhost_ms.c ****         rc = Host_ProcessTD(EDBulkIn, TD_IN, TDBuffer, CSW_SIZE);
+ 235:Libraries/USBHostLite/usbhost_ms.c ****         if (rc == OK) {        
+ 236:Libraries/USBHostLite/usbhost_ms.c ****             if (TDBuffer[12] != 0) {
+ 237:Libraries/USBHostLite/usbhost_ms.c ****                 rc = ERR_MS_CMD_FAILED;
+ 238:Libraries/USBHostLite/usbhost_ms.c ****             }
+ 239:Libraries/USBHostLite/usbhost_ms.c ****         }
+ 240:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 241:Libraries/USBHostLite/usbhost_ms.c ****     return (rc);
+ 242:Libraries/USBHostLite/usbhost_ms.c **** }
+ 243:Libraries/USBHostLite/usbhost_ms.c **** 
+ 244:Libraries/USBHostLite/usbhost_ms.c **** /*
+ 245:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 246:Libraries/USBHostLite/usbhost_ms.c **** *                                            READ CAPACITY
+ 247:Libraries/USBHostLite/usbhost_ms.c **** *
+ 248:Libraries/USBHostLite/usbhost_ms.c **** * Description: This function is used to read the capacity of the mass storage device
+ 249:Libraries/USBHostLite/usbhost_ms.c **** *
+ 250:Libraries/USBHostLite/usbhost_ms.c **** * Arguments  : None
+ 251:Libraries/USBHostLite/usbhost_ms.c **** *
+ 252:Libraries/USBHostLite/usbhost_ms.c **** * Returns    : OK       if Success
+ 253:Libraries/USBHostLite/usbhost_ms.c **** *              ERROR    if Failed
+ 254:Libraries/USBHostLite/usbhost_ms.c **** *
+ 255:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 256:Libraries/USBHostLite/usbhost_ms.c **** */
+ 257:Libraries/USBHostLite/usbhost_ms.c **** 
+ 258:Libraries/USBHostLite/usbhost_ms.c **** USB_INT32S MS_ReadCapacity (USB_INT32U *numBlks, USB_INT32U *blkSize)
+ 259:Libraries/USBHostLite/usbhost_ms.c **** {
+ 260:Libraries/USBHostLite/usbhost_ms.c ****     USB_INT32S  rc;
+ 261:Libraries/USBHostLite/usbhost_ms.c **** 
+ 262:Libraries/USBHostLite/usbhost_ms.c **** 
+ 263:Libraries/USBHostLite/usbhost_ms.c ****     Fill_MSCommand(0, 0, 0, MS_DATA_DIR_IN, SCSI_CMD_READ_CAPACITY, 10);
+ 264:Libraries/USBHostLite/usbhost_ms.c ****     rc = Host_ProcessTD(EDBulkOut, TD_OUT, TDBuffer, CBW_SIZE);
+ 265:Libraries/USBHostLite/usbhost_ms.c ****     if (rc == OK) {
+ 266:Libraries/USBHostLite/usbhost_ms.c ****         rc = Host_ProcessTD(EDBulkIn, TD_IN, TDBuffer, 8);
+ 267:Libraries/USBHostLite/usbhost_ms.c ****         if (rc == OK) {
+ 268:Libraries/USBHostLite/usbhost_ms.c ****             if (numBlks)
+ 269:Libraries/USBHostLite/usbhost_ms.c ****             	*numBlks = ReadBE32U(&TDBuffer[0]);
+ 270:Libraries/USBHostLite/usbhost_ms.c ****             if (blkSize)
+ 271:Libraries/USBHostLite/usbhost_ms.c ****             	*blkSize = ReadBE32U(&TDBuffer[4]);
+ 272:Libraries/USBHostLite/usbhost_ms.c ****             rc = Host_ProcessTD(EDBulkIn, TD_IN, TDBuffer, CSW_SIZE);
+ 273:Libraries/USBHostLite/usbhost_ms.c ****             if (rc == OK) {
+ 274:Libraries/USBHostLite/usbhost_ms.c ****                 if (TDBuffer[12] != 0) {
+ 275:Libraries/USBHostLite/usbhost_ms.c ****                     rc = ERR_MS_CMD_FAILED;
+ 276:Libraries/USBHostLite/usbhost_ms.c ****                 }
+ 277:Libraries/USBHostLite/usbhost_ms.c ****             }
+ 278:Libraries/USBHostLite/usbhost_ms.c ****         }
+ 279:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 280:Libraries/USBHostLite/usbhost_ms.c ****     return (rc);
+ 281:Libraries/USBHostLite/usbhost_ms.c **** }
+ 282:Libraries/USBHostLite/usbhost_ms.c **** 
+ 283:Libraries/USBHostLite/usbhost_ms.c **** 
+ 284:Libraries/USBHostLite/usbhost_ms.c **** 
+ 285:Libraries/USBHostLite/usbhost_ms.c **** USB_INT32S MS_Inquire (USB_INT08U *response)
+ 286:Libraries/USBHostLite/usbhost_ms.c **** {
+ 287:Libraries/USBHostLite/usbhost_ms.c ****     USB_INT32S rc;
+ 288:Libraries/USBHostLite/usbhost_ms.c **** 	USB_INT32U i;
+ 289:Libraries/USBHostLite/usbhost_ms.c **** 
+ 290:Libraries/USBHostLite/usbhost_ms.c ****     Fill_MSCommand(0, 0, 0, MS_DATA_DIR_IN, SCSI_CMD_INQUIRY, 6);
+ 291:Libraries/USBHostLite/usbhost_ms.c ****     rc = Host_ProcessTD(EDBulkOut, TD_OUT, TDBuffer, CBW_SIZE);
+ 292:Libraries/USBHostLite/usbhost_ms.c ****     if (rc == OK) {
+ 293:Libraries/USBHostLite/usbhost_ms.c ****         rc = Host_ProcessTD(EDBulkIn, TD_IN, TDBuffer, INQUIRY_LENGTH);
+ 294:Libraries/USBHostLite/usbhost_ms.c ****         if (rc == OK) {
+ 295:Libraries/USBHostLite/usbhost_ms.c ****             if (response) {
+ 296:Libraries/USBHostLite/usbhost_ms.c **** 				for ( i = 0; i < INQUIRY_LENGTH; i++ )
+ 297:Libraries/USBHostLite/usbhost_ms.c **** 					*response++ = *TDBuffer++;
+ 298:Libraries/USBHostLite/usbhost_ms.c **** #if 0
+ 299:Libraries/USBHostLite/usbhost_ms.c ****             	MemCpy (response, TDBuffer, INQUIRY_LENGTH);
+ 300:Libraries/USBHostLite/usbhost_ms.c **** 	        	StrNullTrailingSpace (response->vendorID, SCSI_INQUIRY_VENDORCHARS);
+ 301:Libraries/USBHostLite/usbhost_ms.c **** 	        	StrNullTrailingSpace (response->productID, SCSI_INQUIRY_PRODUCTCHARS);
+ 302:Libraries/USBHostLite/usbhost_ms.c **** 	        	StrNullTrailingSpace (response->productRev, SCSI_INQUIRY_REVCHARS);
+ 303:Libraries/USBHostLite/usbhost_ms.c **** #endif
+ 304:Libraries/USBHostLite/usbhost_ms.c ****             }
+ 305:Libraries/USBHostLite/usbhost_ms.c ****             rc = Host_ProcessTD(EDBulkIn, TD_IN, TDBuffer, CSW_SIZE);
+ 306:Libraries/USBHostLite/usbhost_ms.c ****             if (rc == OK) {
+ 307:Libraries/USBHostLite/usbhost_ms.c ****                 if (TDBuffer[12] != 0) {	// bCSWStatus byte
+ 308:Libraries/USBHostLite/usbhost_ms.c ****                     rc = ERR_MS_CMD_FAILED;
+ 309:Libraries/USBHostLite/usbhost_ms.c ****                 }
+ 310:Libraries/USBHostLite/usbhost_ms.c ****             }
+ 311:Libraries/USBHostLite/usbhost_ms.c ****         }
+ 312:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 313:Libraries/USBHostLite/usbhost_ms.c ****     return (rc);
+ 314:Libraries/USBHostLite/usbhost_ms.c **** }
+ 315:Libraries/USBHostLite/usbhost_ms.c **** 
+ 316:Libraries/USBHostLite/usbhost_ms.c **** /*
+ 317:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 318:Libraries/USBHostLite/usbhost_ms.c **** *                                         RECEIVE THE BULK DATA
+ 319:Libraries/USBHostLite/usbhost_ms.c **** *
+ 320:Libraries/USBHostLite/usbhost_ms.c **** * Description: This function is used to receive the bulk data
+ 321:Libraries/USBHostLite/usbhost_ms.c **** *
+ 322:Libraries/USBHostLite/usbhost_ms.c **** * Arguments  : None
+ 323:Libraries/USBHostLite/usbhost_ms.c **** *
+ 324:Libraries/USBHostLite/usbhost_ms.c **** * Returns    : OK		              if Success
+ 325:Libraries/USBHostLite/usbhost_ms.c **** *              ERR_INVALID_BOOTSIG    if Failed
+ 326:Libraries/USBHostLite/usbhost_ms.c **** *
+ 327:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 328:Libraries/USBHostLite/usbhost_ms.c **** */
+ 329:Libraries/USBHostLite/usbhost_ms.c ****     
+ 330:Libraries/USBHostLite/usbhost_ms.c **** USB_INT32S  MS_BulkRecv (          USB_INT32U   block_number,
+ 331:Libraries/USBHostLite/usbhost_ms.c ****                                    USB_INT16U   num_blocks,
+ 332:Libraries/USBHostLite/usbhost_ms.c ****                          volatile  USB_INT08U  *user_buffer)
+ 333:Libraries/USBHostLite/usbhost_ms.c **** {
+ 334:Libraries/USBHostLite/usbhost_ms.c ****     USB_INT32S  rc;
+ 335:Libraries/USBHostLite/usbhost_ms.c ****     unsigned int i;
+ 336:Libraries/USBHostLite/usbhost_ms.c ****     volatile USB_INT08U *c = user_buffer;
+ 337:Libraries/USBHostLite/usbhost_ms.c ****     for ( i = 0 ; i < MS_BlkSize * num_blocks; i++) {
+ 338:Libraries/USBHostLite/usbhost_ms.c ****     	*c++ = 0;
+ 339:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 340:Libraries/USBHostLite/usbhost_ms.c **** 
+ 341:Libraries/USBHostLite/usbhost_ms.c **** 
+ 342:Libraries/USBHostLite/usbhost_ms.c ****     Fill_MSCommand(block_number, MS_BlkSize, num_blocks, MS_DATA_DIR_IN, SCSI_CMD_READ_10, 10);
+ 343:Libraries/USBHostLite/usbhost_ms.c **** 
+ 344:Libraries/USBHostLite/usbhost_ms.c ****     rc = Host_ProcessTD(EDBulkOut, TD_OUT, TDBuffer, CBW_SIZE);
+ 345:Libraries/USBHostLite/usbhost_ms.c ****     if (rc == OK) {
+ 346:Libraries/USBHostLite/usbhost_ms.c ****         rc = Host_ProcessTD(EDBulkIn, TD_IN, user_buffer, MS_BlkSize * num_blocks);
+ 347:Libraries/USBHostLite/usbhost_ms.c ****         if (rc == OK) {
+ 348:Libraries/USBHostLite/usbhost_ms.c ****             rc = Host_ProcessTD(EDBulkIn, TD_IN, TDBuffer, CSW_SIZE);
+ 349:Libraries/USBHostLite/usbhost_ms.c ****             if (rc == OK) {
+ 350:Libraries/USBHostLite/usbhost_ms.c ****                 if (TDBuffer[12] != 0) {
+ 351:Libraries/USBHostLite/usbhost_ms.c ****                     rc = ERR_MS_CMD_FAILED;
+ 352:Libraries/USBHostLite/usbhost_ms.c ****                 }
+ 353:Libraries/USBHostLite/usbhost_ms.c ****             }
+ 354:Libraries/USBHostLite/usbhost_ms.c ****         }
+ 355:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 356:Libraries/USBHostLite/usbhost_ms.c ****     return (rc);
+ 357:Libraries/USBHostLite/usbhost_ms.c **** }
+ 358:Libraries/USBHostLite/usbhost_ms.c **** 
+ 359:Libraries/USBHostLite/usbhost_ms.c **** /*
+ 360:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 361:Libraries/USBHostLite/usbhost_ms.c **** *                                         SEND BULK DATA
+ 362:Libraries/USBHostLite/usbhost_ms.c **** *
+ 363:Libraries/USBHostLite/usbhost_ms.c **** * Description: This function is used to send the bulk data
+ 364:Libraries/USBHostLite/usbhost_ms.c **** *
+ 365:Libraries/USBHostLite/usbhost_ms.c **** * Arguments  : None
+ 366:Libraries/USBHostLite/usbhost_ms.c **** *
+ 367:Libraries/USBHostLite/usbhost_ms.c **** * Returns    : OK		              if Success
+ 368:Libraries/USBHostLite/usbhost_ms.c **** *              ERR_INVALID_BOOTSIG    if Failed
+ 369:Libraries/USBHostLite/usbhost_ms.c **** *
+ 370:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 371:Libraries/USBHostLite/usbhost_ms.c **** */
+ 372:Libraries/USBHostLite/usbhost_ms.c **** 
+ 373:Libraries/USBHostLite/usbhost_ms.c **** USB_INT32S  MS_BulkSend (          USB_INT32U   block_number,
+ 374:Libraries/USBHostLite/usbhost_ms.c ****                                    USB_INT16U   num_blocks,
+ 375:Libraries/USBHostLite/usbhost_ms.c ****                           volatile USB_INT08U  *user_buffer)
+ 376:Libraries/USBHostLite/usbhost_ms.c **** {
+ 377:Libraries/USBHostLite/usbhost_ms.c ****     USB_INT32S  rc;
+ 378:Libraries/USBHostLite/usbhost_ms.c **** 
+ 379:Libraries/USBHostLite/usbhost_ms.c **** 
+ 380:Libraries/USBHostLite/usbhost_ms.c ****     Fill_MSCommand(block_number, MS_BlkSize, num_blocks, MS_DATA_DIR_OUT, SCSI_CMD_WRITE_10, 10);
+ 381:Libraries/USBHostLite/usbhost_ms.c **** 
+ 382:Libraries/USBHostLite/usbhost_ms.c ****     rc = Host_ProcessTD(EDBulkOut, TD_OUT, TDBuffer, CBW_SIZE);
+ 383:Libraries/USBHostLite/usbhost_ms.c ****     if (rc == OK) {
+ 384:Libraries/USBHostLite/usbhost_ms.c ****         rc = Host_ProcessTD(EDBulkOut, TD_OUT, user_buffer, MS_BlkSize * num_blocks);
+ 385:Libraries/USBHostLite/usbhost_ms.c ****         if (rc == OK) {
+ 386:Libraries/USBHostLite/usbhost_ms.c ****             rc = Host_ProcessTD(EDBulkIn, TD_IN, TDBuffer, CSW_SIZE);
+ 387:Libraries/USBHostLite/usbhost_ms.c ****             if (rc == OK) {
+ 388:Libraries/USBHostLite/usbhost_ms.c ****                 if (TDBuffer[12] != 0) {
+ 389:Libraries/USBHostLite/usbhost_ms.c ****                     rc = ERR_MS_CMD_FAILED;
+ 390:Libraries/USBHostLite/usbhost_ms.c ****                 }
+ 391:Libraries/USBHostLite/usbhost_ms.c ****             }
+ 392:Libraries/USBHostLite/usbhost_ms.c ****         }
+ 393:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 394:Libraries/USBHostLite/usbhost_ms.c ****     return (rc);
+ 395:Libraries/USBHostLite/usbhost_ms.c **** }
+ 396:Libraries/USBHostLite/usbhost_ms.c **** 
+ 397:Libraries/USBHostLite/usbhost_ms.c **** /*
+ 398:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 399:Libraries/USBHostLite/usbhost_ms.c **** *                                         FILL MASS STORAGE COMMAND
+ 400:Libraries/USBHostLite/usbhost_ms.c **** *
+ 401:Libraries/USBHostLite/usbhost_ms.c **** * Description: This function is used to fill the mass storage command
+ 402:Libraries/USBHostLite/usbhost_ms.c **** *
+ 403:Libraries/USBHostLite/usbhost_ms.c **** * Arguments  : None
+ 404:Libraries/USBHostLite/usbhost_ms.c **** *
+ 405:Libraries/USBHostLite/usbhost_ms.c **** * Returns    : OK		              if Success
+ 406:Libraries/USBHostLite/usbhost_ms.c **** *              ERR_INVALID_BOOTSIG    if Failed
+ 407:Libraries/USBHostLite/usbhost_ms.c **** *
+ 408:Libraries/USBHostLite/usbhost_ms.c **** ***************************************************************************************************
+ 409:Libraries/USBHostLite/usbhost_ms.c **** */
+ 410:Libraries/USBHostLite/usbhost_ms.c **** 
+ 411:Libraries/USBHostLite/usbhost_ms.c **** void  Fill_MSCommand (USB_INT32U   block_number,
+ 412:Libraries/USBHostLite/usbhost_ms.c ****                       USB_INT32U   block_size,
+ 413:Libraries/USBHostLite/usbhost_ms.c ****                       USB_INT16U   num_blocks,
+ 414:Libraries/USBHostLite/usbhost_ms.c ****                       MS_DATA_DIR  direction,
+ 415:Libraries/USBHostLite/usbhost_ms.c ****                       USB_INT08U   scsi_cmd,
+ 416:Libraries/USBHostLite/usbhost_ms.c ****                       USB_INT08U   scsi_cmd_len)
+ 417:Libraries/USBHostLite/usbhost_ms.c **** {
+  31              	tend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              	.LVL0:
+  34              		push	{r4, r5, r6, r7, r8, r9, sl, lr}
+  35 0000 2DE9F047 	.LCFI0:
+  36              		.loc 1 417 0
+  37              		ldrb	r5, [sp, #32]	@ zero_extendqisi2
+  38 0004 9DF82050 	.LVL1:
+  39              		ldrb	r9, [sp, #36]	@ zero_extendqisi2
+  40 0008 9DF82490 	.LVL2:
+  41              		mov	sl, r0
+  42 000c 8246     		mov	r8, r2
+  43 000e 9046     		mov	r7, r3
+  44 0010 1F46     		movs	r0, #0
+  45 0012 0020     	.LVL3:
+  46              	.L2:
+  47              		.loc 1 424 0
+ 418:Libraries/USBHostLite/usbhost_ms.c ****             USB_INT32U  data_len;
+ 419:Libraries/USBHostLite/usbhost_ms.c ****     static  USB_INT32U  tag_cnt = 0;
+ 420:Libraries/USBHostLite/usbhost_ms.c ****             USB_INT32U  cnt;
+ 421:Libraries/USBHostLite/usbhost_ms.c **** 
+ 422:Libraries/USBHostLite/usbhost_ms.c **** 
+ 423:Libraries/USBHostLite/usbhost_ms.c ****     for (cnt = 0; cnt < CBW_SIZE; cnt++) {
+ 424:Libraries/USBHostLite/usbhost_ms.c ****          TDBuffer[cnt] = 0;
+  48              	r	r2, [r3, #0]
+  49 0014 224B     		movs	r3, #0
+  50 0016 1A68     		strb	r3, [r0, r2]
+  51 0018 0023     		.loc 1 423 0
+  52 001a 8354     		adds	r0, r0, #1
+  53              		cmp	r0, #31
+  54 001c 0130     		bne	.L2
+  55 001e 1F28     		.loc 1 426 0
+  56 0020 F8D1     		cmp	r5, #3
+ 425:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 426:Libraries/USBHostLite/usbhost_ms.c ****     switch(scsi_cmd) {
+  57              		bhi	.L9
+  58 0022 032D     		cbz	r5, .L5
+  59 0024 07D0     		b	.L4
+  60 0026 01D8     	.L9:
+  61 0028 4DB1     		cmp	r5, #18
+  62 002a 0CE0     		beq	.L7
+  63              		cmp	r5, #37
+  64 002c 122D     		beq	.L8
+  65 002e 04D0     		b	.L4
+  66 0030 252D     	.L6:
+  67 0032 06D0     		movs	r6, #18
+  68 0034 07E0     	.LVL4:
+  69              		b	.L10
+  70 0036 1226     	.LVL5:
+  71              	.L7:
+  72 0038 07E0     		movs	r6, #36
+  73              	.LVL6:
+  74              		b	.L10
+  75 003a 2426     	.LVL7:
+  76              	.L5:
+  77 003c 05E0     		mov	r6, r5
+  78              	.LVL8:
+  79              		.loc 1 430 0
+  80 003e 2E46     		b	.L10
+  81              	.LVL9:
+ 427:Libraries/USBHostLite/usbhost_ms.c **** 
+ 428:Libraries/USBHostLite/usbhost_ms.c ****         case SCSI_CMD_TEST_UNIT_READY:
+ 429:Libraries/USBHostLite/usbhost_ms.c ****              data_len = 0;
+ 430:Libraries/USBHostLite/usbhost_ms.c ****              break;
+  82              	
+  83 0040 03E0     		.loc 1 433 0
+  84              		b	.L10
+  85              	.LVL11:
+  86 0042 0826     	.L4:
+  87              		.loc 1 441 0
+ 431:Libraries/USBHostLite/usbhost_ms.c ****         case SCSI_CMD_READ_CAPACITY:
+ 432:Libraries/USBHostLite/usbhost_ms.c ****              data_len = 8;
+ 433:Libraries/USBHostLite/usbhost_ms.c ****              break;
+  88              	r6, r1, r8
+  89 0044 01E0     	.LVL12:
+  90              	.L10:
+  91              		.loc 1 444 0
+ 434:Libraries/USBHostLite/usbhost_ms.c ****         case SCSI_CMD_REQUEST_SENSE:
+ 435:Libraries/USBHostLite/usbhost_ms.c ****              data_len = 18;
+ 436:Libraries/USBHostLite/usbhost_ms.c ****              break;
+ 437:Libraries/USBHostLite/usbhost_ms.c ****         case SCSI_CMD_INQUIRY:
+ 438:Libraries/USBHostLite/usbhost_ms.c ****         	 data_len = 36;
+ 439:Libraries/USBHostLite/usbhost_ms.c ****         	 break;
+ 440:Libraries/USBHostLite/usbhost_ms.c ****         default:
+ 441:Libraries/USBHostLite/usbhost_ms.c ****              data_len = block_size * num_blocks;
+  92              		r4, .L18
+  93 0046 01FB08F6 		ldr	r1, .L18+4
+  94              	.LVL13:
+  95              		ldr	r0, [r4, #0]
+ 442:Libraries/USBHostLite/usbhost_ms.c ****              break;
+ 443:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 444:Libraries/USBHostLite/usbhost_ms.c ****     WriteLE32U(TDBuffer, CBW_SIGNATURE);
+  96              	14:
+  97 004a 154C     		bl	WriteLE32U
+  98 004c 1549     		.loc 1 445 0
+  99              		ldr	r0, [r4, #0]
+ 100 004e 2068     		movs	r1, #0
+ 101              		adds	r0, r0, #4
+ 102 0050 FFF7FEFF 		bl	WriteLE32U
+ 445:Libraries/USBHostLite/usbhost_ms.c ****     WriteLE32U(&TDBuffer[4], tag_cnt);
+ 103              	 446 0
+ 104 0054 2068     		ldr	r0, [r4, #0]
+ 105 0056 0021     		mov	r1, r6
+ 106 0058 0430     		adds	r0, r0, #8
+ 107 005a FFF7FEFF 		bl	WriteLE32U
+ 446:Libraries/USBHostLite/usbhost_ms.c ****     WriteLE32U(&TDBuffer[8], data_len);
+ 108              	 1 447 0
+ 109 005e 2068     		ldr	r0, [r4, #0]
+ 110 0060 3146     		cmp	r7, #1
+ 111 0062 0830     		it	eq
+ 112 0064 FFF7FEFF 		moveq	r7, #0
+ 447:Libraries/USBHostLite/usbhost_ms.c ****     TDBuffer[12]     = (direction == MS_DATA_DIR_NONE) ? 0 : direction;
+ 113              	 1 450 0
+ 114 0068 2068     		cmp	r5, #3
+ 115 006a 012F     		.loc 1 447 0
+ 116 006c 08BF     		strb	r7, [r0, #12]
+ 117 006e 0027     		.loc 1 448 0
+ 448:Libraries/USBHostLite/usbhost_ms.c ****     TDBuffer[14]     = scsi_cmd_len;                                   /* Length of the CBW        
+ 449:Libraries/USBHostLite/usbhost_ms.c ****     TDBuffer[15]     = scsi_cmd;
+ 450:Libraries/USBHostLite/usbhost_ms.c ****     if ((scsi_cmd     == SCSI_CMD_REQUEST_SENSE)
+ 118              		r9, [r0, #14]
+ 119 0070 032D     		.loc 1 449 0
+ 120              		strb	r5, [r0, #15]
+ 121 0072 0773     		.loc 1 450 0
+ 122              		beq	.L13
+ 123 0074 80F80E90 		cmp	r5, #18
+ 124              		bne	.L15
+ 125 0078 C573     	.L13:
+ 126              		.loc 1 452 0
+ 127 007a 01D0     		uxtb	r3, r6
+ 128 007c 122D     		strb	r3, [r0, #19]
+ 129 007e 02D1     		.loc 1 450 0
+ 130              		b	.L16
+ 451:Libraries/USBHostLite/usbhost_ms.c ****      || (scsi_cmd     == SCSI_CMD_INQUIRY)) {
+ 452:Libraries/USBHostLite/usbhost_ms.c ****         TDBuffer[19] = (USB_INT08U)data_len;
+ 131              	 454 0
+ 132 0080 F3B2     		adds	r0, r0, #17
+ 133 0082 C374     		mov	r1, sl
+ 134              		bl	WriteBE32U
+ 135 0084 03E0     	.L16:
+ 136              		.loc 1 456 0
+ 453:Libraries/USBHostLite/usbhost_ms.c ****     } else {
+ 454:Libraries/USBHostLite/usbhost_ms.c ****         WriteBE32U(&TDBuffer[17], block_number);
+ 137              	3, .L18
+ 138 0086 1130     		mov	r1, r8
+ 139 0088 5146     		ldr	r0, [r3, #0]
+ 140 008a FFF7FEFF 		adds	r0, r0, #22
+ 141              		bl	WriteBE16U
+ 455:Libraries/USBHostLite/usbhost_ms.c ****     }
+ 456:Libraries/USBHostLite/usbhost_ms.c ****     WriteBE16U(&TDBuffer[22], num_blocks);
+ 142              	 1 457 0
+ 143 008e 044B     		pop	{r4, r5, r6, r7, r8, r9, sl, pc}
+ 144 0090 4146     	.L19:
+ 145 0092 1868     		.align	2
+ 146 0094 1630     	.L18:
+ 147 0096 FFF7FEFF 		.word	TDBuffer
+ 457:Libraries/USBHostLite/usbhost_ms.c **** }
+ 148              		1128420181
+ 149 009a BDE8F087 	.LFE40:
+ 151 009e C046     		.section	.text.MS_BulkSend,"ax",%progbits
+ 152              		.align	2
+ 153 00a0 00000000 		.global	MS_BulkSend
+ 154 00a4 55534243 		.thumb
+ 155              		.thumb_func
+ 157              	MS_BulkSend:
+ 158              	.LFB39:
+ 159              		.loc 1 376 0
+ 160              		@ args = 0, pretend = 0, frame = 0
+ 161              		@ frame_needed = 0, uses_anonymous_args = 0
+ 162              	.LVL15:
+ 163              		push	{r0, r1, r4, r5, r6, r7, r8, lr}
+ 164              	.LCFI1:
+ 165              	.LVL16:
+ 166              		.loc 1 380 0
+ 167              		movs	r3, #42
+ 168              		ldr	r8, .L27+12
+ 169 0000 2DE9F341 		.loc 1 376 0
+ 170              		mov	r6, r1
+ 171              	.LVL17:
+ 172              		.loc 1 380 0
+ 173 0004 2A23     		str	r3, [sp, #0]
+ 174 0006 DFF87C80 		.loc 1 382 0
+ 175              		ldr	r5, .L27
+ 176 000a 0E46     		.loc 1 380 0
+ 177              		movs	r3, #10
+ 178              		.loc 1 382 0
+ 179 000c 0093     		ldr	r4, .L27+4
+ 180              		.loc 1 380 0
+ 181 000e 1A4D     		ldr	r1, [r8, #0]
+ 182              	.LVL18:
+ 183 0010 0A23     		str	r3, [sp, #4]
+ 184              		.loc 1 376 0
+ 185 0012 1A4C     		mov	r7, r2
+ 186              		.loc 1 380 0
+ 187 0014 D8F80010 		movs	r3, #0
+ 188              		mov	r2, r6
+ 189 0018 0193     	.LVL19:
+ 190              		bl	Fill_MSCommand
+ 191 001a 1746     		.loc 1 382 0
+ 192              		movs	r3, #31
+ 193 001c 0023     		ldr	r0, [r5, #0]
+ 194 001e 3246     		mov	r1, #524288
+ 195              		ldr	r2, [r4, #0]
+ 196 0020 FFF7FEFF 		bl	Host_ProcessTD
+ 197              		.loc 1 383 0
+ 198 0024 1F23     		mov	r3, r0
+ 199 0026 2868     	.LVL20:
+ 200 0028 4FF40021 		cbnz	r0, .L21
+ 201 002c 2268     		.loc 1 384 0
+ 202 002e FFF7FEFF 		ldr	r3, [r8, #0]
+ 203              	.LVL21:
+ 204 0032 0346     		ldr	r0, [r5, #0]
+ 205              		mul	r3, r3, r6
+ 206 0034 E0B9     		mov	r1, #524288
+ 207              		mov	r2, r7
+ 208 0036 D8F80030 		bl	Host_ProcessTD
+ 209              		.loc 1 385 0
+ 210 003a 2868     		mov	r3, r0
+ 211 003c 03FB06F3 	.LVL22:
+ 212 0040 4FF40021 		cbnz	r0, .L21
+ 213 0044 3A46     		.loc 1 386 0
+ 214 0046 FFF7FEFF 		ldr	r3, .L27+8
+ 215              	.LVL23:
+ 216 004a 0346     		mov	r1, #1048576
+ 217              		ldr	r0, [r3, #0]
+ 218 004c 80B9     		ldr	r2, [r4, #0]
+ 219              		movs	r3, #13
+ 220 004e 0C4B     		bl	Host_ProcessTD
+ 221              		.loc 1 387 0
+ 222 0050 4FF48011 		mov	r3, r0
+ 223 0054 1868     	.LVL24:
+ 224 0056 2268     		cbnz	r0, .L21
+ 225 0058 0D23     		.loc 1 388 0
+ 226 005a FFF7FEFF 		ldr	r3, [r4, #0]
+ 227              	.LVL25:
+ 228 005e 0346     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 229              		cmp	r3, #0
+ 230 0060 30B9     		ite	eq
+ 231              		moveq	r3, #0
+ 232 0062 2368     		mvnne	r3, #9
+ 233              	.LVL26:
+ 234 0064 1B7B     	.L21:
+ 235 0066 002B     		.loc 1 395 0
+ 236 0068 0CBF     		mov	r0, r3
+ 237 006a 0023     		pop	{r2, r3, r4, r5, r6, r7, r8, pc}
+ 238 006c 6FF00903 	.L28:
+ 239              		.align	2
+ 240              	.L27:
+ 241              		.word	EDBulkOut
+ 242 0070 1846     		.word	TDBuffer
+ 243 0072 BDE8FC81 		.word	EDBulkIn
+ 244              		.word	MS_BlkSize
+ 245 0076 C046     	.LFE39:
+ 247 0078 00000000 		.section	.text.MS_BulkRecv,"ax",%progbits
+ 248 007c 00000000 		.align	2
+ 249 0080 00000000 		.global	MS_BulkRecv
+ 250 0084 00000000 		.thumb
+ 251              		.thumb_func
+ 253              	MS_BulkRecv:
+ 254              	.LFB38:
+ 255              		.loc 1 333 0
+ 256              		@ args = 0, pretend = 0, frame = 0
+ 257              		@ frame_needed = 0, uses_anonymous_args = 0
+ 258              	.LVL27:
+ 259              		.loc 1 337 0
+ 260              		ldr	r3, .L39
+ 261              		.loc 1 333 0
+ 262              		push	{r0, r1, r2, r4, r5, r6, r7, lr}
+ 263              	.LCFI2:
+ 264              	.LVL28:
+ 265              		.loc 1 337 0
+ 266 0000 214B     		ldr	r5, [r3, #0]
+ 267              		.loc 1 333 0
+ 268 0002 F7B5     		mov	r4, r1
+ 269              	.LVL29:
+ 270              		mov	r7, r2
+ 271              	.LVL30:
+ 272 0004 1D68     		.loc 1 337 0
+ 273              		mul	lr, r5, r1
+ 274 0006 0C46     		mov	r1, r2
+ 275              	.LVL31:
+ 276 0008 1746     		movs	r2, #0
+ 277              	.LVL32:
+ 278              		b	.L30
+ 279 000a 05FB01FE 	.L31:
+ 280 000e 1146     		.loc 1 338 0
+ 281              		movs	r3, #0
+ 282 0010 0022     		strb	r3, [r1], #1
+ 283              		.loc 1 337 0
+ 284 0012 03E0     		adds	r2, r2, #1
+ 285              	.L30:
+ 286              		cmp	r2, lr
+ 287 0014 0023     		bne	.L31
+ 288 0016 01F8013B 		.loc 1 342 0
+ 289              		movs	r3, #40
+ 290 001a 0132     		str	r3, [sp, #0]
+ 291              		movs	r3, #10
+ 292 001c 7245     		mov	r1, r5
+ 293 001e F9D1     	.LVL33:
+ 294              		str	r3, [sp, #4]
+ 295 0020 2823     		mov	r2, r4
+ 296 0022 0093     	.LVL34:
+ 297 0024 0A23     		adds	r3, r3, #118
+ 298 0026 2946     		bl	Fill_MSCommand
+ 299              		.loc 1 344 0
+ 300 0028 0193     		ldr	r5, .L39+4
+ 301 002a 2246     		ldr	r3, .L39+8
+ 302              		mov	r1, #524288
+ 303 002c 7633     		ldr	r0, [r3, #0]
+ 304 002e FFF7FEFF 		ldr	r2, [r5, #0]
+ 305              		movs	r3, #31
+ 306 0032 164D     		bl	Host_ProcessTD
+ 307 0034 164B     		.loc 1 345 0
+ 308 0036 4FF40021 		mov	r3, r0
+ 309 003a 1868     	.LVL35:
+ 310 003c 2A68     		cbnz	r0, .L33
+ 311 003e 1F23     		.loc 1 346 0
+ 312 0040 FFF7FEFF 		ldr	r3, .L39
+ 313              	.LVL36:
+ 314 0044 0346     		ldr	r6, .L39+12
+ 315              		ldr	r3, [r3, #0]
+ 316 0046 E0B9     		ldr	r0, [r6, #0]
+ 317              		mul	r3, r3, r4
+ 318 0048 0F4B     		mov	r1, #1048576
+ 319              		mov	r2, r7
+ 320 004a 124E     		bl	Host_ProcessTD
+ 321 004c 1B68     		.loc 1 347 0
+ 322 004e 3068     		mov	r3, r0
+ 323 0050 03FB04F3 	.LVL37:
+ 324 0054 4FF48011 		cbnz	r0, .L33
+ 325 0058 3A46     		.loc 1 348 0
+ 326 005a FFF7FEFF 		movs	r3, #13
+ 327              	.LVL38:
+ 328 005e 0346     		ldr	r0, [r6, #0]
+ 329              		mov	r1, #1048576
+ 330 0060 78B9     		ldr	r2, [r5, #0]
+ 331              		bl	Host_ProcessTD
+ 332 0062 0D23     		.loc 1 349 0
+ 333              		mov	r3, r0
+ 334 0064 3068     	.LVL39:
+ 335 0066 4FF48011 		cbnz	r0, .L33
+ 336 006a 2A68     		.loc 1 350 0
+ 337 006c FFF7FEFF 		ldr	r3, [r5, #0]
+ 338              	.LVL40:
+ 339 0070 0346     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 340              		cmp	r3, #0
+ 341 0072 30B9     		ite	eq
+ 342              		moveq	r3, #0
+ 343 0074 2B68     		mvnne	r3, #9
+ 344              	.LVL41:
+ 345 0076 1B7B     	.L33:
+ 346 0078 002B     		.loc 1 357 0
+ 347 007a 0CBF     		mov	r0, r3
+ 348 007c 0023     		pop	{r1, r2, r3, r4, r5, r6, r7, pc}
+ 349 007e 6FF00903 	.L40:
+ 350              		.align	2
+ 351              	.L39:
+ 352              		.word	MS_BlkSize
+ 353 0082 1846     		.word	TDBuffer
+ 354 0084 FEBD     		.word	EDBulkOut
+ 355              		.word	EDBulkIn
+ 356 0086 C046     	.LFE38:
+ 358 0088 00000000 		.section	.text.MS_Inquire,"ax",%progbits
+ 359 008c 00000000 		.align	2
+ 360 0090 00000000 		.global	MS_Inquire
+ 361 0094 00000000 		.thumb
+ 362              		.thumb_func
+ 364              	MS_Inquire:
+ 365              	.LFB37:
+ 366              		.loc 1 286 0
+ 367              		@ args = 0, pretend = 0, frame = 0
+ 368              		@ frame_needed = 0, uses_anonymous_args = 0
+ 369              	.LVL42:
+ 370              		push	{r0, r1, r2, r4, r5, lr}
+ 371              	.LCFI3:
+ 372              	.LVL43:
+ 373              		.loc 1 290 0
+ 374              		movs	r3, #18
+ 375              		str	r3, [sp, #0]
+ 376 0000 37B5     		.loc 1 286 0
+ 377              		mov	r4, r0
+ 378              	.LVL44:
+ 379              		.loc 1 290 0
+ 380 0002 1223     		movs	r3, #6
+ 381 0004 0093     		movs	r0, #0
+ 382              	.LVL45:
+ 383 0006 0446     		mov	r1, r0
+ 384              		mov	r2, r0
+ 385              		str	r3, [sp, #4]
+ 386 0008 0623     		adds	r3, r3, #122
+ 387 000a 0020     		bl	Fill_MSCommand
+ 388              		.loc 1 291 0
+ 389 000c 0146     		ldr	r5, .L51
+ 390 000e 0246     		ldr	r3, .L51+4
+ 391 0010 0193     		mov	r1, #524288
+ 392 0012 7A33     		ldr	r0, [r3, #0]
+ 393 0014 FFF7FEFF 		ldr	r2, [r5, #0]
+ 394              		movs	r3, #31
+ 395 0018 194D     		bl	Host_ProcessTD
+ 396 001a 1A4B     		.loc 1 292 0
+ 397 001c 4FF40021 		mov	r3, r0
+ 398 0020 1868     	.LVL46:
+ 399 0022 2A68     		cbnz	r0, .L42
+ 400 0024 1F23     		.loc 1 293 0
+ 401 0026 FFF7FEFF 		ldr	r3, .L51+8
+ 402              	.LVL47:
+ 403 002a 0346     		mov	r1, #1048576
+ 404              		ldr	r0, [r3, #0]
+ 405 002c 30BB     		ldr	r2, [r5, #0]
+ 406              		movs	r3, #36
+ 407 002e 164B     		bl	Host_ProcessTD
+ 408              		.loc 1 294 0
+ 409 0030 4FF48011 		mov	r3, r0
+ 410 0034 1868     	.LVL48:
+ 411 0036 2A68     		cbnz	r0, .L42
+ 412 0038 2423     		.loc 1 295 0
+ 413 003a FFF7FEFF 		cbz	r4, .L45
+ 414              	.L47:
+ 415 003e 0346     		.loc 1 297 0
+ 416              		ldr	r3, .L51
+ 417 0040 E0B9     	.LVL49:
+ 418              		.loc 1 296 0
+ 419 0042 4CB1     		adds	r0, r0, #1
+ 420              	.LVL50:
+ 421              		.loc 1 297 0
+ 422 0044 0E4B     		ldr	r2, [r3, #0]
+ 423              		.loc 1 296 0
+ 424              		cmp	r0, #36
+ 425 0046 0130     		.loc 1 297 0
+ 426              		ldrb	r1, [r2], #1	@ zero_extendqisi2
+ 427              		strb	r1, [r4], #1
+ 428 0048 1A68     		str	r2, [r3, #0]
+ 429              		.loc 1 296 0
+ 430 004a 2428     		bne	.L47
+ 431              	.LVL51:
+ 432 004c 12F8011B 	.L45:
+ 433 0050 04F8011B 		.loc 1 305 0
+ 434 0054 1A60     		ldr	r3, .L51+8
+ 435              	.LVL52:
+ 436 0056 F5D1     		ldr	r4, .L51
+ 437              	.LVL53:
+ 438              		ldr	r0, [r3, #0]
+ 439              	.LVL54:
+ 440 0058 0B4B     		mov	r1, #1048576
+ 441              		movs	r3, #13
+ 442 005a 094C     		ldr	r2, [r4, #0]
+ 443              		bl	Host_ProcessTD
+ 444 005c 1868     		.loc 1 306 0
+ 445              		mov	r3, r0
+ 446 005e 4FF48011 	.LVL55:
+ 447 0062 0D23     		cbnz	r0, .L42
+ 448 0064 2268     		.loc 1 307 0
+ 449 0066 FFF7FEFF 		ldr	r3, [r4, #0]
+ 450              	.LVL56:
+ 451 006a 0346     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 452              		cmp	r3, #0
+ 453 006c 30B9     		ite	eq
+ 454              		moveq	r3, #0
+ 455 006e 2368     		mvnne	r3, #9
+ 456              	.LVL57:
+ 457 0070 1B7B     	.L42:
+ 458 0072 002B     		.loc 1 314 0
+ 459 0074 0CBF     		mov	r0, r3
+ 460 0076 0023     		pop	{r1, r2, r3, r4, r5, pc}
+ 461 0078 6FF00903 	.L52:
+ 462              		.align	2
+ 463              	.L51:
+ 464              		.word	TDBuffer
+ 465 007c 1846     		.word	EDBulkOut
+ 466 007e 3EBD     		.word	EDBulkIn
+ 467              	.LFE37:
+ 469              		.section	.text.MS_TestUnitReady,"ax",%progbits
+ 470 0080 00000000 		.align	2
+ 471 0084 00000000 		.global	MS_TestUnitReady
+ 472 0088 00000000 		.thumb
+ 473              		.thumb_func
+ 475              	MS_TestUnitReady:
+ 476              	.LFB35:
+ 477              		.loc 1 227 0
+ 478              		@ args = 0, pretend = 0, frame = 0
+ 479              		@ frame_needed = 0, uses_anonymous_args = 0
+ 480              		push	{r0, r1, r4, lr}
+ 481              	.LCFI4:
+ 482              		.loc 1 231 0
+ 483              		movs	r3, #6
+ 484              		movs	r0, #0
+ 485              		mov	r1, r0
+ 486 0000 13B5     		mov	r2, r0
+ 487              		str	r3, [sp, #4]
+ 488              		movs	r3, #1
+ 489 0002 0623     		str	r0, [sp, #0]
+ 490 0004 0020     		.loc 1 232 0
+ 491 0006 0146     		ldr	r4, .L59
+ 492 0008 0246     		.loc 1 231 0
+ 493 000a 0193     		bl	Fill_MSCommand
+ 494 000c 0123     		.loc 1 232 0
+ 495 000e 0090     		ldr	r3, .L59+4
+ 496              		mov	r1, #524288
+ 497 0010 0F4C     		ldr	r0, [r3, #0]
+ 498              		ldr	r2, [r4, #0]
+ 499 0012 FFF7FEFF 		movs	r3, #31
+ 500              		bl	Host_ProcessTD
+ 501 0016 0F4B     		.loc 1 233 0
+ 502 0018 4FF40021 		mov	r3, r0
+ 503 001c 1868     	.LVL58:
+ 504 001e 2268     		cbnz	r0, .L54
+ 505 0020 1F23     		.loc 1 234 0
+ 506 0022 FFF7FEFF 		ldr	r3, .L59+8
+ 507              	.LVL59:
+ 508 0026 0346     		mov	r1, #1048576
+ 509              		ldr	r0, [r3, #0]
+ 510 0028 80B9     		ldr	r2, [r4, #0]
+ 511              		movs	r3, #13
+ 512 002a 0B4B     		bl	Host_ProcessTD
+ 513              		.loc 1 235 0
+ 514 002c 4FF48011 		mov	r3, r0
+ 515 0030 1868     	.LVL60:
+ 516 0032 2268     		cbnz	r0, .L54
+ 517 0034 0D23     		.loc 1 236 0
+ 518 0036 FFF7FEFF 		ldr	r3, [r4, #0]
+ 519              	.LVL61:
+ 520 003a 0346     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 521              		cmp	r3, #0
+ 522 003c 30B9     		ite	eq
+ 523              		moveq	r3, #0
+ 524 003e 2368     		mvnne	r3, #9
+ 525              	.LVL62:
+ 526 0040 1B7B     	.L54:
+ 527 0042 002B     		.loc 1 242 0
+ 528 0044 0CBF     		mov	r0, r3
+ 529 0046 0023     		pop	{r2, r3, r4, pc}
+ 530 0048 6FF00903 	.L60:
+ 531              		.align	2
+ 532              	.L59:
+ 533              		.word	TDBuffer
+ 534 004c 1846     		.word	EDBulkOut
+ 535 004e 1CBD     		.word	EDBulkIn
+ 536              	.LFE35:
+ 538              		.section	.text.MS_GetSenseInfo,"ax",%progbits
+ 539 0050 00000000 		.align	2
+ 540 0054 00000000 		.global	MS_GetSenseInfo
+ 541 0058 00000000 		.thumb
+ 542              		.thumb_func
+ 544              	MS_GetSenseInfo:
+ 545              	.LFB34:
+ 546              		.loc 1 192 0
+ 547              		@ args = 0, pretend = 0, frame = 0
+ 548              		@ frame_needed = 0, uses_anonymous_args = 0
+ 549              		push	{r0, r1, r2, r4, r5, lr}
+ 550              	.LCFI5:
+ 551              		.loc 1 196 0
+ 552              		movs	r3, #3
+ 553              		movs	r0, #0
+ 554              		str	r3, [sp, #0]
+ 555 0000 37B5     		adds	r3, r3, r3
+ 556              		mov	r1, r0
+ 557              		mov	r2, r0
+ 558 0002 0323     		str	r3, [sp, #4]
+ 559 0004 0020     		adds	r3, r3, #122
+ 560 0006 0093     		bl	Fill_MSCommand
+ 561 0008 DB18     		.loc 1 197 0
+ 562 000a 0146     		ldr	r4, .L68
+ 563 000c 0246     		ldr	r3, .L68+4
+ 564 000e 0193     		mov	r1, #524288
+ 565 0010 7A33     		ldr	r0, [r3, #0]
+ 566 0012 FFF7FEFF 		ldr	r2, [r4, #0]
+ 567              		movs	r3, #31
+ 568 0016 134C     		bl	Host_ProcessTD
+ 569 0018 134B     		.loc 1 198 0
+ 570 001a 4FF40021 		mov	r3, r0
+ 571 001e 1868     	.LVL63:
+ 572 0020 2268     		cbnz	r0, .L62
+ 573 0022 1F23     		.loc 1 199 0
+ 574 0024 FFF7FEFF 		ldr	r5, .L68+8
+ 575              		movs	r3, #18
+ 576 0028 0346     	.LVL64:
+ 577              		ldr	r0, [r5, #0]
+ 578 002a C8B9     		mov	r1, #1048576
+ 579              		ldr	r2, [r4, #0]
+ 580 002c 0F4D     		bl	Host_ProcessTD
+ 581 002e 1223     		.loc 1 200 0
+ 582              		mov	r3, r0
+ 583 0030 2868     	.LVL65:
+ 584 0032 4FF48011 		cbnz	r0, .L62
+ 585 0036 2268     		.loc 1 201 0
+ 586 0038 FFF7FEFF 		movs	r3, #13
+ 587              	.LVL66:
+ 588 003c 0346     		ldr	r0, [r5, #0]
+ 589              		mov	r1, #1048576
+ 590 003e 78B9     		ldr	r2, [r4, #0]
+ 591              		bl	Host_ProcessTD
+ 592 0040 0D23     		.loc 1 202 0
+ 593              		mov	r3, r0
+ 594 0042 2868     	.LVL67:
+ 595 0044 4FF48011 		cbnz	r0, .L62
+ 596 0048 2268     		.loc 1 203 0
+ 597 004a FFF7FEFF 		ldr	r3, [r4, #0]
+ 598              	.LVL68:
+ 599 004e 0346     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 600              		cmp	r3, #0
+ 601 0050 30B9     		ite	eq
+ 602              		moveq	r3, #0
+ 603 0052 2368     		mvnne	r3, #9
+ 604              	.LVL69:
+ 605 0054 1B7B     	.L62:
+ 606 0056 002B     		.loc 1 210 0
+ 607 0058 0CBF     		mov	r0, r3
+ 608 005a 0023     		pop	{r1, r2, r3, r4, r5, pc}
+ 609 005c 6FF00903 	.L69:
+ 610              		.align	2
+ 611              	.L68:
+ 612              		.word	TDBuffer
+ 613 0060 1846     		.word	EDBulkOut
+ 614 0062 3EBD     		.word	EDBulkIn
+ 615              	.LFE34:
+ 617              		.section	.text.MS_ReadCapacity,"ax",%progbits
+ 618 0064 00000000 		.align	2
+ 619 0068 00000000 		.global	MS_ReadCapacity
+ 620 006c 00000000 		.thumb
+ 621              		.thumb_func
+ 623              	MS_ReadCapacity:
+ 624              	.LFB36:
+ 625              		.loc 1 259 0
+ 626              		@ args = 0, pretend = 0, frame = 0
+ 627              		@ frame_needed = 0, uses_anonymous_args = 0
+ 628              	.LVL70:
+ 629              		push	{r0, r1, r2, r4, r5, r6, r7, lr}
+ 630              	.LCFI6:
+ 631              	.LVL71:
+ 632              		.loc 1 263 0
+ 633              		movs	r3, #37
+ 634              		str	r3, [sp, #0]
+ 635 0000 F7B5     		.loc 1 259 0
+ 636              		mov	r5, r0
+ 637              	.LVL72:
+ 638              		.loc 1 263 0
+ 639 0002 2523     		movs	r3, #10
+ 640 0004 0093     		movs	r0, #0
+ 641              	.LVL73:
+ 642 0006 0546     		mov	r2, r0
+ 643              		str	r3, [sp, #4]
+ 644              		.loc 1 259 0
+ 645 0008 0A23     		mov	r6, r1
+ 646 000a 0020     	.LVL74:
+ 647              		.loc 1 263 0
+ 648 000c 0246     		adds	r3, r3, #118
+ 649 000e 0193     		mov	r1, r0
+ 650              	.LVL75:
+ 651 0010 0E46     		bl	Fill_MSCommand
+ 652              		.loc 1 264 0
+ 653              		ldr	r4, .L81
+ 654 0012 7633     		ldr	r3, .L81+4
+ 655 0014 0146     		mov	r1, #524288
+ 656              		ldr	r0, [r3, #0]
+ 657 0016 FFF7FEFF 		ldr	r2, [r4, #0]
+ 658              		movs	r3, #31
+ 659 001a 194C     		bl	Host_ProcessTD
+ 660 001c 194B     		.loc 1 265 0
+ 661 001e 4FF40021 		mov	r3, r0
+ 662 0022 1868     	.LVL76:
+ 663 0024 2268     		cbnz	r0, .L71
+ 664 0026 1F23     		.loc 1 266 0
+ 665 0028 FFF7FEFF 		ldr	r7, .L81+8
+ 666              		movs	r3, #8
+ 667 002c 0346     	.LVL77:
+ 668              		ldr	r0, [r7, #0]
+ 669 002e 20BB     		mov	r1, #1048576
+ 670              		ldr	r2, [r4, #0]
+ 671 0030 154F     		bl	Host_ProcessTD
+ 672 0032 0823     		.loc 1 267 0
+ 673              		mov	r3, r0
+ 674 0034 3868     	.LVL78:
+ 675 0036 4FF48011 		cbnz	r0, .L71
+ 676 003a 2268     		.loc 1 268 0
+ 677 003c FFF7FEFF 		cbz	r5, .L74
+ 678              		.loc 1 269 0
+ 679 0040 0346     		ldr	r0, [r4, #0]
+ 680              		bl	ReadBE32U
+ 681 0042 D0B9     	.LVL79:
+ 682              		str	r0, [r5, #0]
+ 683 0044 1DB1     	.LVL80:
+ 684              	.L74:
+ 685 0046 2068     		.loc 1 270 0
+ 686 0048 FFF7FEFF 		cbz	r6, .L76
+ 687              		.loc 1 271 0
+ 688 004c 2860     		ldr	r0, [r4, #0]
+ 689              		adds	r0, r0, #4
+ 690              		bl	ReadBE32U
+ 691              	.LVL81:
+ 692 004e 26B1     		str	r0, [r6, #0]
+ 693              	.LVL82:
+ 694 0050 2068     	.L76:
+ 695 0052 0430     		.loc 1 272 0
+ 696 0054 FFF7FEFF 		movs	r3, #13
+ 697              	.LVL83:
+ 698 0058 3060     		ldr	r0, [r7, #0]
+ 699              		mov	r1, #1048576
+ 700              		ldr	r2, [r4, #0]
+ 701              		bl	Host_ProcessTD
+ 702 005a 0D23     		.loc 1 273 0
+ 703              		mov	r3, r0
+ 704 005c 3868     	.LVL84:
+ 705 005e 4FF48011 		cbnz	r0, .L71
+ 706 0062 2268     		.loc 1 274 0
+ 707 0064 FFF7FEFF 		ldr	r3, [r4, #0]
+ 708              	.LVL85:
+ 709 0068 0346     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 710              		cmp	r3, #0
+ 711 006a 30B9     		ite	eq
+ 712              		moveq	r3, #0
+ 713 006c 2368     		mvnne	r3, #9
+ 714              	.LVL86:
+ 715 006e 1B7B     	.L71:
+ 716 0070 002B     		.loc 1 281 0
+ 717 0072 0CBF     		mov	r0, r3
+ 718 0074 0023     		pop	{r1, r2, r3, r4, r5, r6, r7, pc}
+ 719 0076 6FF00903 	.L82:
+ 720              		.align	2
+ 721              	.L81:
+ 722              		.word	TDBuffer
+ 723 007a 1846     		.word	EDBulkOut
+ 724 007c FEBD     		.word	EDBulkIn
+ 725              	.LFE36:
+ 727              		.section	.text.MS_GetMaxLUN,"ax",%progbits
+ 728 0080 00000000 		.align	2
+ 729 0084 00000000 		.global	MS_GetMaxLUN
+ 730 0088 00000000 		.thumb
+ 731              		.thumb_func
+ 733              	MS_GetMaxLUN:
+ 734              	.LFB33:
+ 735              		.loc 1 164 0
+ 736              		@ args = 0, pretend = 0, frame = 0
+ 737              		@ frame_needed = 0, uses_anonymous_args = 0
+ 738              		push	{r0, r1, r2, lr}
+ 739              	.LCFI7:
+ 740              		.loc 1 168 0
+ 741              		ldr	r3, .L85
+ 742              		movs	r0, #161
+ 743              		ldr	r2, [r3, #0]
+ 744 0000 07B5     		movs	r3, #1
+ 745              		str	r2, [sp, #4]
+ 746              		movs	r2, #0
+ 747 0002 064B     		str	r3, [sp, #0]
+ 748 0004 A120     		movs	r1, #254
+ 749 0006 1A68     		mov	r3, r2
+ 750 0008 0123     		bl	Host_CtrlRecv
+ 751 000a 0192     		.loc 1 175 0
+ 752 000c 0022     		pop	{r1, r2, r3, pc}
+ 753 000e 0093     	.L86:
+ 754 0010 FE21     		.align	2
+ 755 0012 1346     	.L85:
+ 756 0014 FFF7FEFF 		.word	TDBuffer
+ 757              	.LFE33:
+ 759              		.section	.text.MS_Init,"ax",%progbits
+ 760 001a C046     		.align	2
+ 761              		.global	MS_Init
+ 762 001c 00000000 		.thumb
+ 763              		.thumb_func
+ 765              	MS_Init:
+ 766              	.LFB31:
+ 767              		.loc 1 50 0
+ 768              		@ args = 0, pretend = 0, frame = 0
+ 769              		@ frame_needed = 0, uses_anonymous_args = 0
+ 770              	.LVL87:
+ 771              		push	{r4, r5, r6, r7, r8, lr}
+ 772              	.LCFI8:
+ 773              		.loc 1 50 0
+ 774              		mov	r6, r0
+ 775              		mov	r7, r1
+ 776              		mov	r8, r2
+ 777 0000 2DE9F041 		.loc 1 54 0
+ 778              		bl	MS_GetMaxLUN
+ 779              	.LVL88:
+ 780 0004 0646     		movs	r4, #80
+ 781 0006 0F46     	.LVL89:
+ 782 0008 9046     	.L88:
+ 783              		.loc 1 57 0
+ 784 000a FFF7FEFF 		bl	MS_TestUnitReady
+ 785              		.loc 1 58 0
+ 786 000e 5024     		mov	r5, r0
+ 787              		cbz	r0, .L89
+ 788              		.loc 1 61 0
+ 789              		bl	MS_GetSenseInfo
+ 790 0010 FFF7FEFF 		.loc 1 62 0
+ 791              		subs	r3, r4, #1
+ 792 0014 0546     		uxtb	r4, r3
+ 793 0016 30B1     		.loc 1 56 0
+ 794              		cmp	r4, #0
+ 795 0018 FFF7FEFF 		bne	.L88
+ 796              		b	.L91
+ 797 001c 631E     	.L89:
+ 798 001e DCB2     		.loc 1 68 0
+ 799              		mov	r1, r6
+ 800 0020 002C     		mov	r0, r7
+ 801 0022 F5D1     		bl	MS_ReadCapacity
+ 802 0024 0AE0     		.loc 1 69 0
+ 803              		ldr	r2, [r6, #0]
+ 804              		ldr	r3, .L93
+ 805 0026 3146     		.loc 1 70 0
+ 806 0028 3846     		mov	r0, r8
+ 807 002a FFF7FEFF 		.loc 1 69 0
+ 808              		str	r2, [r3, #0]
+ 809 002e 3268     		.loc 1 70 0
+ 810 0030 044B     		bl	MS_Inquire
+ 811              		mov	r5, r0
+ 812 0032 4046     	.L91:
+ 813              		.loc 1 72 0
+ 814 0034 1A60     		mov	r0, r5
+ 815              		pop	{r4, r5, r6, r7, r8, pc}
+ 816 0036 FFF7FEFF 	.L94:
+ 817 003a 0546     		.align	2
+ 818              	.L93:
+ 819              		.word	MS_BlkSize
+ 820 003c 2846     	.LFE31:
+ 822              		.section	.text.MS_ParseConfiguration,"ax",%progbits
+ 823 0042 C046     		.align	2
+ 824              		.global	MS_ParseConfiguration
+ 825 0044 00000000 		.thumb
+ 826              		.thumb_func
+ 828              	MS_ParseConfiguration:
+ 829              	.LFB32:
+ 830              		.loc 1 88 0
+ 831              		@ args = 0, pretend = 0, frame = 0
+ 832              		@ frame_needed = 0, uses_anonymous_args = 0
+ 833              		push	{r4, r5, r6, r7, r8, lr}
+ 834              	.LCFI9:
+ 835              		.loc 1 93 0
+ 836              		ldr	r3, .L119
+ 837              		ldr	r2, [r3, #0]
+ 838              	.LVL90:
+ 839 0000 2DE9F041 		.loc 1 96 0
+ 840              		ldrb	r3, [r2, #1]	@ zero_extendqisi2
+ 841              		cmp	r3, #2
+ 842 0004 2A4B     		beq	.L96
+ 843 0006 1A68     		mvn	r0, #10
+ 844              		b	.L98
+ 845              	.L96:
+ 846 0008 5378     		.loc 1 99 0
+ 847 000a 022B     		ldrb	r3, [r2, #0]	@ zero_extendqisi2
+ 848 000c 02D0     		movs	r7, #0
+ 849 000e 6FF00A00 	.LVL91:
+ 850 0012 4AE0     		adds	r6, r2, r3
+ 851              	.LVL92:
+ 852              		.loc 1 101 0
+ 853 0014 1378     		b	.L118
+ 854 0016 0027     	.L100:
+ 855              		.loc 1 104 0
+ 856 0018 D618     		ldrb	r3, [r6, #1]	@ zero_extendqisi2
+ 857              		cmp	r3, #4
+ 858              		beq	.L102
+ 859 001a 39E0     		cmp	r3, #5
+ 860              		beq	.L103
+ 861              		b	.L101
+ 862 001c 7378     	.L102:
+ 863 001e 042B     		.loc 1 107 0
+ 864 0020 02D0     		ldrb	r3, [r6, #5]	@ zero_extendqisi2
+ 865 0022 052B     		cmp	r3, #8
+ 866 0024 0DD0     		bne	.L118
+ 867 0026 31E0     		ldrb	r3, [r6, #6]	@ zero_extendqisi2
+ 868              		cmp	r3, #6
+ 869              		bne	.L118
+ 870 0028 7379     		ldrb	r3, [r6, #7]	@ zero_extendqisi2
+ 871 002a 082B     		cmp	r3, #80
+ 872 002c 30D1     		bne	.L118
+ 873 002e B379     		.loc 1 111 0
+ 874 0030 062B     		ldrb	r3, [r6, #0]	@ zero_extendqisi2
+ 875 0032 2DD1     		movs	r7, #1
+ 876 0034 F379     		adds	r6, r6, r3
+ 877 0036 502B     		b	.L118
+ 878 0038 2AD1     	.L103:
+ 879              		.loc 1 116 0
+ 880 003a 3378     		ldrb	r3, [r6, #3]	@ zero_extendqisi2
+ 881 003c 0127     		and	r3, r3, #3
+ 882 003e F618     		cmp	r3, #2
+ 883 0040 26E0     		bne	.L101
+ 884              		.loc 1 117 0
+ 885              		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 886 0042 F378     		add	r0, r6, #4
+ 887 0044 03F00303 		tst	r3, #128
+ 888 0048 022B     		beq	.L109
+ 889 004a 1FD1     		.loc 1 118 0
+ 890              		ldrb	r4, [r6, #2]	@ zero_extendqisi2
+ 891 004c B378     		ldr	r3, .L119+4
+ 892 004e 06F10400 		and	r4, r4, #127
+ 893 0052 13F0800F 		lsls	r4, r4, #7
+ 894 0056 0AD0     		ldr	r5, [r3, #0]
+ 895              		orr	r4, r4, #4096
+ 896 0058 B478     		bl	ReadLE16U
+ 897 005a 164B     		b	.L117
+ 898 005c 04F07F04 	.L109:
+ 899 0060 E401     		.loc 1 124 0
+ 900 0062 1D68     		ldr	r3, .L119+8
+ 901 0064 44F48054 		ldrb	r4, [r6, #2]	@ zero_extendqisi2
+ 902 0068 FFF7FEFF 		ldr	r5, [r3, #0]
+ 903 006c 09E0     		bl	ReadLE16U
+ 904              		and	r4, r4, #127
+ 905              		lsls	r4, r4, #7
+ 906 006e 124B     		orr	r4, r4, #2048
+ 907 0070 B478     	.L117:
+ 908 0072 1D68     		orr	r4, r4, #1
+ 909 0074 FFF7FEFF 		orr	r4, r4, r0, lsl #16
+ 910 0078 04F07F04 		str	r4, [r5, #0]
+ 911 007c E401     	.L101:
+ 912 007e 44F40064 		.loc 1 136 0
+ 913              		ldrb	r3, [r6, #0]	@ zero_extendqisi2
+ 914 0082 44F00104 		adds	r6, r6, r3
+ 915 0086 44EA0044 	.L118:
+ 916 008a 2C60     		.loc 1 101 0
+ 917              		ldr	r3, .L119
+ 918              		ldr	r4, [r3, #0]
+ 919 008c 3378     		adds	r0, r4, #2
+ 920 008e F618     		bl	ReadLE16U
+ 921              		adds	r4, r4, r0
+ 922              		cmp	r6, r4
+ 923 0090 074B     		bne	.L100
+ 924 0092 1C68     		.loc 1 140 0
+ 925 0094 A01C     		cmp	r7, #0
+ 926 0096 FFF7FEFF 		ite	eq
+ 927 009a 2418     		mvneq	r0, #11
+ 928 009c A642     		movne	r0, #0
+ 929 009e BDD1     	.LVL93:
+ 930              	.L98:
+ 931 00a0 002F     		.loc 1 147 0
+ 932 00a2 0CBF     		pop	{r4, r5, r6, r7, r8, pc}
+ 933 00a4 6FF00B00 	.L120:
+ 934 00a8 0020     		.align	2
+ 935              	.L119:
+ 936              		.word	TDBuffer
+ 937              		.word	EDBulkIn
+ 938 00aa BDE8F081 		.word	EDBulkOut
+ 939              	.LFE32:
+ 941              		.comm	MS_BlkSize,4,4
+ 942 00b0 00000000 		.section	.debug_frame,"",%progbits
+ 943 00b4 00000000 	.Lframe0:
+ 944 00b8 00000000 		.4byte	.LECIE0-.LSCIE0
+ 945              	.LSCIE0:
+ 946              		.4byte	0xffffffff
+ 947              		.byte	0x1
+ 1212              		.2byte	0x1
+DEFINED SYMBOLS
+                            *ABS*:00000000 usbhost_ms.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:28     .text.Fill_MSCommand:00000000 Fill_MSCommand
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:25     .text.Fill_MSCommand:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:153    .text.Fill_MSCommand:000000a0 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:163    .text.MS_BulkSend:00000000 MS_BulkSend
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:160    .text.MS_BulkSend:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:247    .text.MS_BulkSend:00000078 $d
+                            *COM*:00000004 MS_BlkSize
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:259    .text.MS_BulkRecv:00000000 MS_BulkRecv
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:256    .text.MS_BulkRecv:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:358    .text.MS_BulkRecv:00000088 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:370    .text.MS_Inquire:00000000 MS_Inquire
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:367    .text.MS_Inquire:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:470    .text.MS_Inquire:00000080 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:481    .text.MS_TestUnitReady:00000000 MS_TestUnitReady
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:478    .text.MS_TestUnitReady:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:539    .text.MS_TestUnitReady:00000050 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:550    .text.MS_GetSenseInfo:00000000 MS_GetSenseInfo
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:547    .text.MS_GetSenseInfo:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:618    .text.MS_GetSenseInfo:00000064 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:629    .text.MS_ReadCapacity:00000000 MS_ReadCapacity
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:626    .text.MS_ReadCapacity:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:728    .text.MS_ReadCapacity:00000080 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:739    .text.MS_GetMaxLUN:00000000 MS_GetMaxLUN
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:736    .text.MS_GetMaxLUN:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:762    .text.MS_GetMaxLUN:0000001c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:771    .text.MS_Init:00000000 MS_Init
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:768    .text.MS_Init:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:825    .text.MS_Init:00000044 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:834    .text.MS_ParseConfiguration:00000000 MS_ParseConfiguration
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:831    .text.MS_ParseConfiguration:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:942    .text.MS_ParseConfiguration:000000b0 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccK0aaaa.s:1216   .debug_loc:00000000 $d
+
+UNDEFINED SYMBOLS
+WriteLE32U
+WriteBE32U
+WriteBE16U
+TDBuffer
+Host_ProcessTD
+EDBulkOut
+EDBulkIn
+ReadBE32U
+Host_CtrlRecv
+ReadLE16U

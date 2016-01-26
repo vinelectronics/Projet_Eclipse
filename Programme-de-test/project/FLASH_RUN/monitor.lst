@@ -1,0 +1,1174 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"monitor.c"
+  21              	.Ltext0:
+  22              		.section	.text.xputc,"ax",%progbits
+  23              		.align	2
+  24              		.global	xputc
+  25              		.thumb
+  26              		.thumb_func
+  28              	xputc:
+  29              	.LFB2:
+  30              		.file 1 "monitor.c"
+   1:monitor.c     **** /*------------------------------------------------------------------------*/
+   2:monitor.c     **** /* Universal string handler for user console interface                    */
+   3:monitor.c     **** /*------------------------------------------------------------------------*/
+   4:monitor.c     **** /*
+   5:monitor.c     **** /  Copyright (C) 2010, ChaN, all right reserved.
+   6:monitor.c     **** /
+   7:monitor.c     **** / * This software is a free software and there is NO WARRANTY.
+   8:monitor.c     **** / * No restriction on use. You can use, modify and redistribute it for
+   9:monitor.c     **** /   personal, non-profit or commercial products UNDER YOUR RESPONSIBILITY.
+  10:monitor.c     **** / * Redistributions of source code must retain the above copyright notice.
+  11:monitor.c     **** /
+  12:monitor.c     **** /-------------------------------------------------------------------------*/
+  13:monitor.c     **** 
+  14:monitor.c     **** #include <stdarg.h>
+  15:monitor.c     **** #include "monitor.h"
+  16:monitor.c     **** 
+  17:monitor.c     **** #if _USE_XFUNC_IN
+  18:monitor.c     **** unsigned char (*xfunc_in)(void);	/* Pointer to the input stream */
+  19:monitor.c     **** #endif
+  20:monitor.c     **** #if _USE_XFUNC_OUT
+  21:monitor.c     **** void (*xfunc_out)(unsigned char);	/* Pointer to the output stream */
+  22:monitor.c     **** #endif
+  23:monitor.c     **** 
+  24:monitor.c     **** 
+  25:monitor.c     **** 
+  26:monitor.c     **** #if _USE_XFUNC_OUT
+  27:monitor.c     **** /*----------------------------------------------*/
+  28:monitor.c     **** /* Put a character                              */
+  29:monitor.c     **** /*----------------------------------------------*/
+  30:monitor.c     **** 
+  31:monitor.c     **** void xputc (char c)
+  32:monitor.c     **** {
+  31              	end = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              	.LVL0:
+  34              		.loc 1 33 0
+  33:monitor.c     **** 	if (_CR_CRLF && c == '\n') xfunc_out('\r');		/* CR -> CRLF */
+  35              		r0, #10
+  36 0000 0A28     		.loc 1 32 0
+  37              		push	{r4, lr}
+  38 0002 10B5     	.LCFI0:
+  39              		.loc 1 32 0
+  40              		mov	r4, r0
+  41 0004 0446     		.loc 1 33 0
+  42              		bne	.L2
+  43 0006 03D1     	.LVL1:
+  44              		ldr	r3, .L5
+  45 0008 044B     		movs	r0, #13
+  46 000a 0D20     		ldr	r3, [r3, #0]
+  47 000c 1B68     		blx	r3
+  48 000e 9847     	.LVL2:
+  49              	.L2:
+  50              		.loc 1 34 0
+  34:monitor.c     **** 	xfunc_out((unsigned char)c);
+  51              	v	r0, r4
+  52 0010 024B     		ldr	r3, [r3, #0]
+  53 0012 2046     		blx	r3
+  54 0014 1B68     		.loc 1 35 0
+  55 0016 9847     		pop	{r4, pc}
+  35:monitor.c     **** }
+  56              		.align	2
+  57 0018 10BD     	.L5:
+  58              		.word	xfunc_out
+  59 001a C046     	.LFE2:
+  61 001c 00000000 		.section	.text.xputs,"ax",%progbits
+  62              		.align	2
+  63              		.global	xputs
+  64              		.thumb
+  65              		.thumb_func
+  67              	xputs:
+  68              	.LFB3:
+  69              		.loc 1 43 0
+  70              		@ args = 0, pretend = 0, frame = 0
+  71              		@ frame_needed = 0, uses_anonymous_args = 0
+  36:monitor.c     **** 
+  37:monitor.c     **** 
+  38:monitor.c     **** /*----------------------------------------------*/
+  39:monitor.c     **** /* Put a null-terminated string                 */
+  40:monitor.c     **** /*----------------------------------------------*/
+  41:monitor.c     **** 
+  42:monitor.c     **** void xputs (const char* str)
+  43:monitor.c     **** {
+  72              	, lr}
+  73              	.LCFI1:
+  74              		.loc 1 43 0
+  75              		mov	r4, r0
+  76 0000 10B5     		.loc 1 44 0
+  77              		b	.L8
+  78              	.LVL4:
+  79 0002 0446     	.L9:
+  44:monitor.c     **** 	while (*str)
+  80              	45 0
+  81 0004 02E0     		adds	r4, r4, #1
+  82              		bl	xputc
+  83              	.LVL5:
+  45:monitor.c     **** 		xputc(*str++);
+  84              	
+  85 0006 0134     		.loc 1 44 0
+  86 0008 FFF7FEFF 		ldrb	r0, [r4, #0]	@ zero_extendqisi2
+  87              		cmp	r0, #0
+  88              		bne	.L9
+  89              		.loc 1 46 0
+  90 000c 2078     		pop	{r4, pc}
+  91 000e 0028     	.LFE3:
+  46:monitor.c     **** }
+  93              	n	.text.xatoi,"ax",%progbits
+  94 0012 10BD     		.align	2
+  95              		.global	xatoi
+  96              		.thumb
+  97              		.thumb_func
+  99              	xatoi:
+ 100              	.LFB6:
+ 101              		.loc 1 192 0
+ 102              		@ args = 0, pretend = 0, frame = 0
+ 103              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104              	.LVL6:
+  47:monitor.c     **** 
+  48:monitor.c     **** 
+  49:monitor.c     **** /*----------------------------------------------*/
+  50:monitor.c     **** /* Formatted string output                      */
+  51:monitor.c     **** /*----------------------------------------------*/
+  52:monitor.c     **** /*  xprintf("%6d", -200);			"  -200"
+  53:monitor.c     ****     xprintf("%02u", 5);				"05"
+  54:monitor.c     ****     xprintf("%ld", 12345678L);		"12345678C"
+  55:monitor.c     ****     xprintf("%08LX", 0x123ABCUL);	"00123ABC"
+  56:monitor.c     ****     xprintf("%016b", 0x550F);		"0101010100001111"
+  57:monitor.c     ****     xprintf("%s", "String");		"String"
+  58:monitor.c     ****     xprintf("%c", 'a');				"a"
+  59:monitor.c     **** */
+  60:monitor.c     **** 
+  61:monitor.c     **** void xprintf (
+  62:monitor.c     **** 	const char*	str,	/* Pointer to the format string */
+  63:monitor.c     **** 	...					/* Optional arguments */
+  64:monitor.c     **** )
+  65:monitor.c     **** {
+  66:monitor.c     **** 	va_list arp;
+  67:monitor.c     **** 	unsigned int r, i, w, f;
+  68:monitor.c     **** 	unsigned long val;
+  69:monitor.c     **** 	char s[16], c, d;
+  70:monitor.c     **** 
+  71:monitor.c     **** 
+  72:monitor.c     **** 	va_start(arp, str);
+  73:monitor.c     **** 
+  74:monitor.c     **** 	while ((c = *str++) != 0) {
+  75:monitor.c     **** 		if (c != '%') {
+  76:monitor.c     **** 			xputc(c); continue;
+  77:monitor.c     **** 		}
+  78:monitor.c     **** 		c = *str++;
+  79:monitor.c     **** 		f = 0;
+  80:monitor.c     **** 		if (c == '0') {				/* Flag: '0' padded */
+  81:monitor.c     **** 			f = 1; c = *str++;
+  82:monitor.c     **** 		}
+  83:monitor.c     **** 		w = 0;
+  84:monitor.c     **** 		while (c >= '0' && c <= '9') {	/* Minimum width */
+  85:monitor.c     **** 			w = w * 10 + c - '0';
+  86:monitor.c     **** 			c = *str++;
+  87:monitor.c     **** 		}
+  88:monitor.c     **** 		if (c == 'l' || c == 'L') {	/* Prefix: Size is long int */
+  89:monitor.c     **** 			f |= 2; c = *str++;
+  90:monitor.c     **** 		}
+  91:monitor.c     **** 		if (!c) break;
+  92:monitor.c     **** 		d = c;
+  93:monitor.c     **** 		if (d >= 'a') d -= 0x20;
+  94:monitor.c     **** 		switch (d) {				/* Type is... */
+  95:monitor.c     **** 		case 'S' :					/* String */
+  96:monitor.c     **** 			xputs(va_arg(arp, char*)); continue;
+  97:monitor.c     **** 		case 'C' :					/* Character */
+  98:monitor.c     **** 			xputc((char)va_arg(arp, int)); continue;
+  99:monitor.c     **** 		case 'B' :					/* Binary */
+ 100:monitor.c     **** 			r = 2; break;
+ 101:monitor.c     **** 		case 'O' :					/* Octal */
+ 102:monitor.c     **** 			r = 8; break;
+ 103:monitor.c     **** 		case 'D' :					/* Signed decimal */
+ 104:monitor.c     **** 		case 'U' :					/* Unsigned decimal */
+ 105:monitor.c     **** 			r = 10; break;
+ 106:monitor.c     **** 		case 'X' :					/* Hexdecimal */
+ 107:monitor.c     **** 			r = 16; break;
+ 108:monitor.c     **** 		default:					/* Unknown */
+ 109:monitor.c     **** 			xputc(c); continue;
+ 110:monitor.c     **** 		}
+ 111:monitor.c     **** 
+ 112:monitor.c     **** 		/* Get an argument and put it in numeral */
+ 113:monitor.c     **** 		// mthomas val = (f & 2) ? va_arg(arp, long) : ((d == 'D') ? (long)va_arg(arp, int) : va_arg(arp,
+ 114:monitor.c     **** 		if (f & 2) {
+ 115:monitor.c     **** 			val = va_arg(arp, long);
+ 116:monitor.c     **** 		} else {
+ 117:monitor.c     **** 			if (d == 'D') {
+ 118:monitor.c     **** 				val = (long)va_arg(arp, int);
+ 119:monitor.c     **** 			} else {
+ 120:monitor.c     **** 				val =va_arg(arp, unsigned int);
+ 121:monitor.c     **** 			}
+ 122:monitor.c     **** 		}
+ 123:monitor.c     **** 		if (d == 'D' && (val & 0x80000000)) {
+ 124:monitor.c     **** 			val = 0 - val;
+ 125:monitor.c     **** 			f |= 4;
+ 126:monitor.c     **** 		}
+ 127:monitor.c     **** 		i = 0;
+ 128:monitor.c     **** 		do {
+ 129:monitor.c     **** 			d = (char)(val % r); val /= r;
+ 130:monitor.c     **** 			if (d > 9) {
+ 131:monitor.c     **** 				d += 7;
+ 132:monitor.c     **** 				if (c == 'x') d += 0x20;
+ 133:monitor.c     **** 			}
+ 134:monitor.c     **** 			s[i++] = d + '0';
+ 135:monitor.c     **** 		} while (val && i < sizeof(s));
+ 136:monitor.c     **** 		if (f & 4) s[i++] = '-';
+ 137:monitor.c     **** 		while (i < w--) xputc((f & 1) ? '0' : ' ');
+ 138:monitor.c     **** 		do xputc(s[--i]); while(i);
+ 139:monitor.c     **** 	}
+ 140:monitor.c     **** 
+ 141:monitor.c     **** 	va_end(arp);
+ 142:monitor.c     **** }
+ 143:monitor.c     **** 
+ 144:monitor.c     **** 
+ 145:monitor.c     **** /*----------------------------------------------*/
+ 146:monitor.c     **** /* Dump a block of byte array                   */
+ 147:monitor.c     **** /*----------------------------------------------*/
+ 148:monitor.c     **** 
+ 149:monitor.c     **** void put_dump (
+ 150:monitor.c     **** 	const void* buff,		/* Pointer to the byte array to be dumped */
+ 151:monitor.c     **** 	unsigned long addr,		/* Heading address value */
+ 152:monitor.c     **** 	int cnt					/* Number of bytes to be dumped */
+ 153:monitor.c     **** )
+ 154:monitor.c     **** {
+ 155:monitor.c     **** 	int i;
+ 156:monitor.c     **** 	const unsigned char *p = buff;
+ 157:monitor.c     **** 
+ 158:monitor.c     **** 
+ 159:monitor.c     **** 	xprintf("%08lX ", addr);		/* address */
+ 160:monitor.c     **** 
+ 161:monitor.c     **** 	for (i = 0; i < cnt; i++)		/* data (hexdecimal) */
+ 162:monitor.c     **** 		xprintf(" %02X", p[i]);
+ 163:monitor.c     **** 
+ 164:monitor.c     **** 	xputc(' ');
+ 165:monitor.c     **** 	for (i = 0; i < cnt; i++)		/* data (ascii) */
+ 166:monitor.c     **** 		xputc((p[i] >= ' ' && p[i] <= '~') ? p[i] : '.');
+ 167:monitor.c     **** 
+ 168:monitor.c     **** 	xputc('\n');
+ 169:monitor.c     **** }
+ 170:monitor.c     **** 
+ 171:monitor.c     **** #endif /* _USE_XFUNC_OUT */
+ 172:monitor.c     **** 
+ 173:monitor.c     **** 
+ 174:monitor.c     **** 
+ 175:monitor.c     **** #if _USE_XFUNC_IN
+ 176:monitor.c     **** /*----------------------------------------------*/
+ 177:monitor.c     **** /* Get a value of the string                    */
+ 178:monitor.c     **** /*----------------------------------------------*/
+ 179:monitor.c     **** /*	"123 -5   0x3ff 0b1111 0377  w "
+ 180:monitor.c     **** 	    ^                           1st call returns 123 and next ptr
+ 181:monitor.c     **** 	       ^                        2nd call returns -5 and next ptr
+ 182:monitor.c     ****                    ^                3rd call returns 1023 and next ptr
+ 183:monitor.c     ****                           ^         4th call returns 15 and next ptr
+ 184:monitor.c     ****                                ^    5th call returns 255 and next ptr
+ 185:monitor.c     ****                                   ^ 6th call fails and returns 0
+ 186:monitor.c     **** */
+ 187:monitor.c     **** 
+ 188:monitor.c     **** int xatoi (			/* 0:Failed, 1:Successful */
+ 189:monitor.c     **** 	char **str,		/* Pointer to pointer to the string */
+ 190:monitor.c     **** 	long *res		/* Pointer to the valiable to store the value */
+ 191:monitor.c     **** )
+ 192:monitor.c     **** {
+ 105              	0
+ 106              		movs	r3, #0
+ 107              		.loc 1 192 0
+ 108              		push	{r4, r5, lr}
+ 193:monitor.c     **** 	unsigned long val;
+ 194:monitor.c     **** 	unsigned char c, r, s = 0;
+ 195:monitor.c     **** 
+ 196:monitor.c     **** 
+ 197:monitor.c     **** 	*res = 0;
+ 109              	I2:
+ 110 0000 0023     		.loc 1 197 0
+ 111              		str	r3, [r1, #0]
+ 112 0002 30B5     		.loc 1 192 0
+ 113              		mov	r4, r1
+ 114              		.loc 1 199 0
+ 115 0004 0B60     		b	.L13
+ 116              	.LVL7:
+ 117 0006 0C46     	.L14:
+ 198:monitor.c     **** 
+ 199:monitor.c     **** 	while ((c = **str) == ' ') (*str)++;	/* Skip leading spaces */
+ 118              	 r1, #1
+ 119 0008 01E0     		str	r3, [r0, #0]
+ 120              	.LVL8:
+ 121              	.L13:
+ 122 000a 4B1C     		ldr	r1, [r0, #0]
+ 123 000c 0360     		ldrb	r2, [r1, #0]	@ zero_extendqisi2
+ 124              		cmp	r2, #32
+ 125              		beq	.L14
+ 126 000e 0168     		.loc 1 201 0
+ 127 0010 0A78     		cmp	r2, #45
+ 128 0012 202A     		beq	.L16
+ 129 0014 F9D0     		movs	r5, #0
+ 200:monitor.c     **** 
+ 201:monitor.c     **** 	if (c == '-') {		/* negative? */
+ 130              	18
+ 131 0016 2D2A     	.LVL10:
+ 132 0018 01D0     	.L16:
+ 133 001a 0025     		.loc 1 203 0
+ 134              		adds	r3, r1, #1
+ 135 001c 03E0     		str	r3, [r0, #0]
+ 136              		ldrb	r2, [r1, #1]	@ zero_extendqisi2
+ 137              		movs	r5, #1
+ 202:monitor.c     **** 		s = 1;
+ 203:monitor.c     **** 		c = *(++(*str));
+ 138              	.L18:
+ 139 001e 4B1C     		.loc 1 206 0
+ 140 0020 0360     		cmp	r2, #48
+ 141 0022 4A78     		bne	.L19
+ 142 0024 0125     		.loc 1 207 0
+ 143              		ldr	r3, [r0, #0]
+ 144              		adds	r1, r3, #1
+ 204:monitor.c     **** 	}
+ 205:monitor.c     **** 
+ 206:monitor.c     **** 	if (c == '0') {
+ 145              	, [r0, #0]
+ 146 0026 302A     		ldrb	r2, [r3, #1]	@ zero_extendqisi2
+ 147 0028 1DD1     		.loc 1 208 0
+ 207:monitor.c     **** 		c = *(++(*str));
+ 148              	p	r2, #98
+ 149 002a 0368     		beq	.L22
+ 150 002c 591C     		cmp	r2, #120
+ 151 002e 0160     		bne	.L21
+ 152 0030 5A78     		.loc 1 210 0
+ 208:monitor.c     **** 		switch (c) {
+ 153              		r3, r1, #1
+ 154 0032 622A     		str	r3, [r0, #0]
+ 155 0034 07D0     		ldrb	r2, [r1, #1]	@ zero_extendqisi2
+ 156 0036 782A     		mov	lr, #16
+ 157 0038 0BD1     	.LVL12:
+ 209:monitor.c     **** 		case 'x':		/* hexdecimal */
+ 210:monitor.c     **** 			r = 16; c = *(++(*str));
+ 158              	 1 211 0
+ 159 003a 4B1C     		b	.L24
+ 160 003c 0360     	.LVL13:
+ 161 003e 4A78     	.L22:
+ 162 0040 4FF0100E 		.loc 1 213 0
+ 163              		adds	r3, r1, #1
+ 211:monitor.c     **** 			break;
+ 164              	3, [r0, #0]
+ 165 0044 16E0     		ldrb	r2, [r1, #1]	@ zero_extendqisi2
+ 166              		mov	lr, #2
+ 167              	.LVL14:
+ 212:monitor.c     **** 		case 'b':		/* binary */
+ 213:monitor.c     **** 			r = 2; c = *(++(*str));
+ 168              	c 1 214 0
+ 169 0046 4B1C     		b	.L24
+ 170 0048 0360     	.LVL15:
+ 171 004a 4A78     	.L21:
+ 172 004c 4FF0020E 		.loc 1 216 0
+ 173              		cmp	r2, #32
+ 214:monitor.c     **** 			break;
+ 174              	L42
+ 175 0050 10E0     		.loc 1 217 0
+ 176              		sub	r3, r2, #48
+ 177              		uxtb	r3, r3
+ 215:monitor.c     **** 		default:
+ 216:monitor.c     **** 			if (c <= ' ') return 1;	/* single zero */
+ 178              		r3, #9
+ 179 0052 202A     		bhi	.L28
+ 180 0054 29D9     		mov	lr, #8
+ 217:monitor.c     **** 			if (c < '0' || c > '9') return 0;	/* invalid char */
+ 181              	L16:
+ 182 0056 A2F13003 		b	.L24
+ 183 005a DBB2     	.LVL17:
+ 184 005c 092B     	.L19:
+ 185 005e 26D8     		.loc 1 221 0
+ 186 0060 4FF0080E 		sub	r3, r2, #48
+ 187              		uxtb	r3, r3
+ 188 0064 06E0     		cmp	r3, #9
+ 189              		bhi	.L28
+ 190              		mov	lr, #10
+ 218:monitor.c     **** 			r = 8;		/* octal */
+ 219:monitor.c     **** 		}
+ 220:monitor.c     **** 	} else {
+ 221:monitor.c     **** 		if (c < '0' || c > '9') return 0;	/* EOL or invalid char */
+ 191              	24:
+ 192 0066 A2F13003 		movs	r1, #0
+ 193 006a DBB2     	.LVL19:
+ 194 006c 092B     		.loc 1 226 0
+ 195 006e 1ED8     		b	.L31
+ 196 0070 4FF00A0E 	.L32:
+ 197              		.loc 1 227 0
+ 198              		cmp	r2, #96
+ 199 0074 0021     		itt	hi
+ 200              		subhi	r3, r2, #32
+ 222:monitor.c     **** 		r = 10;			/* decimal */
+ 223:monitor.c     **** 	}
+ 224:monitor.c     **** 
+ 225:monitor.c     **** 	val = 0;
+ 226:monitor.c     **** 	while (c > ' ') {
+ 201              	, r3
+ 202 0076 13E0     		.loc 1 228 0
+ 203              		sub	r3, r2, #48
+ 227:monitor.c     **** 		if (c >= 'a') c -= 0x20;
+ 204              	tb	r3, r3
+ 205 0078 602A     	.LVL20:
+ 206 007a 84BF     		.loc 1 229 0
+ 207 007c A2F12003 		cmp	r3, #16
+ 208 0080 DAB2     		bls	.L35
+ 228:monitor.c     **** 		c -= '0';
+ 209              	 1 230 0
+ 210 0082 A2F13003 		subs	r3, r3, #7
+ 211 0086 DBB2     	.LVL21:
+ 212              		uxtb	r3, r3
+ 229:monitor.c     **** 		if (c >= 17) {
+ 213              	22:
+ 214 0088 102B     	.L35:
+ 215 008a 01D9     		.loc 1 233 0
+ 230:monitor.c     **** 			c -= 7;
+ 216              	p	r3, lr
+ 217 008c 073B     		bcs	.L28
+ 218              		.loc 1 235 0
+ 219 008e DBB2     		ldr	r2, [r0, #0]
+ 220              		.loc 1 234 0
+ 221              		mla	r1, lr, r1, r3
+ 231:monitor.c     **** 			if (c <= 9) return 0;	/* invalid char */
+ 232:monitor.c     **** 		}
+ 233:monitor.c     **** 		if (c >= r) return 0;		/* invalid char for current radix */
+ 222              	1 235 0
+ 223 0090 7345     		adds	r3, r2, #1
+ 224 0092 0CD2     	.LVL23:
+ 234:monitor.c     **** 		val = val * r + c;
+ 235:monitor.c     **** 		c = *(++(*str));
+ 225              	r	r3, [r0, #0]
+ 226 0094 0268     		ldrb	r2, [r2, #1]	@ zero_extendqisi2
+ 227              	.LVL24:
+ 228 0096 0EFB0131 	.L31:
+ 229              		.loc 1 226 0
+ 230 009a 531C     		cmp	r2, #32
+ 231              		bhi	.L32
+ 232 009c 0360     		.loc 1 237 0
+ 233 009e 5278     		cbz	r5, .L39
+ 234              		negs	r1, r1
+ 235              	.L39:
+ 236              		.loc 1 239 0
+ 237 00a0 202A     		str	r1, [r4, #0]
+ 238 00a2 E9D8     	.L42:
+ 236:monitor.c     **** 	}
+ 237:monitor.c     **** 	if (s) val = 0 - val;			/* apply sign if needed */
+ 239              	LVL25:
+ 240 00a4 05B1     		.loc 1 240 0
+ 241 00a6 4942     		b	.L27
+ 242              	.LVL26:
+ 238:monitor.c     **** 
+ 239:monitor.c     **** 	*res = val;
+ 243              	:
+ 244 00a8 2160     		movs	r0, #0
+ 245              	.LVL27:
+ 246 00aa 0120     	.L27:
+ 247              		.loc 1 241 0
+ 240:monitor.c     **** 	return 1;
+ 248              	{r4, r5, pc}
+ 249 00ac 00E0     	.LFE6:
+ 251              		.section	.text.get_line,"ax",%progbits
+ 252 00ae 0020     		.align	2
+ 253              		.global	get_line
+ 254              		.thumb
+ 241:monitor.c     **** }
+ 255              	_func
+ 257              	get_line:
+ 258              	.LFB7:
+ 259 00b2 C046     		.loc 1 252 0
+ 260              		@ args = 0, pretend = 0, frame = 0
+ 261              		@ frame_needed = 0, uses_anonymous_args = 0
+ 262              	.LVL28:
+ 263              		push	{r4, r5, r6, r7, r8, lr}
+ 264              	.LCFI3:
+ 265              		.loc 1 252 0
+ 266              		mov	r6, r0
+ 242:monitor.c     **** 
+ 243:monitor.c     **** 
+ 244:monitor.c     **** /*----------------------------------------------*/
+ 245:monitor.c     **** /* Get a line from the input                    */
+ 246:monitor.c     **** /*----------------------------------------------*/
+ 247:monitor.c     **** 
+ 248:monitor.c     **** int get_line (		/* 0:End of stream, 1:A line arrived */
+ 249:monitor.c     **** 	char* buff,		/* Pointer to the buffer */
+ 250:monitor.c     **** 	int len			/* Buffer length */
+ 251:monitor.c     **** )
+ 252:monitor.c     **** {
+ 267              		movs	r5, #0
+ 268              	.LVL29:
+ 269              	.L60:
+ 270              		.loc 1 257 0
+ 271 0000 2DE9F041 		ldr	r3, .L61
+ 272              		ldr	r3, [r3, #0]
+ 273              		blx	r3
+ 274 0004 0646     		.loc 1 258 0
+ 275 0006 0F46     		mov	r4, r0
+ 276 0008 0025     		cbz	r0, .L47
+ 277              		.loc 1 259 0
+ 278              		cmp	r0, #13
+ 253:monitor.c     **** 	int rv, c, i;
+ 254:monitor.c     **** 
+ 255:monitor.c     **** 	rv = i = 0;
+ 256:monitor.c     **** 	for (;;) {
+ 257:monitor.c     **** 		c = xfunc_in();				/* Get a char from the incoming stream */
+ 279              	loc 1 260 0
+ 280 000a 124B     		cmp	r0, #8
+ 281 000c 1B68     		bne	.L50
+ 282 000e 9847     		cmp	r5, #0
+ 258:monitor.c     **** 		if (!c) return 0;			/* End of stream? */
+ 283              		.L60
+ 284 0010 0446     		.loc 1 262 0
+ 285 0012 E8B1     		bl	xputc
+ 259:monitor.c     **** 		if (c == '\r') break;		/* End of line? */
+ 286              	oc 1 263 0
+ 287 0014 0D28     		movs	r0, #32
+ 288 0016 15D0     		bl	xputc
+ 260:monitor.c     **** 		if (c == '\b' && i) {		/* Back space? */
+ 289              	oc 1 261 0
+ 290 0018 0828     		subs	r5, r5, #1
+ 291 001a 09D1     		.loc 1 264 0
+ 292 001c 002D     		mov	r0, r4
+ 293 001e F4D0     		b	.L59
+ 261:monitor.c     **** 			i--;
+ 262:monitor.c     **** 			xputc(c);
+ 294              	
+ 295 0020 FFF7FEFF 		.loc 1 267 0
+ 263:monitor.c     **** 			xputc(' '); // mthomas
+ 296              	cmp	r0, #31
+ 297 0024 2020     		ble	.L60
+ 298 0026 FFF7FEFF 		subs	r3, r7, #1
+ 299              		cmp	r5, r3
+ 300 002a 013D     		bge	.L60
+ 264:monitor.c     **** 			xputc(c);   // mthomas
+ 301              	 1 268 0
+ 302 002c 2046     		strb	r0, [r6, r5]
+ 303 002e 06E0     		adds	r5, r5, #1
+ 304              	.L59:
+ 265:monitor.c     **** 			continue;
+ 266:monitor.c     **** 		}
+ 267:monitor.c     **** 		if (c >= ' ' && i < len - 1) {	/* Visible chars */
+ 305              	c 1 269 0
+ 306 0030 1F28     		bl	xputc
+ 307 0032 EADD     		b	.L60
+ 308 0034 7B1E     	.L48:
+ 309 0036 9D42     		.loc 1 272 0
+ 310 0038 E7DA     		movs	r3, #0
+ 268:monitor.c     **** 			buff[i++] = c;
+ 311              	1 273 0
+ 312 003a 7055     		movs	r0, #10
+ 313 003c 0135     		.loc 1 272 0
+ 314              		strb	r3, [r6, r5]
+ 269:monitor.c     **** 			xputc(c);
+ 315              	c 1 273 0
+ 316 003e FFF7FEFF 		bl	xputc
+ 317 0042 E2E7     		movs	r0, #1
+ 318              	.L47:
+ 270:monitor.c     **** 		}
+ 271:monitor.c     **** 	}
+ 272:monitor.c     **** 	buff[i] = 0;	/* Terminate with zero */
+ 319              	c 1 275 0
+ 320 0044 0023     		pop	{r4, r5, r6, r7, r8, pc}
+ 273:monitor.c     **** 	xputc('\n');
+ 321              	62:
+ 322 0046 0A20     		.align	2
+ 323              	.L61:
+ 324 0048 7355     		.word	xfunc_in
+ 325              	.LFE7:
+ 327 004e 0120     		.section	.text.xstrlen,"ax",%progbits
+ 328              		.align	2
+ 274:monitor.c     **** 	return 1;
+ 275:monitor.c     **** }
+ 329              		xstrlen
+ 330 0050 BDE8F081 		.thumb
+ 331              		.thumb_func
+ 333              	xstrlen:
+ 334 0054 00000000 	.LFB8:
+ 335              		.loc 1 286 0
+ 336              		@ args = 0, pretend = 0, frame = 0
+ 337              		@ frame_needed = 0, uses_anonymous_args = 0
+ 338              		@ link register save eliminated.
+ 339              	.LVL30:
+ 340              		mov	r2, r0
+ 341              		@ lr needed for prologue
+ 342              		.loc 1 286 0
+ 343              		movs	r0, #0
+ 344              	.LVL31:
+ 276:monitor.c     **** 
+ 277:monitor.c     **** #endif /* _USE_XFUNC_IN */
+ 278:monitor.c     **** 
+ 279:monitor.c     **** 
+ 280:monitor.c     **** #if _USE_XSTRFUNC
+ 281:monitor.c     **** /*----------------------------------------------*/
+ 282:monitor.c     **** /* Simple string functions                      */
+ 283:monitor.c     **** /*----------------------------------------------*/
+ 284:monitor.c     **** 
+ 285:monitor.c     **** int xstrlen (const char *str)
+ 286:monitor.c     **** {
+ 345              		.L64
+ 346              	.L65:
+ 347              		adds	r0, r0, #1
+ 348              	.L64:
+ 349              		ldrb	r3, [r0, r2]	@ zero_extendqisi2
+ 350 0000 0246     		cmp	r3, #0
+ 351              		bne	.L65
+ 352              		.loc 1 291 0
+ 353 0002 0020     		bx	lr
+ 354              	.LFE8:
+ 287:monitor.c     **** 	int n = 0;
+ 288:monitor.c     **** 
+ 289:monitor.c     **** 	while (*str++) n++;
+ 355              	rlen, .-xstrlen
+ 356 0004 00E0     		.section	.text.xstrcpy,"ax",%progbits
+ 357              		.align	2
+ 358 0006 0130     		.global	xstrcpy
+ 359              		.thumb
+ 360 0008 835C     		.thumb_func
+ 362 000c FBD1     	xstrcpy:
+ 290:monitor.c     **** 	return n;
+ 291:monitor.c     **** }
+ 363              	.loc 1 295 0
+ 364 000e 7047     		@ args = 0, pretend = 0, frame = 0
+ 365              		@ frame_needed = 0, uses_anonymous_args = 0
+ 366              		@ link register save eliminated.
+ 367              	.LVL32:
+ 368              		@ lr needed for prologue
+ 369              		.loc 1 295 0
+ 370              		mov	r2, r0
+ 371              	.LVL33:
+ 372              	.L69:
+ 373              		.loc 1 299 0
+ 374              		ldrb	r3, [r1], #1	@ zero_extendqisi2
+ 292:monitor.c     **** 
+ 293:monitor.c     **** 
+ 294:monitor.c     **** char *xstrcpy (char* dst, const char* src)
+ 295:monitor.c     **** {
+ 375              	c 1 300 0
+ 376              		strb	r3, [r2], #1
+ 377              		.loc 1 301 0
+ 378              		cmp	r3, #0
+ 379              		bne	.L69
+ 380              		.loc 1 304 0
+ 381              		bx	lr
+ 382 0000 0246     	.LFE9:
+ 384              		.section	.text.xmemset,"ax",%progbits
+ 296:monitor.c     **** 	char c, *d = dst;
+ 297:monitor.c     **** 
+ 298:monitor.c     **** 	do {
+ 299:monitor.c     **** 		c = *src++;
+ 385              		.global	xmemset
+ 386 0002 11F8013B 		.thumb
+ 387              		.thumb_func
+ 300:monitor.c     **** 		*d++ = c;
+ 388              	ype	xmemset, %function
+ 389 0006 02F8013B 	xmemset:
+ 301:monitor.c     **** 	} while (c);
+ 390              	FB10:
+ 391 000a 002B     		.loc 1 308 0
+ 392 000c F9D1     		@ args = 0, pretend = 0, frame = 0
+ 302:monitor.c     **** 
+ 303:monitor.c     **** 	return dst;
+ 304:monitor.c     **** }
+ 393              	frame_needed = 0, uses_anonymous_args = 0
+ 394 000e 7047     		@ link register save eliminated.
+ 395              	.LVL35:
+ 396              		@ lr needed for prologue
+ 397              		.loc 1 308 0
+ 398              		movs	r3, #0
+ 399              		.loc 1 311 0
+ 400              		b	.L73
+ 401              	.L74:
+ 402              		strb	r1, [r3, r0]
+ 403              		adds	r3, r3, #1
+ 404              	.L73:
+ 305:monitor.c     **** 
+ 306:monitor.c     **** 
+ 307:monitor.c     **** void *xmemset (void *p, int c, int sz)
+ 308:monitor.c     **** {
+ 405              	, #1
+ 406              	.LVL36:
+ 407              		bcs	.L74
+ 408              		.loc 1 313 0
+ 409              		bx	lr
+ 410              	.LFE10:
+ 412 0000 0023     		.section	.text.xstrchr,"ax",%progbits
+ 309:monitor.c     **** 	char *pf = (char*)p;
+ 310:monitor.c     **** 
+ 311:monitor.c     **** 	while (sz--) *pf++ = (char)c;
+ 413              	2
+ 414 0002 01E0     		.global	xstrchr
+ 415              		.thumb
+ 416 0004 1954     		.thumb_func
+ 418              	xstrchr:
+ 419 0008 013A     	.LFB11:
+ 420              		.loc 1 317 0
+ 421 000a FBD2     		@ args = 0, pretend = 0, frame = 0
+ 312:monitor.c     **** 	return p;
+ 313:monitor.c     **** }
+ 422              	needed = 0, uses_anonymous_args = 0
+ 423 000c 7047     		@ link register save eliminated.
+ 424              	.LVL37:
+ 425              		@ lr needed for prologue
+ 426 000e C046     		.loc 1 318 0
+ 427              		b	.L78
+ 428              	.LVL38:
+ 429              	.L79:
+ 430              		.loc 1 319 0
+ 431              		uxtb	r3, r1
+ 432              	.LVL39:
+ 433              		cmp	r2, r3
+ 314:monitor.c     **** 
+ 315:monitor.c     **** 
+ 316:monitor.c     **** char *xstrchr (/*const*/ char *str, int c)
+ 317:monitor.c     **** {
+ 434              	loc 1 322 0
+ 435              		adds	r0, r0, #1
+ 436              	.LVL40:
+ 437              	.L78:
+ 438              		.loc 1 318 0
+ 439              		ldrb	r2, [r0, #0]	@ zero_extendqisi2
+ 318:monitor.c     **** 	while (*str) {
+ 440              	2, #0
+ 441 0000 03E0     		bne	.L79
+ 442              		mov	r0, r2
+ 443              	.LVL41:
+ 319:monitor.c     **** 		if (*str == (char)c) {
+ 444              	:
+ 445 0002 CBB2     	.LVL42:
+ 446              		.loc 1 325 0
+ 447 0004 9A42     		bx	lr
+ 448 0006 04D0     	.LFE11:
+ 320:monitor.c     **** 			return (char*)str;
+ 321:monitor.c     **** 		}
+ 322:monitor.c     **** 		str++;
+ 449              	e	xstrchr, .-xstrchr
+ 450 0008 0130     		.section	.text.xprintf,"ax",%progbits
+ 451              		.align	2
+ 452              		.global	xprintf
+ 453              		.thumb
+ 454 000a 0278     		.thumb_func
+ 456 000e F8D1     	xprintf:
+ 457 0010 1046     	.LFB4:
+ 458              		.loc 1 65 0
+ 459              		@ args = 4, pretend = 16, frame = 24
+ 460              		@ frame_needed = 0, uses_anonymous_args = 1
+ 323:monitor.c     **** 	}
+ 324:monitor.c     **** 	return 0;
+ 325:monitor.c     **** }
+ 461              	h	{r0, r1, r2, r3}
+ 462 0012 7047     	.LCFI4:
+ 463              		push	{r4, r5, r6, r7, r8, lr}
+ 464              	.LCFI5:
+ 465              		sub	sp, sp, #24
+ 466              	.LCFI6:
+ 467              		.loc 1 65 0
+ 468              		add	r3, sp, #48
+ 469              		ldr	r6, [r3], #4
+ 470              		.loc 1 72 0
+ 471              		str	r3, [sp, #20]
+ 472              	.LVL44:
+ 473              		.loc 1 74 0
+ 474              		b	.L137
+ 475              	.LVL45:
+ 476              	.L86:
+ 477 0000 0FB4     		adds	r6, r6, #1
+ 478              		.loc 1 75 0
+ 479 0002 2DE9F041 		cmp	r0, #37
+ 480              		bne	.L136
+ 481 0006 86B0     		.loc 1 78 0
+ 482              		mov	r3, r6
+ 483              		ldrb	r0, [r3], #1	@ zero_extendqisi2
+ 484 0008 0CAB     	.LVL46:
+ 485 000a 53F8046B 		.loc 1 80 0
+ 486              		cmp	r0, #48
+ 487 000e 0593     		beq	.L89
+ 488              	.LVL47:
+ 489              		movs	r7, #0
+ 490 0010 A7E0     		b	.L91
+ 491              	.L89:
+ 492              		.loc 1 81 0
+ 493 0012 0136     		ldrb	r0, [r6, #1]	@ zero_extendqisi2
+ 494              		adds	r3, r3, #1
+ 495 0014 2528     		movs	r7, #1
+ 496 0016 47D1     	.LVL48:
+ 497              	.L91:
+ 498 0018 3346     		mov	r2, r3
+ 499 001a 13F8010B 		mov	r8, #0
+ 500              		.loc 1 84 0
+ 501              		b	.L92
+ 502 001e 3028     	.LVL49:
+ 503 0020 01D0     	.L93:
+ 504              		.loc 1 85 0
+ 505 0022 0027     		movs	r3, #10
+ 506 0024 02E0     		mla	r3, r8, r3, r0
+ 507              		.loc 1 86 0
+ 508              		ldrb	r0, [r2, #-1]	@ zero_extendqisi2
+ 509 0026 7078     		.loc 1 85 0
+ 510 0028 0133     		sub	r8, r3, #48
+ 511 002a 0127     	.LVL50:
+ 512              	.L92:
+ 513              		.loc 1 84 0
+ 514 002c 1A46     		sub	r3, r0, #48
+ 515 002e 4FF00008 		uxtb	r3, r3
+ 516              		.loc 1 86 0
+ 517 0032 06E0     		mov	r6, r2
+ 518              		adds	r2, r2, #1
+ 519              		.loc 1 84 0
+ 520              		cmp	r3, #9
+ 521 0034 0A23     		bls	.L93
+ 522 0036 08FB0303 		.loc 1 88 0
+ 523              		cmp	r0, #108
+ 524 003a 12F8010C 		beq	.L95
+ 525              		cmp	r0, #76
+ 526 003e A3F13008 		bne	.L97
+ 527              	.L95:
+ 528              		.loc 1 89 0
+ 529              		ldrb	r0, [r6, #0]	@ zero_extendqisi2
+ 530 0042 A0F13003 		orr	r7, r7, #2
+ 531 0046 DBB2     		mov	r6, r2
+ 532              	.L97:
+ 533 0048 1646     		.loc 1 91 0
+ 534 004a 0132     		cmp	r0, #0
+ 535              		beq	.L133
+ 536 004c 092B     		.loc 1 93 0
+ 537 004e F1D9     		cmp	r0, #96
+ 538              		itet	hi
+ 539 0050 6C28     		subhi	r3, r0, #32
+ 540 0052 01D0     		movls	r1, r0
+ 541 0054 4C28     	.LVL51:
+ 542 0056 03D1     		uxtbhi	r1, r3
+ 543              		.loc 1 94 0
+ 544              		cmp	r1, #79
+ 545 0058 3078     		beq	.L107
+ 546 005a 47F00207 		bhi	.L110
+ 547 005e 1646     		cmp	r1, #67
+ 548              		beq	.L105
+ 549              		cmp	r1, #68
+ 550 0060 0028     		beq	.L106
+ 551 0062 00F08280 		cmp	r1, #66
+ 552              		beq	.L104
+ 553 0066 6028     		b	.L136
+ 554 0068 8ABF     	.L110:
+ 555 006a A0F12003 		cmp	r1, #85
+ 556 006e 0146     		beq	.L106
+ 557              		cmp	r1, #88
+ 558 0070 D9B2     		beq	.L109
+ 559              		cmp	r1, #83
+ 560 0072 4F29     		bne	.L136
+ 561 0074 1ED0     		.loc 1 96 0
+ 562 0076 06D8     		ldr	r2, [sp, #20]
+ 563 0078 4329     		adds	r3, r2, #4
+ 564 007a 11D0     		ldr	r0, [r2, #0]
+ 565 007c 4429     	.LVL52:
+ 566 007e 1CD0     		str	r3, [sp, #20]
+ 567 0080 4229     	.LVL53:
+ 568 0082 14D0     		bl	xputs
+ 569 0084 10E0     	.LVL54:
+ 570              		b	.L137
+ 571 0086 5529     	.LVL55:
+ 572 0088 17D0     	.L105:
+ 573 008a 5829     		.loc 1 98 0
+ 574 008c 18D0     		ldr	r2, [sp, #20]
+ 575 008e 5329     		adds	r3, r2, #4
+ 576 0090 0AD1     		ldrb	r0, [r2, #0]	@ zero_extendqisi2
+ 577              	.LVL56:
+ 578 0092 059A     		str	r3, [sp, #20]
+ 579 0094 131D     	.LVL57:
+ 580 0096 1068     	.L136:
+ 581              		bl	xputc
+ 582 0098 0593     	.LVL58:
+ 583              		b	.L137
+ 584 009a FFF7FEFF 	.LVL59:
+ 585              	.L104:
+ 586 009e 60E0     		mov	lr, #2
+ 587              	.LVL60:
+ 588              		.loc 1 100 0
+ 589              		b	.L111
+ 590 00a0 059A     	.LVL61:
+ 591 00a2 131D     	.L107:
+ 592 00a4 1078     		mov	lr, #8
+ 593              	.LVL62:
+ 594 00a6 0593     		.loc 1 102 0
+ 595              		b	.L111
+ 596              	.LVL63:
+ 597 00a8 FFF7FEFF 	.L106:
+ 598              		mov	lr, #10
+ 599 00ac 59E0     	.LVL64:
+ 600              		.loc 1 105 0
+ 601              		b	.L111
+ 602 00ae 4FF0020E 	.LVL65:
+ 603              	.L109:
+ 604              		.loc 1 109 0
+ 605 00b2 07E0     		mov	lr, #16
+ 606              	.LVL66:
+ 607              	.L111:
+ 608 00b4 4FF0080E 		.loc 1 114 0
+ 609              		tst	r7, #2
+ 610              		beq	.L112
+ 611 00b8 04E0     		.loc 1 115 0
+ 612              		ldr	r2, [sp, #20]
+ 613              		adds	r3, r2, #4
+ 614 00ba 4FF00A0E 		.loc 1 123 0
+ 615              		cmp	r1, #68
+ 616              		.loc 1 115 0
+ 617 00be 01E0     		str	r3, [sp, #20]
+ 618              	.LVL67:
+ 619              		ldr	r4, [r2, #0]
+ 620              	.LVL68:
+ 621 00c0 4FF0100E 		.loc 1 123 0
+ 622              		beq	.L114
+ 623              		b	.L115
+ 624              	.LVL69:
+ 625 00c4 17F0020F 	.L112:
+ 626 00c8 06D0     		.loc 1 117 0
+ 627              		cmp	r1, #68
+ 628 00ca 059A     		ldr	r2, [sp, #20]
+ 629 00cc 131D     		bne	.L116
+ 630              	.LVL70:
+ 631 00ce 4429     		.loc 1 118 0
+ 632              		adds	r3, r2, #4
+ 633 00d0 0593     		str	r3, [sp, #20]
+ 634              	.LVL71:
+ 635 00d2 1468     		ldr	r4, [r2, #0]
+ 636              	.LVL72:
+ 637              		b	.L114
+ 638 00d4 0BD0     	.LVL73:
+ 639 00d6 0FE0     	.L116:
+ 640              		.loc 1 120 0
+ 641              		adds	r3, r2, #4
+ 642              		str	r3, [sp, #20]
+ 643 00d8 4429     	.LVL74:
+ 644 00da 059A     		ldr	r4, [r2, #0]
+ 645 00dc 03D1     	.LVL75:
+ 646              		b	.L115
+ 647              	.L114:
+ 648 00de 131D     		.loc 1 123 0
+ 649 00e0 0593     		cmp	r4, #0
+ 650              		bge	.L115
+ 651 00e2 1468     		.loc 1 124 0
+ 652              		negs	r4, r4
+ 653 00e4 03E0     		.loc 1 125 0
+ 654              		orr	r7, r7, #4
+ 655              	.L115:
+ 656              		movs	r5, #0
+ 657 00e6 131D     	.L119:
+ 658 00e8 0593     		.loc 1 129 0
+ 659              		udiv	r1, r4, lr
+ 660 00ea 1468     	.LVL76:
+ 661              		mls	r3, lr, r1, r4
+ 662 00ec 04E0     		uxtb	r2, r3
+ 663              	.LVL77:
+ 664              		.loc 1 130 0
+ 665 00ee 002C     		cmp	r2, #9
+ 666 00f0 02DA     		.loc 1 129 0
+ 667              		mov	r4, r1
+ 668 00f2 6442     		.loc 1 130 0
+ 669              		bls	.L120
+ 670 00f4 47F00407 		.loc 1 131 0
+ 671              		adds	r3, r2, #7
+ 672 00f8 0025     		uxtb	r2, r3
+ 673              		.loc 1 132 0
+ 674              		cmp	r0, #120
+ 675 00fa B4FBFEF1 		itt	eq
+ 676              		addeq	r3, r2, #32
+ 677 00fe 0EFB1143 		uxtbeq	r2, r3
+ 678 0102 DAB2     	.L120:
+ 679              		.loc 1 134 0
+ 680              		adds	r2, r2, #48
+ 681 0104 092A     	.LVL78:
+ 682              		add	r3, sp, #4
+ 683 0106 0C46     		strb	r2, [r5, r3]
+ 684              		adds	r5, r5, #1
+ 685 0108 06D9     		.loc 1 135 0
+ 686              		cbz	r1, .L123
+ 687 010a D31D     		cmp	r5, #16
+ 688 010c DAB2     		bne	.L119
+ 689              	.L123:
+ 690 010e 7828     		.loc 1 136 0
+ 691 0110 04BF     		tst	r7, #4
+ 692 0112 02F12003 		beq	.L125
+ 693 0116 DAB2     		add	r3, sp, #24
+ 694              		adds	r2, r3, r5
+ 695              		movs	r3, #45
+ 696 0118 3032     		strb	r3, [r2, #-20]
+ 697              		adds	r5, r5, #1
+ 698 011a 01AB     		b	.L125
+ 699 011c EA54     	.L127:
+ 700 011e 0135     		.loc 1 137 0
+ 701              		tst	r7, #1
+ 702 0120 09B1     		ite	eq
+ 703 0122 102D     		moveq	r0, #32
+ 704 0124 E9D1     		movne	r0, #48
+ 705              	.LVL79:
+ 706              		bl	xputc
+ 707 0126 17F0040F 	.LVL80:
+ 708 012a 0FD0     		add	r8, r8, #-1
+ 709 012c 06AB     	.LVL81:
+ 710 012e 5A19     	.L125:
+ 711 0130 2D23     		cmp	r5, r8
+ 712 0132 02F8143C 		bcc	.L127
+ 713 0136 0135     		add	r3, sp, #4
+ 714 0138 08E0     		adds	r4, r3, r5
+ 715              	.LVL82:
+ 716              	.L132:
+ 717 013a 17F0010F 		.loc 1 138 0
+ 718 013e 0CBF     		ldrb	r0, [r4, #-1]!	@ zero_extendqisi2
+ 719 0140 2020     	.LVL83:
+ 720 0142 3020     		bl	xputc
+ 721              	.LVL84:
+ 722 0144 FFF7FEFF 		.loc 1 65 0
+ 723              		add	r3, sp, #4
+ 724 0148 08F1FF38 		.loc 1 138 0
+ 725              		cmp	r4, r3
+ 726              		bne	.L132
+ 727 014c 4545     	.LVL85:
+ 728 014e F4D3     	.L137:
+ 729 0150 01AB     		.loc 1 74 0
+ 730 0152 5C19     		ldrb	r0, [r6, #0]	@ zero_extendqisi2
+ 731              	.LVL86:
+ 732              		cmp	r0, #0
+ 733              		bne	.L86
+ 734 0154 14F8010D 	.L133:
+ 735              		.loc 1 142 0
+ 736 0158 FFF7FEFF 		add	sp, sp, #24
+ 737              		pop	{r4, r5, r6, r7, r8, lr}
+ 738              		add	sp, sp, #16
+ 739 015c 01AB     		bx	lr
+ 740              	.LFE4:
+ 742 0160 F8D1     		.section	.text.put_dump,"ax",%progbits
+ 743              		.align	2
+ 744              		.global	put_dump
+ 745              		.thumb
+ 746 0162 3078     		.thumb_func
+ 748 0164 0028     	put_dump:
+ 749 0166 7FF454AF 	.LFB5:
+ 750              		.loc 1 154 0
+ 751              		@ args = 0, pretend = 0, frame = 0
+ 752 016a 06B0     		@ frame_needed = 0, uses_anonymous_args = 0
+ 753 016c BDE8F041 	.LVL87:
+ 754 0170 04B0     		push	{r4, r5, r6, lr}
+ 755 0172 7047     	.LCFI7:
+ 756              		.loc 1 154 0
+ 757              		mov	r6, r0
+ 758              		.loc 1 159 0
+ 759              		ldr	r0, .L149
+ 760              	.LVL88:
+ 761              		.loc 1 154 0
+ 762              		mov	r5, r2
+ 763              		.loc 1 159 0
+ 764              		movs	r4, #0
+ 765              	.LVL89:
+ 766              		bl	xprintf
+ 767              	.LVL90:
+ 768              		.loc 1 161 0
+ 769              		b	.L139
+ 770 0000 70B5     	.L140:
+ 771              		.loc 1 162 0
+ 772              		ldrb	r1, [r4, r6]	@ zero_extendqisi2
+ 773 0002 0646     		ldr	r0, .L149+4
+ 774              		bl	xprintf
+ 775 0004 1148     		.loc 1 161 0
+ 776              		adds	r4, r4, #1
+ 777              	.L139:
+ 778 0006 1546     		cmp	r4, r5
+ 779              		blt	.L140
+ 780 0008 0024     		.loc 1 164 0
+ 781              		movs	r0, #32
+ 782 000a FFF7FEFF 		bl	xputc
+ 783              		movs	r4, #0
+ 784              	.LVL91:
+ 785 000e 04E0     		.loc 1 165 0
+ 786              		b	.L142
+ 787              	.L143:
+ 788 0010 A15D     		.loc 1 166 0
+ 789 0012 0F48     		ldrb	r3, [r4, r6]	@ zero_extendqisi2
+ 790 0014 FFF7FEFF 		.loc 1 165 0
+ 791              		adds	r4, r4, #1
+ 792 0018 0134     		.loc 1 166 0
+ 793              		sub	r0, r3, #32
+ 794 001a AC42     		uxtb	r0, r0
+ 795 001c F8DB     		cmp	r0, #94
+ 796              		ite	ls
+ 797 001e 2020     		movls	r0, r3
+ 798 0020 FFF7FEFF 		movhi	r0, #46
+ 799 0024 0024     		bl	xputc
+ 800              	.L142:
+ 801              		.loc 1 165 0
+ 802 0026 0AE0     		cmp	r4, r5
+ 803              		blt	.L143
+ 804              		.loc 1 168 0
+ 805 0028 A35D     		movs	r0, #10
+ 806              		bl	xputc
+ 807 002a 0134     		.loc 1 169 0
+ 808              		pop	{r4, r5, r6, pc}
+ 809 002c A3F12000 	.L150:
+ 810 0030 C0B2     		.align	2
+ 811 0032 5E28     	.L149:
+ 812 0034 94BF     		.word	.LC0
+ 813 0036 1846     		.word	.LC1
+ 814 0038 2E20     	.LFE5:
+ 816              		.comm	xfunc_out,4,4
+ 817              		.comm	xfunc_in,4,4
+ 818 003e AC42     		.section	.rodata.str1.1,"aMS",%progbits,1
+ 819 0040 F2DB     	.LC0:
+ 820              		.ascii	"%08lX \000"
+ 821 0042 0A20     	.LC1:
+ 822 0044 FFF7FEFF 		.ascii	" %02X\000"
+ 823              		.section	.debug_frame,"",%progbits
+ 824 0048 70BD     	.Lframe0:
+ 825              		.4byte	.LECIE0-.LSCIE0
+ 826 004a C046     	.LSCIE0:
+ 827              		.4byte	0xffffffff
+ 828 004c 00000000 		.byte	0x1
+ 829 0050 07000000 		.ascii	"\000"
+ 830              		.uleb128 0x1
+ 831              		.sleb128 -4
+ 832              		.byte	0xe
+ 833              		.byte	0xc
+ 834              		.uleb128 0xd
+ 835              		.uleb128 0x0
+ 836 0000 2530386C 		.align	2
+ 836      582000
+ 837              	.LECIE0:
+ 838 0007 20253032 	.LSFDE0:
+ 838      5800
+ 1021              		.4byte	.LVL0
+DEFINED SYMBOLS
+                            *ABS*:00000000 monitor.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:28     .text.xputc:00000000 xputc
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:25     .text.xputc:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:61     .text.xputc:0000001c $d
+                            *COM*:00000004 xfunc_out
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:70     .text.xputs:00000000 xputs
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:67     .text.xputs:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:103    .text.xatoi:00000000 xatoi
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:100    .text.xatoi:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:265    .text.get_line:00000000 get_line
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:262    .text.get_line:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:334    .text.get_line:00000054 $d
+                            *COM*:00000004 xfunc_in
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:343    .text.xstrlen:00000000 xstrlen
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:340    .text.xstrlen:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:373    .text.xstrcpy:00000000 xstrcpy
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:370    .text.xstrcpy:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:403    .text.xmemset:00000000 xmemset
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:400    .text.xmemset:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:432    .text.xstrchr:00000000 xstrchr
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:429    .text.xstrchr:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:471    .text.xprintf:00000000 xprintf
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:468    .text.xprintf:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:764    .text.put_dump:00000000 put_dump
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:761    .text.put_dump:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:828    .text.put_dump:0000004c $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:841    .debug_frame:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc6baaaa.s:1025   .debug_loc:00000000 $d
+
+NO UNDEFINED SYMBOLS

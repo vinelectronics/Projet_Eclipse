@@ -1,0 +1,2853 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"ff_test_term.c"
+  21              	.Ltext0:
+  22              		.section	.text.ff_test_term_timer_callback,"ax",%progbits
+  23              		.align	2
+  24              		.global	ff_test_term_timer_callback
+  25              		.thumb
+  26              		.thumb_func
+  28              	ff_test_term_timer_callback:
+  29              	.LFB31:
+  30              		.file 1 "ff_test_term.c"
+   1:ff_test_term.c **** /*----------------------------------------------------------------------*/
+   2:ff_test_term.c **** /* FatFs Module Sample Program / LPC17xx        (C)ChaN, mthomas 2010   */
+   3:ff_test_term.c **** /*----------------------------------------------------------------------*/
+   4:ff_test_term.c **** 
+   5:ff_test_term.c **** #include "integer.h"
+   6:ff_test_term.c **** #include "monitor.h"
+   7:ff_test_term.c **** #include "diskio.h"
+   8:ff_test_term.c **** #include "ff.h"
+   9:ff_test_term.c **** #include "rtc_cal.h"
+  10:ff_test_term.c **** 
+  11:ff_test_term.c **** /*---------------------------------------------------------*/
+  12:ff_test_term.c **** /* Work Area                                               */
+  13:ff_test_term.c **** /*---------------------------------------------------------*/
+  14:ff_test_term.c **** 
+  15:ff_test_term.c **** DWORD acc_size; /* Working variables (fs command) */
+  16:ff_test_term.c **** WORD acc_files, acc_dirs;
+  17:ff_test_term.c **** 
+  18:ff_test_term.c **** FILINFO Finfo; /* Working variables (fs/fl command) */
+  19:ff_test_term.c **** #if _USE_LFN
+  20:ff_test_term.c **** char Lfname[_MAX_LFN + 1];
+  21:ff_test_term.c **** #endif
+  22:ff_test_term.c **** 
+  23:ff_test_term.c **** //char Line[256]; /* Console input buffer */
+  24:ff_test_term.c **** char Line[1024]; /* Console input buffer */
+  25:ff_test_term.c **** 
+  26:ff_test_term.c **** FATFS Fatfs[_DRIVES];		/* File system object for each logical drive */
+  27:ff_test_term.c **** FIL File1, File2; /* File objects */
+  28:ff_test_term.c **** DIR Dir; /* Directory object */
+  29:ff_test_term.c **** 
+  30:ff_test_term.c **** BYTE Buff[8*512] /* __attribute__ ((aligned (4)))*/;  /* Data buffer */
+  31:ff_test_term.c **** 
+  32:ff_test_term.c **** volatile UINT Timer; /* Performance timer (1kHz increment) */
+  33:ff_test_term.c **** 
+  34:ff_test_term.c **** /*---------------------------------------------------------*/
+  35:ff_test_term.c **** /* 1000Hz interval timer (CMT0)                            */
+  36:ff_test_term.c **** /*---------------------------------------------------------*/
+  37:ff_test_term.c **** 
+  38:ff_test_term.c **** void ff_test_term_timer_callback(void) /* ISR: Requires vect.h */
+  39:ff_test_term.c **** {
+  31              	end = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              		.loc 1 40 0
+  40:ff_test_term.c **** 	Timer++;
+  35              		r2, .L3
+  36 0000 024A     		.loc 1 39 0
+  37              		@ lr needed for prologue
+  38              		.loc 1 40 0
+  39              		ldr	r3, [r2, #0]
+  40 0002 1368     		adds	r3, r3, #1
+  41 0004 0133     		str	r3, [r2, #0]
+  42 0006 1360     		.loc 1 41 0
+  41:ff_test_term.c **** }
+  43              	L4:
+  44 0008 7047     		.align	2
+  45              	.L3:
+  46 000a C046     		.word	Timer
+  47              	.LFE31:
+  49              		.section	.text.put_rc,"ax",%progbits
+  50              		.align	2
+  51              		.thumb
+  52              		.thumb_func
+  54              	put_rc:
+  55              	.LFB33:
+  56              		.loc 1 94 0
+  57              		@ args = 0, pretend = 0, frame = 0
+  42:ff_test_term.c **** 
+  43:ff_test_term.c **** /*--------------------------------------------------------------------------*/
+  44:ff_test_term.c **** /* Monitor                                                                  */
+  45:ff_test_term.c **** /*--------------------------------------------------------------------------*/
+  46:ff_test_term.c **** 
+  47:ff_test_term.c **** static FRESULT scan_files( /* Scan directory contents */
+  48:ff_test_term.c **** 		char* path /* Pointer to the path name working buffer */
+  49:ff_test_term.c **** )
+  50:ff_test_term.c **** {
+  51:ff_test_term.c **** 	DIR dirs;
+  52:ff_test_term.c **** 	FRESULT res;
+  53:ff_test_term.c **** 	BYTE i;
+  54:ff_test_term.c **** 	char *fn;
+  55:ff_test_term.c **** 
+  56:ff_test_term.c **** 	res = f_opendir(&dirs, path); /* Open the directory */
+  57:ff_test_term.c **** 	if (res == FR_OK)
+  58:ff_test_term.c **** 	{
+  59:ff_test_term.c **** 		i = xstrlen(path);
+  60:ff_test_term.c **** 		while (((res = f_readdir(&dirs, &Finfo)) == FR_OK) && Finfo.fname[0])
+  61:ff_test_term.c **** 		{ /* Read an item */
+  62:ff_test_term.c **** 			if (_FS_RPATH && Finfo.fname[0] == '.')
+  63:ff_test_term.c **** 				continue; /* Ignore dot entries */
+  64:ff_test_term.c **** #if _USE_LFN
+  65:ff_test_term.c **** 			fn = *Finfo.lfname ? Finfo.lfname : Finfo.fname; /* Use LFN if available */
+  66:ff_test_term.c **** #else
+  67:ff_test_term.c **** 			fn = Finfo.fname; /* Always use SFN */
+  68:ff_test_term.c **** #endif
+  69:ff_test_term.c **** 			if (Finfo.fattrib & AM_DIR)
+  70:ff_test_term.c **** 			{ /* Directory */
+  71:ff_test_term.c **** 				acc_dirs++; /* Increment number of dirs */
+  72:ff_test_term.c **** 				*(path + i) = '/';
+  73:ff_test_term.c **** 				xstrcpy(path + i + 1, fn); /* Scan in the dir */
+  74:ff_test_term.c **** 				res = scan_files(path);
+  75:ff_test_term.c **** 				*(path + i) = '\0';
+  76:ff_test_term.c **** 				if (res != FR_OK)
+  77:ff_test_term.c **** 					break;
+  78:ff_test_term.c **** 			}
+  79:ff_test_term.c **** 			else
+  80:ff_test_term.c **** 			{ /* File */
+  81:ff_test_term.c **** 				/*	xprintf("%s/%s\n", path, fn); */
+  82:ff_test_term.c **** 				acc_files++; /* Increment number of files */
+  83:ff_test_term.c **** 				acc_size += Finfo.fsize; /* Add file size */
+  84:ff_test_term.c **** 			}
+  85:ff_test_term.c **** 		}
+  86:ff_test_term.c **** 	}
+  87:ff_test_term.c **** 
+  88:ff_test_term.c **** 	return res;
+  89:ff_test_term.c **** }
+  90:ff_test_term.c **** 
+  91:ff_test_term.c **** static
+  92:ff_test_term.c **** void put_rc( /* Put FatFs return code */
+  93:ff_test_term.c **** FRESULT rc)
+  94:ff_test_term.c **** {
+  58              	 = 0, uses_anonymous_args = 0
+  59              	.LVL0:
+  60              		mov	r1, r0
+  61              		push	{r4, lr}
+  62 0000 0146     	.LCFI0:
+  63 0002 10B5     		.loc 1 94 0
+  64              		ldr	r2, .L12
+  65              	.LVL1:
+  66 0004 084A     		movs	r0, #0
+  67              	.LVL2:
+  68 0006 0020     		.loc 1 103 0
+  69              		b	.L6
+  95:ff_test_term.c **** 	const char
+  96:ff_test_term.c **** 			*str =
+  97:ff_test_term.c **** 					"OK\0" "DISK_ERR\0" "INT_ERR\0" "NOT_READY\0" "NO_FILE\0" "NO_PATH\0"
+  98:ff_test_term.c **** 						"INVALID_NAME\0" "DENIED\0" "EXIST\0" "INVALID_OBJECT\0" "WRITE_PROTECTED\0"
+  99:ff_test_term.c **** 						"INVALID_DRIVE\0" "NOT_ENABLED\0" "NO_FILE_SYSTEM\0" "MKFS_ABORTED\0" "TIMEOUT\0"
+ 100:ff_test_term.c **** 						"LOCKED\0" "NOT_ENOUGH_CORE\0" "TOO_MANY_OPEN_FILES\0";
+ 101:ff_test_term.c **** 	FRESULT i;
+ 102:ff_test_term.c **** 
+ 103:ff_test_term.c **** 	for (i = 0; i != rc && *str; i++)
+  70              	 105 0
+  71 0008 05E0     		ldrb	r3, [r2], #1	@ zero_extendqisi2
+  72              		cmp	r3, #0
+ 104:ff_test_term.c **** 	{
+ 105:ff_test_term.c **** 		while (*str++)
+  73              	e	.L7
+  74 000a 12F8013B 		.loc 1 103 0
+  75 000e 002B     		adds	r3, r0, #1
+  76 0010 FBD1     		uxtb	r0, r3
+  77              	.L6:
+  78 0012 431C     		cmp	r0, r1
+  79 0014 D8B2     		beq	.L9
+  80              		ldrb	r3, [r2, #0]	@ zero_extendqisi2
+  81 0016 8842     		cmp	r3, #0
+  82 0018 02D0     		bne	.L7
+  83 001a 1378     	.L9:
+  84 001c 002B     		.loc 1 108 0
+  85 001e F4D1     		ldr	r0, .L12+4
+  86              	.LVL3:
+ 106:ff_test_term.c **** 			;
+ 107:ff_test_term.c **** 	}
+ 108:ff_test_term.c **** 	xprintf("rc=%u FR_%s\n", (UINT) rc, str);
+  87              	VL4:
+  88 0020 0248     		.loc 1 109 0
+  89              		pop	{r4, pc}
+  90 0022 FFF7FEFF 	.L13:
+  91              		.align	2
+ 109:ff_test_term.c **** }
+  92              	
+  93 0026 10BD     		.word	.LANCHOR0
+  94              		.word	.LC1
+  95              	.LFE33:
+  97 0028 00000000 		.section	.text.scan_files,"ax",%progbits
+  98 002c 00000000 		.align	2
+  99              		.thumb
+ 100              		.thumb_func
+ 102              	scan_files:
+ 103              	.LFB32:
+ 104              		.loc 1 50 0
+ 105              		@ args = 0, pretend = 0, frame = 40
+ 106              		@ frame_needed = 0, uses_anonymous_args = 0
+ 107              	.LVL5:
+ 108              		push	{r4, r5, r6, r7, lr}
+ 109              	.LCFI1:
+ 110              		mov	r5, r0
+ 111              		sub	sp, sp, #44
+ 112 0000 F0B5     	.LCFI2:
+ 113              		.loc 1 56 0
+ 114 0002 0546     		add	r0, sp, #4
+ 115 0004 8BB0     	.LVL6:
+ 116              		mov	r1, r5
+ 117              		bl	f_opendir
+ 118 0006 01A8     		.loc 1 57 0
+ 119              		mov	r3, r0
+ 120 0008 2946     	.LVL7:
+ 121 000a FFF7FEFF 		cmp	r0, #0
+ 122              		bne	.L15
+ 123 000e 0346     		.loc 1 59 0
+ 124              		mov	r0, r5
+ 125 0010 0028     		bl	xstrlen
+ 126 0012 36D1     	.LVL8:
+ 127              		uxtb	r6, r0
+ 128 0014 2846     	.LVL9:
+ 129 0016 FFF7FEFF 		.loc 1 60 0
+ 130              		b	.L28
+ 131 001a C6B2     	.LVL10:
+ 132              	.L18:
+ 133              		.loc 1 62 0
+ 134 001c 26E0     		cmp	r2, #46
+ 135              		beq	.L28
+ 136              		.loc 1 65 0
+ 137              		ldr	r1, [r4, #24]
+ 138 001e 2E2A     	.LVL11:
+ 139 0020 24D0     		add	r2, r4, #9
+ 140              		ldrb	r3, [r1, #0]	@ zero_extendqisi2
+ 141 0022 A169     		cmp	r3, #0
+ 142              		it	eq
+ 143 0024 04F10902 		moveq	r1, r2
+ 144 0028 0B78     		.loc 1 69 0
+ 145 002a 002B     		ldrb	r3, [r4, #8]	@ zero_extendqisi2
+ 146 002c 08BF     		tst	r3, #16
+ 147 002e 1146     		beq	.L22
+ 148              		.loc 1 71 0
+ 149 0030 237A     		ldr	r2, .L29
+ 150 0032 13F0100F 		.loc 1 72 0
+ 151 0036 10D0     		adds	r0, r5, r6
+ 152              	.LVL12:
+ 153 0038 134A     		.loc 1 71 0
+ 154              		ldrh	r3, [r2, #0]
+ 155 003a A819     		.loc 1 73 0
+ 156              		adds	r0, r0, #1
+ 157              		.loc 1 71 0
+ 158 003c 1388     		adds	r3, r3, #1
+ 159              		strh	r3, [r2, #0]	@ movhi
+ 160 003e 0130     		.loc 1 72 0
+ 161              		movs	r3, #47
+ 162 0040 0133     		strb	r3, [r5, r6]
+ 163 0042 1380     		.loc 1 73 0
+ 164              		bl	xstrcpy
+ 165 0044 2F23     	.LVL13:
+ 166 0046 AB55     		.loc 1 74 0
+ 167              		mov	r0, r5
+ 168 0048 FFF7FEFF 		bl	scan_files
+ 169              		.loc 1 75 0
+ 170              		strb	r7, [r5, r6]
+ 171 004c 2846     		.loc 1 76 0
+ 172 004e FFF7D7FF 		mov	r3, r0
+ 173              	.LVL14:
+ 174 0052 AF55     		cbnz	r0, .L15
+ 175              		b	.L28
+ 176 0054 0346     	.LVL15:
+ 177              	.L22:
+ 178 0056 A0B9     		.loc 1 82 0
+ 179 0058 08E0     		ldr	r2, .L29+4
+ 180              		.loc 1 83 0
+ 181              		ldr	r1, .L29+8
+ 182              	.LVL16:
+ 183 005a 0C4A     		.loc 1 82 0
+ 184              		ldrh	r3, [r2, #0]
+ 185 005c 0C49     		adds	r3, r3, #1
+ 186              		strh	r3, [r2, #0]	@ movhi
+ 187              		.loc 1 83 0
+ 188 005e 1388     		ldr	r2, [r1, #0]
+ 189 0060 0133     		ldr	r3, [r4, #0]
+ 190 0062 1380     		adds	r3, r3, r2
+ 191              		str	r3, [r1, #0]
+ 192 0064 0A68     	.LVL17:
+ 193 0066 2368     	.L28:
+ 194 0068 9B18     		.loc 1 60 0
+ 195 006a 0B60     		ldr	r4, .L29+12
+ 196              		add	r0, sp, #4
+ 197              		mov	r1, r4
+ 198              		bl	f_readdir
+ 199 006c 094C     	.LVL18:
+ 200 006e 01A8     		mov	r3, r0
+ 201 0070 2146     	.LVL19:
+ 202 0072 FFF7FEFF 		mov	r7, r0
+ 203              		cbnz	r0, .L15
+ 204 0076 0346     	.LVL20:
+ 205              		ldrb	r2, [r4, #9]	@ zero_extendqisi2
+ 206 0078 0746     		cmp	r2, #0
+ 207 007a 10B9     		bne	.L18
+ 208              	.L15:
+ 209 007c 627A     		.loc 1 89 0
+ 210 007e 002A     		mov	r0, r3
+ 211 0080 CDD1     	.LVL21:
+ 212              		add	sp, sp, #44
+ 213              		pop	{r4, r5, r6, r7, pc}
+ 214 0082 1846     	.L30:
+ 215              		.align	2
+ 216 0084 0BB0     	.L29:
+ 217 0086 F0BD     		.word	acc_dirs
+ 218              		.word	acc_files
+ 219              		.word	acc_size
+ 220              		.word	Finfo
+ 221 0088 00000000 	.LFE32:
+ 223 0090 00000000 		.section	.text.ff_test_term,"ax",%progbits
+ 224 0094 00000000 		.align	2
+ 225              		.global	ff_test_term
+ 226              		.thumb
+ 227              		.thumb_func
+ 229              	ff_test_term:
+ 230              	.LFB34:
+ 231              		.loc 1 120 0
+ 232              		@ args = 0, pretend = 0, frame = 80
+ 233              		@ frame_needed = 0, uses_anonymous_args = 0
+ 234              		push	{r4, r5, r6, r7, r8, r9, sl, fp, lr}
+ 110:ff_test_term.c **** 
+ 111:ff_test_term.c **** 
+ 112:ff_test_term.c **** /*--------------------------------------------------------------------------*/
+ 113:ff_test_term.c **** /* ff_test_term                                                             */
+ 114:ff_test_term.c **** /*--------------------------------------------------------------------------*/
+ 115:ff_test_term.c **** 
+ 116:ff_test_term.c **** #if 1
+ 117:ff_test_term.c **** 
+ 118:ff_test_term.c **** 
+ 119:ff_test_term.c **** int ff_test_term(void)
+ 120:ff_test_term.c **** {
+ 235              		.loc 1 133 0
+ 236              		ldr	r0, .L264+8
+ 237              		movw	r1, #1252
+ 238 0000 2DE9F04F 		bl	xprintf
+ 239              		.loc 1 136 0
+ 121:ff_test_term.c **** 	char *ptr, *ptr2;
+ 122:ff_test_term.c **** 	long p1, p2, p3;
+ 123:ff_test_term.c **** 	BYTE res, b1;
+ 124:ff_test_term.c **** 	WORD w1;
+ 125:ff_test_term.c **** 	UINT s1, s2, cnt, blen = sizeof(Buff);
+ 126:ff_test_term.c **** 	static const BYTE ft[] = {0, 12, 16, 32};
+ 127:ff_test_term.c **** 	DWORD ofs = 0, sect = 0;
+ 128:ff_test_term.c **** 	FATFS *fs;				/* Pointer to file system object */
+ 129:ff_test_term.c **** 	RTC_TIME_Type rtc;
+ 130:ff_test_term.c **** 
+ 131:ff_test_term.c **** 	xputs("\nFatFs module test monitor for LPC17xx/SSP\n");
+ 240              	r3, .L264+12
+ 241 0004 A048     		ldr	r2, .L264+16
+ 242              		.loc 1 137 0
+ 243 0006 9FB0     		mov	fp, #4096
+ 244              	.LVL22:
+ 245              		.loc 1 136 0
+ 246 0008 FFF7FEFF 		str	r2, [r3, #24]
+ 132:ff_test_term.c **** 	xputs(_USE_LFN ? "LFN Enabled" : "LFN Disabled");
+ 247              	 137 0
+ 248 000c 9F48     		mov	r2, #256
+ 249 000e FFF7FEFF 		str	r2, [r3, #28]
+ 133:ff_test_term.c **** 	xprintf(", Code page: %u\n", _CODE_PAGE);
+ 250              	vs	r2, #0
+ 251 0012 9F48     		str	r2, [sp, #44]
+ 252 0014 40F2E441 	.LVL23:
+ 253 0018 FFF7FEFF 	.L262:
+ 134:ff_test_term.c **** 
+ 135:ff_test_term.c **** #if _USE_LFN
+ 136:ff_test_term.c **** 	Finfo.lfname = Lfname;
+ 254              	c 1 142 0
+ 255 001c 9D4B     		ldr	r4, .L264+20
+ 256 001e 9E4A     	.LVL24:
+ 137:ff_test_term.c **** 	Finfo.lfsize = sizeof(Lfname);
+ 257              	oc 1 141 0
+ 258 0020 4FF4805B 		movs	r0, #62
+ 259              		bl	xputc
+ 260              		.loc 1 142 0
+ 261 0024 9A61     		mov	r0, r4
+ 262              		mov	r1, #1024
+ 263 0026 4FF48072 		bl	get_line
+ 264 002a DA61     		.loc 1 145 0
+ 265 002c 0022     		mov	r3, r4
+ 266 002e 0B92     		ldrb	r2, [r3], #1	@ zero_extendqisi2
+ 267              		cmp	r2, #102
+ 268              		str	r3, [sp, #112]
+ 138:ff_test_term.c **** #endif
+ 139:ff_test_term.c **** 
+ 140:ff_test_term.c **** 	for (;;) {
+ 141:ff_test_term.c **** 		xputc('>');
+ 142:ff_test_term.c **** 		get_line(Line, sizeof(Line));
+ 269              		.L36
+ 270 0030 9A4C     		bhi	.L39
+ 271              		cmp	r2, #98
+ 272              		beq	.L34
+ 273 0032 3E20     		cmp	r2, #100
+ 274 0034 FFF7FEFF 		beq	.L35
+ 275              		cmp	r2, #63
+ 276 0038 2046     		beq	.L33
+ 277 003a 4FF48061 		b	.L262
+ 278 003e FFF7FEFF 	.L39:
+ 143:ff_test_term.c **** 
+ 144:ff_test_term.c **** 		ptr = Line;
+ 145:ff_test_term.c **** 		switch (*ptr++) {
+ 279              	109
+ 280 0042 2346     		beq	.L37
+ 281 0044 13F8012B 		cmp	r2, #116
+ 282 0048 662A     		beq	.L38
+ 283 004a 1C93     		b	.L262
+ 284              	.L33:
+ 285 004c 00F0ED81 		.loc 1 147 0
+ 286 0050 07D8     		ldr	r0, .L264+24
+ 287 0052 622A     		bl	xputs
+ 288 0054 00F00581 		.loc 1 180 0
+ 289 0058 642A     		b	.L262
+ 290 005a 37D0     	.L37:
+ 291 005c 3F2A     		.loc 1 183 0
+ 292 005e 06D0     		ldrb	r2, [r4, #1]	@ zero_extendqisi2
+ 293 0060 E6E7     		adds	r3, r4, #2
+ 294              		cmp	r2, #100
+ 295 0062 6D2A     		str	r3, [sp, #112]
+ 296 0064 07D0     	.LVL26:
+ 297 0066 742A     		bne	.L262
+ 298 0068 00F06C85 		.loc 1 185 0
+ 299 006c E0E7     		add	r4, sp, #112
+ 300              		mov	r0, r4
+ 146:ff_test_term.c **** 		case '?': /* ? - Show usage */
+ 147:ff_test_term.c **** 			xputs(
+ 301              	xatoi
+ 302 006e 8C48     		cmp	r0, #0
+ 303 0070 FFF7FEFF 		beq	.L262
+ 148:ff_test_term.c **** 					"md <address> [<len>] - Dump system memory\n"
+ 149:ff_test_term.c **** 						"\n"
+ 150:ff_test_term.c **** 						"dd [<lba>] - Dump sector\n"
+ 151:ff_test_term.c **** 						"di [<drive>] - Initialize disk\n"
+ 152:ff_test_term.c **** 						"ds [<drive>] - Show disk status\n"
+ 153:ff_test_term.c **** 						"\n"
+ 154:ff_test_term.c **** 						"bd <ofs> - Dump working buffer\n"
+ 155:ff_test_term.c **** 						"be <ofs> [<data>] ... - Edit working buffer\n"
+ 156:ff_test_term.c **** 						"br <lba> [<num>] - Read disk into working buffer\n"
+ 157:ff_test_term.c **** 						"bw <lba> [<num>] - Write working buffer into disk\n"
+ 158:ff_test_term.c **** 						"bf <val> - Fill working buffer\n"
+ 159:ff_test_term.c **** 						"\n"
+ 160:ff_test_term.c **** 						"fi - Force initialized the volume\n"
+ 161:ff_test_term.c **** 						"fs - Show volume status\n"
+ 162:ff_test_term.c **** 						"fl [<path>] - Show a directory\n"
+ 163:ff_test_term.c **** 						"fo <mode> <file> - Open a file\n"
+ 164:ff_test_term.c **** 						"fc - Close the file\n"
+ 165:ff_test_term.c **** 						"fe <ofs> - Move fp\n"
+ 166:ff_test_term.c **** 						"fd <len> - Read and dump the file\n"
+ 167:ff_test_term.c **** 						"fr <len> - Read the file\n"
+ 168:ff_test_term.c **** 						"fw <len> <val> - Write to the file\n"
+ 169:ff_test_term.c **** 						"fn <object name> <new name> - Rename an object\n"
+ 170:ff_test_term.c **** 						"fu <object name> - Unlink an object\n"
+ 171:ff_test_term.c **** 						"fv - Truncate the file at current fp\n"
+ 172:ff_test_term.c **** 						"fk <dir name> - Create a directory\n"
+ 173:ff_test_term.c **** 						"fa <atrr> <mask> <object name> - Change object attribute\n"
+ 174:ff_test_term.c **** 						"ft <year> <month> <day> <hour> <min> <sec> <object name> - Change timestamp of an object\n"
+ 175:ff_test_term.c **** 						"fx <src file> <dst file> - Copy a file\n"
+ 176:ff_test_term.c **** 						"fg <path> - Change current directory\n"
+ 177:ff_test_term.c **** 						"fm <rule> <cluster size> - Create file system\n"
+ 178:ff_test_term.c **** 						"fz [<len>] - Change R/W block length for fr/fw/fx command\n"
+ 179:ff_test_term.c **** 						"\n");
+ 180:ff_test_term.c **** 			break;
+ 304              	oc 1 186 0
+ 305 0074 DCE7     		mov	r0, r4
+ 306              		add	r1, sp, #104
+ 181:ff_test_term.c **** 
+ 182:ff_test_term.c **** 		case 'm' :
+ 183:ff_test_term.c **** 			switch (*ptr++) {
+ 307              		xatoi
+ 308 0076 6278     		cbnz	r0, .L42
+ 309 0078 A31C     		movs	r3, #128
+ 310 007a 642A     		str	r3, [sp, #104]
+ 311 007c 1C93     	.LVL27:
+ 312              	.L42:
+ 313 007e D7D1     		.loc 1 187 0
+ 184:ff_test_term.c **** 			case 'd' :	/* md <address> [<count>] - Dump memory */
+ 185:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 314              	, [sp, #108]
+ 315 0080 1CAC     		str	r3, [sp, #112]
+ 316 0082 2046     	.LVL28:
+ 317 0084 1BA9     		b	.L44
+ 318 0086 FFF7FEFF 	.L45:
+ 319 008a 0028     		.loc 1 188 0
+ 320 008c D0D0     		ldr	r0, [sp, #112]
+ 186:ff_test_term.c **** 				if (!xatoi(&ptr, &p2)) p2 = 128;
+ 321              	2, #16
+ 322 008e 2046     		mov	r1, r0
+ 323 0090 1AA9     		bl	put_dump
+ 324 0092 FFF7FEFF 		.loc 1 187 0
+ 325 0096 08B9     		ldr	r3, [sp, #112]
+ 326 0098 8023     		adds	r3, r3, #16
+ 327 009a 1A93     		str	r3, [sp, #112]
+ 328              	.LVL29:
+ 329              		ldr	r3, [sp, #104]
+ 187:ff_test_term.c **** 				for (ptr=(char*)p1; p2 >= 16; ptr += 16, p2 -= 16)
+ 330              	 r3, #16
+ 331 009c 1B9B     		str	r3, [sp, #104]
+ 332 009e 1C93     	.LVL30:
+ 333              	.L44:
+ 334 00a0 0AE0     		ldr	r2, [sp, #104]
+ 335              		cmp	r2, #15
+ 188:ff_test_term.c **** 					put_dump((BYTE*)ptr, (UINT)ptr, 16);
+ 336              	L45
+ 337 00a2 1C98     		.loc 1 189 0
+ 338 00a4 1022     		cmp	r2, #0
+ 339 00a6 0146     		beq	.L262
+ 340 00a8 FFF7FEFF 		ldr	r0, [sp, #112]
+ 341              		mov	r1, r0
+ 342 00ac 1C9B     		bl	put_dump
+ 343 00ae 1033     		b	.L262
+ 344 00b0 1C93     	.L35:
+ 345              		.loc 1 195 0
+ 346 00b2 1A9B     		ldrb	r1, [r4, #1]	@ zero_extendqisi2
+ 347 00b4 103B     		adds	r3, r4, #2
+ 348 00b6 1A93     		cmp	r1, #105
+ 349              		str	r3, [sp, #112]
+ 350              	.LVL31:
+ 351 00b8 1A9A     		beq	.L49
+ 352 00ba 0F2A     		cmp	r1, #115
+ 353 00bc F1DC     		beq	.L50
+ 189:ff_test_term.c **** 				if (p2) put_dump((BYTE*)ptr, (UINT)ptr, p2);
+ 354              		.L262
+ 355 00be 002A     		.loc 1 197 0
+ 356 00c0 B6D0     		add	r4, sp, #112
+ 357 00c2 1C98     		mov	r0, r4
+ 358 00c4 0146     		add	r1, sp, #108
+ 359 00c6 FFF7FEFF 		bl	xatoi
+ 360 00ca B1E7     		cmp	r0, #0
+ 361              		beq	.L262
+ 190:ff_test_term.c **** 				break;
+ 191:ff_test_term.c **** 			}
+ 192:ff_test_term.c **** 			break;
+ 193:ff_test_term.c **** 
+ 194:ff_test_term.c **** 		case 'd' :
+ 195:ff_test_term.c **** 			switch (*ptr++) {
+ 362              	198 0
+ 363 00cc 6178     		mov	r0, r4
+ 364 00ce A31C     		add	r1, sp, #104
+ 365 00d0 6929     		bl	xatoi
+ 366 00d2 1C93     		cbnz	r0, .L52
+ 367              		ldr	r3, [sp, #44]
+ 368 00d4 33D0     		str	r3, [sp, #104]
+ 369 00d6 7329     	.LVL32:
+ 370 00d8 41D0     	.L52:
+ 371 00da 6429     		.loc 1 199 0
+ 372 00dc A8D1     		ldr	r6, .L264+28
+ 196:ff_test_term.c **** 			case 'd' :	/* dd <phy_drv#> [<lba>] - Dump sector */
+ 197:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 373              	sp, #108]	@ zero_extendqisi2
+ 374 00de 1CAC     		mov	r1, r6
+ 375 00e0 2046     		ldr	r2, [sp, #104]
+ 376 00e2 1BA9     		movs	r3, #1
+ 377 00e4 FFF7FEFF 		bl	disk_read
+ 378 00e8 0028     		.loc 1 200 0
+ 379 00ea A1D0     		mov	r4, r0
+ 198:ff_test_term.c **** 				if (!xatoi(&ptr, &p2)) p2 = sect;
+ 380              	, .L54
+ 381 00ec 2046     	.LVL33:
+ 382 00ee 1AA9     		ldr	r0, .L264+32
+ 383 00f0 FFF7FEFF 		mov	r1, r4
+ 384 00f4 08B9     		b	.L253
+ 385 00f6 0B9B     	.L54:
+ 386 00f8 1A93     		.loc 1 201 0
+ 387              		ldr	r5, [sp, #104]
+ 388              	.LVL34:
+ 199:ff_test_term.c **** 				res = disk_read((BYTE)p1, Buff, p2, 1);
+ 389              	02 0
+ 390 00fa 6A4E     		ldr	r0, .L264+36
+ 391 00fc 9DF86C00 		mov	r1, r5
+ 392 0100 3146     		bl	xprintf
+ 393 0102 1A9A     		.loc 1 203 0
+ 394 0104 0123     		str	r6, [sp, #112]
+ 395 0106 FFF7FEFF 	.LVL35:
+ 200:ff_test_term.c **** 				if (res) { xprintf("rc=%d\n", (WORD)res); break; }
+ 396              	.loc 1 204 0
+ 397 010a 0446     		mov	r1, r4
+ 398 010c 10B1     		movs	r2, #16
+ 399              		ldr	r0, [sp, #112]
+ 400 010e 6648     		bl	put_dump
+ 401 0110 2146     		.loc 1 203 0
+ 402 0112 21E0     		ldr	r3, [sp, #112]
+ 403              		adds	r4, r4, #16
+ 201:ff_test_term.c **** 				sect = p2 + 1;
+ 404              	, r3, #16
+ 405 0114 1A9D     		cmp	r4, #512
+ 406              		str	r3, [sp, #112]
+ 202:ff_test_term.c **** 				xprintf("Sector:%lu\n", p2);
+ 407              	L36:
+ 408 0116 6548     		bne	.L56
+ 409 0118 2946     		.loc 1 201 0
+ 410 011a FFF7FEFF 		adds	r5, r5, #1
+ 203:ff_test_term.c **** 				for (ptr=(char*)Buff, ofs = 0; ofs < 0x200; ptr+=16, ofs+=16)
+ 411              		r5, [sp, #44]
+ 412 011e 1C96     	.LVL37:
+ 413              		b	.L262
+ 414              	.LVL38:
+ 204:ff_test_term.c **** 					put_dump((BYTE*)ptr, ofs, 16);
+ 415              	:
+ 416 0120 2146     		.loc 1 208 0
+ 417 0122 1022     		add	r0, sp, #112
+ 418 0124 1C98     		add	r1, sp, #108
+ 419 0126 FFF7FEFF 		bl	xatoi
+ 420              		cmp	r0, #0
+ 421 012a 1C9B     		beq	.L262
+ 422 012c 1034     		.loc 1 209 0
+ 423 012e 1033     		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 424 0130 B4F5007F 		bl	disk_initialize
+ 425 0134 1C93     		uxth	r1, r0
+ 426              		ldr	r0, .L264+32
+ 427 0136 F3D1     	.LVL39:
+ 428              	.L253:
+ 429 0138 0135     		bl	xprintf
+ 430 013a 0B95     		.loc 1 210 0
+ 431              		b	.L262
+ 432 013c 78E7     	.L50:
+ 433              		.loc 1 213 0
+ 434              		add	r0, sp, #112
+ 205:ff_test_term.c **** 				break;
+ 206:ff_test_term.c **** 
+ 207:ff_test_term.c **** 			case 'i' :	/* di <phy_drv#> - Initialize disk */
+ 208:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 435              	l	xatoi
+ 436 013e 1CA8     		cmp	r0, #0
+ 437 0140 1BA9     		beq	.L262
+ 438 0142 FFF7FEFF 		.loc 1 214 0
+ 439 0146 0028     		add	r4, sp, #104
+ 440 0148 3FF472AF 		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 209:ff_test_term.c **** 				xprintf("rc=%d\n", (WORD)disk_initialize((BYTE)p1));
+ 441              	r1, #1
+ 442 014c 9DF86C00 		mov	r2, r4
+ 443 0150 FFF7FEFF 		bl	disk_ioctl
+ 444 0154 81B2     		cbnz	r0, .L60
+ 445 0156 5448     	.LVL40:
+ 446              		.loc 1 215 0
+ 447              		ldr	r0, .L264+40
+ 448 0158 FFF7FEFF 		ldr	r1, [sp, #104]
+ 210:ff_test_term.c **** 				break;
+ 449              	ntf
+ 450 015c 68E7     	.L60:
+ 451              		.loc 1 216 0
+ 211:ff_test_term.c **** 
+ 212:ff_test_term.c **** 			case 's' :	/* ds <phy_drv#> - Show disk status */
+ 213:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 452              	rb	r0, [sp, #108]	@ zero_extendqisi2
+ 453 015e 1CA8     		movs	r1, #2
+ 454 0160 1BA9     		add	r2, sp, #116
+ 455 0162 FFF7FEFF 		bl	disk_ioctl
+ 456 0166 0028     		cbnz	r0, .L62
+ 457 0168 3FF462AF 		.loc 1 217 0
+ 214:ff_test_term.c **** 				if (disk_ioctl((BYTE)p1, GET_SECTOR_COUNT, &p2) == RES_OK)
+ 458              	0, .L264+44
+ 459 016c 1AAC     		ldrh	r1, [sp, #116]
+ 460 016e 9DF86C00 		bl	xprintf
+ 461 0172 0121     	.L62:
+ 462 0174 2246     		.loc 1 218 0
+ 463 0176 FFF7FEFF 		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 464 017a 18B9     		movs	r1, #3
+ 465              		mov	r2, r4
+ 215:ff_test_term.c **** 					{ xprintf("Drive size: %lu sectors\n", p2); }
+ 466              	_ioctl
+ 467 017c 4C48     		cbnz	r0, .L64
+ 468 017e 1A99     		.loc 1 219 0
+ 469 0180 FFF7FEFF 		ldr	r0, .L264+48
+ 470              		ldr	r1, [sp, #104]
+ 216:ff_test_term.c **** 				if (disk_ioctl((BYTE)p1, GET_SECTOR_SIZE, &w1) == RES_OK)
+ 471              	printf
+ 472 0184 9DF86C00 	.L64:
+ 473 0188 0221     		.loc 1 220 0
+ 474 018a 1DAA     		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 475 018c FFF7FEFF 		movs	r1, #10
+ 476 0190 20B9     		add	r2, sp, #119
+ 217:ff_test_term.c **** 					{ xprintf("Sector size: %u\n", w1); }
+ 477              	sk_ioctl
+ 478 0192 4848     		cbnz	r0, .L66
+ 479 0194 BDF87410 		.loc 1 221 0
+ 480 0198 FFF7FEFF 		ldr	r0, .L264+52
+ 481              		ldrb	r1, [sp, #119]	@ zero_extendqisi2
+ 218:ff_test_term.c **** 				if (disk_ioctl((BYTE)p1, GET_BLOCK_SIZE, &p2) == RES_OK)
+ 482              	printf
+ 483 019c 9DF86C00 	.L66:
+ 484 01a0 0321     		.loc 1 222 0
+ 485 01a2 2246     		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 486 01a4 FFF7FEFF 		movs	r1, #11
+ 487 01a8 18B9     		ldr	r2, .L264+28
+ 219:ff_test_term.c **** 					{ xprintf("Erase block size: %lu sectors\n", p2); }
+ 488              	sk_ioctl
+ 489 01aa 4348     		mov	r4, r0
+ 490 01ac 1A99     		cbnz	r0, .L68
+ 491 01ae FFF7FEFF 		.loc 1 223 0
+ 492              		ldr	r0, .L264+56
+ 220:ff_test_term.c **** 				if (disk_ioctl((BYTE)p1, MMC_GET_TYPE, &b1) == RES_OK)
+ 493              	puts
+ 494 01b2 9DF86C00 		ldr	r0, .L264+28
+ 495 01b6 0A21     		mov	r1, r4
+ 496 01b8 0DF17702 		movs	r2, #16
+ 497 01bc FFF7FEFF 		bl	put_dump
+ 498 01c0 20B9     	.L68:
+ 221:ff_test_term.c **** 					{ xprintf("MMC/SDC type: %u\n", b1); }
+ 499              	1 224 0
+ 500 01c2 3E48     		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 501 01c4 9DF87710 		movs	r1, #12
+ 502 01c8 FFF7FEFF 		ldr	r2, .L264+28
+ 503              		bl	disk_ioctl
+ 222:ff_test_term.c **** 				if (disk_ioctl((BYTE)p1, MMC_GET_CSD, Buff) == RES_OK)
+ 504              	r4, r0
+ 505 01cc 9DF86C00 		cbnz	r0, .L70
+ 506 01d0 0B21     		.loc 1 225 0
+ 507 01d2 344A     		ldr	r0, .L264+60
+ 508 01d4 FFF7FEFF 		bl	xputs
+ 509 01d8 0446     		ldr	r0, .L264+28
+ 510 01da 38B9     		mov	r1, r4
+ 223:ff_test_term.c **** 					{ xputs("CSD:\n"); put_dump(Buff, 0, 16); }
+ 511              	2, #16
+ 512 01dc 3848     		bl	put_dump
+ 513 01de FFF7FEFF 	.L70:
+ 514 01e2 3048     		.loc 1 226 0
+ 515 01e4 2146     		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 516 01e6 1022     		movs	r1, #13
+ 517 01e8 FFF7FEFF 		ldr	r2, .L264+28
+ 518              		bl	disk_ioctl
+ 224:ff_test_term.c **** 				if (disk_ioctl((BYTE)p1, MMC_GET_CID, Buff) == RES_OK)
+ 519              	 r0
+ 520 01ec 9DF86C00 		cbnz	r0, .L72
+ 521 01f0 0C21     		.loc 1 227 0
+ 522 01f2 2C4A     		ldr	r0, .L264+64
+ 523 01f4 FFF7FEFF 		bl	xputs
+ 524 01f8 0446     		ldr	r0, .L264+28
+ 525 01fa 38B9     		mov	r1, r4
+ 225:ff_test_term.c **** 					{ xputs("CID:\n"); put_dump(Buff, 0, 16); }
+ 526              	2, #4
+ 527 01fc 3148     		bl	put_dump
+ 528 01fe FFF7FEFF 	.L72:
+ 529 0202 2848     		.loc 1 228 0
+ 530 0204 2146     		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 531 0206 1022     		movs	r1, #14
+ 532 0208 FFF7FEFF 		ldr	r2, .L264+28
+ 533              		bl	disk_ioctl
+ 226:ff_test_term.c **** 				if (disk_ioctl((BYTE)p1, MMC_GET_OCR, Buff) == RES_OK)
+ 534              	 r0
+ 535 020c 9DF86C00 		cmp	r0, #0
+ 536 0210 0D21     		bne	.L262
+ 537 0212 244A     		.loc 1 229 0
+ 538 0214 FFF7FEFF 		ldr	r0, .L264+68
+ 539 0218 0446     		bl	xputs
+ 540 021a 38B9     		.loc 1 230 0
+ 227:ff_test_term.c **** 					{ xputs("OCR:\n"); put_dump(Buff, 0, 4); }
+ 541              	, [sp, #96]
+ 542 021c 2A48     	.LVL41:
+ 543 021e FFF7FEFF 		b	.L75
+ 544 0222 2048     	.L76:
+ 545 0224 2146     		ldr	r0, .L264+28
+ 546 0226 0422     		movs	r2, #16
+ 547 0228 FFF7FEFF 		adds	r0, r1, r0
+ 548              		bl	put_dump
+ 228:ff_test_term.c **** 				if (disk_ioctl((BYTE)p1, MMC_GET_SDSTAT, Buff) == RES_OK) {
+ 549              	 [sp, #96]
+ 550 022c 9DF86C00 		adds	r3, r3, #16
+ 551 0230 0E21     		str	r3, [sp, #96]
+ 552 0232 1C4A     	.LVL42:
+ 553 0234 FFF7FEFF 	.L75:
+ 554 0238 0446     		ldr	r1, [sp, #96]
+ 555 023a 0028     		cmp	r1, #63
+ 556 023c 7FF4F8AE 		bls	.L76
+ 229:ff_test_term.c **** 					xputs("SD Status:\n");
+ 557              	
+ 558 0240 2248     	.LVL43:
+ 559 0242 FFF7FEFF 	.L34:
+ 230:ff_test_term.c **** 					for (s1 = 0; s1 < 64; s1 += 16) put_dump(Buff+s1, s1, 16);
+ 560              	loc 1 237 0
+ 561 0246 1894     		ldrb	r1, [r4, #1]	@ zero_extendqisi2
+ 562              		adds	r3, r4, #2
+ 563 0248 07E0     		cmp	r1, #102
+ 564              		str	r3, [sp, #112]
+ 565 024a 1648     	.LVL44:
+ 566 024c 1022     		beq	.L79
+ 567 024e 0818     		bhi	.L82
+ 568 0250 FFF7FEFF 		cmp	r1, #100
+ 569 0254 189B     		beq	.L77
+ 570 0256 1033     		cmp	r1, #101
+ 571 0258 1893     		beq	.L78
+ 572              		b	.L262
+ 573              	.L82:
+ 574 025a 1899     		cmp	r1, #114
+ 575 025c 3F29     		beq	.L80
+ 576 025e F4D9     		cmp	r1, #119
+ 577 0260 E6E6     		beq	.L81
+ 578              		b	.L262
+ 579              	.L265:
+ 231:ff_test_term.c **** 				}
+ 232:ff_test_term.c **** 				break;
+ 233:ff_test_term.c **** 			}
+ 234:ff_test_term.c **** 			break;
+ 235:ff_test_term.c **** 
+ 236:ff_test_term.c **** 		case 'b' :
+ 237:ff_test_term.c **** 			switch (*ptr++) {
+ 580              	ord	.LC2
+ 581 0262 6178     		.word	.LC3
+ 582 0264 A31C     		.word	.LC4
+ 583 0266 6629     		.word	Finfo
+ 584 0268 1C93     		.word	Lfname
+ 585              		.word	Line
+ 586 026a 00F0CF80 		.word	.LC5
+ 587 026e 04D8     		.word	Buff
+ 588 0270 6429     		.word	.LC6
+ 589 0272 2DD0     		.word	.LC7
+ 590 0274 6529     		.word	.LC8
+ 591 0276 4AD0     		.word	.LC9
+ 592 0278 DAE6     		.word	.LC10
+ 593              		.word	.LC11
+ 594 027a 7229     		.word	.LC12
+ 595 027c 00F08680 		.word	.LC13
+ 596 0280 7729     		.word	.LC14
+ 597 0282 00F0A280 		.word	.LC15
+ 598 0286 D3E6     	.L77:
+ 599              		.loc 1 239 0
+ 600              		add	r0, sp, #112
+ 601              		add	r1, sp, #108
+ 602 0288 0D000000 		bl	xatoi
+ 603 028c 39000000 		cmp	r0, #0
+ 604 0290 45000000 		beq	.L262
+ 605 0294 00000000 		.loc 1 240 0
+ 606 0298 00000000 		ldr	r3, [sp, #108]
+ 607 029c 00000000 		ldr	r2, .L266
+ 608 02a0 56000000 		mov	r4, r3
+ 609 02a4 00000000 	.LVL45:
+ 610 02a8 88040000 		adds	r2, r3, r2
+ 611 02ac 8F040000 		movs	r3, #32
+ 612 02b0 9B040000 		str	r2, [sp, #112]
+ 613 02b4 B4040000 	.LVL46:
+ 614 02b8 C5040000 		str	r3, [sp, #88]
+ 615 02bc E4040000 	.LVL47:
+ 616 02c0 F6040000 		b	.L84
+ 617 02c4 FC040000 	.LVL48:
+ 618 02c8 02050000 	.L85:
+ 619 02cc 08050000 		.loc 1 241 0
+ 620              		mov	r1, r4
+ 238:ff_test_term.c **** 			case 'd' :	/* bd <addr> - Dump R/W buffer */
+ 239:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 621              	_dump
+ 622 02d0 1CA8     	.LVL49:
+ 623 02d2 1BA9     		.loc 1 240 0
+ 624 02d4 FFF7FEFF 		ldr	r3, [sp, #88]
+ 625 02d8 0028     		adds	r4, r4, #16
+ 626 02da 3FF4A9AE 		subs	r3, r3, #1
+ 240:ff_test_term.c **** 				for (ptr=(char*)&Buff[p1], ofs = p1, cnt = 32; cnt; cnt--, ptr+=16, ofs+=16)
+ 627              	3, [sp, #88]
+ 628 02de 1B9B     	.LVL50:
+ 629 02e0 9F4A     		ldr	r3, [sp, #112]
+ 630 02e2 1C46     		adds	r3, r3, #16
+ 631              		str	r3, [sp, #112]
+ 632 02e4 9A18     	.LVL51:
+ 633 02e6 2023     	.L84:
+ 634 02e8 1C92     		ldr	r3, [sp, #88]
+ 635              		cmp	r3, #0
+ 636 02ea 1693     		bne	.L85
+ 637              	.LVL52:
+ 638 02ec 0BE0     		b	.L262
+ 639              	.LVL53:
+ 640              	.L78:
+ 241:ff_test_term.c **** 					put_dump((BYTE*)ptr, ofs, 16);
+ 641              		add	r4, sp, #112
+ 642 02ee 2146     		mov	r0, r4
+ 643 02f0 1C98     		add	r1, sp, #108
+ 644 02f2 1022     		bl	xatoi
+ 645 02f4 FFF7FEFF 		cmp	r0, #0
+ 646              		beq	.L262
+ 647              		.loc 1 246 0
+ 648 02f8 169B     		mov	r0, r4
+ 649 02fa 1034     		add	r1, sp, #104
+ 650 02fc 013B     		bl	xatoi
+ 651 02fe 1693     		cbz	r0, .L263
+ 652              	.L88:
+ 653 0300 1C9B     		.loc 1 248 0
+ 654 0302 1033     		ldr	r3, [sp, #108]
+ 655 0304 1C93     		ldr	r1, [sp, #104]
+ 656              		ldr	r2, .L266
+ 657              		.loc 1 249 0
+ 658 0306 169B     		add	r0, sp, #112
+ 659 0308 002B     		.loc 1 248 0
+ 660 030a F0D1     		strb	r1, [r2, r3]
+ 661              		adds	r3, r3, #1
+ 662 030c 90E6     		.loc 1 249 0
+ 663              		add	r1, sp, #104
+ 664              		.loc 1 248 0
+ 242:ff_test_term.c **** 				break;
+ 243:ff_test_term.c **** 
+ 244:ff_test_term.c **** 			case 'e' :	/* be <addr> [<data>] ... - Edit R/W buffer */
+ 245:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 665              	54:
+ 666 030e 1CAC     		.loc 1 249 0
+ 667 0310 2046     		bl	xatoi
+ 668 0312 1BA9     		cmp	r0, #0
+ 669 0314 FFF7FEFF 		bne	.L88
+ 670 0318 0028     		b	.L262
+ 671 031a 3FF489AE 	.LVL55:
+ 246:ff_test_term.c **** 				if (xatoi(&ptr, &p2)) {
+ 672              		.loc 1 253 0
+ 673 031e 2046     		ldr	r3, [sp, #108]
+ 674 0320 1AA9     		ldr	r5, .L266
+ 675 0322 FFF7FEFF 	.LVL56:
+ 676 0326 60B1     		.loc 1 254 0
+ 677              		ldr	r4, .L266+4
+ 247:ff_test_term.c **** 					do {
+ 248:ff_test_term.c **** 						Buff[p1++] = (BYTE)p2;
+ 678              	1 253 0
+ 679 0328 1B9B     		uxth	r1, r3
+ 680 032a 1A99     		ldrb	r2, [r5, r3]	@ zero_extendqisi2
+ 681 032c 8C4A     		ldr	r0, .L266+8
+ 249:ff_test_term.c **** 					} while (xatoi(&ptr, &p2));
+ 682              	xprintf
+ 683 032e 1CA8     		.loc 1 254 0
+ 684              		mov	r0, r4
+ 685 0330 D154     		mov	r1, #1024
+ 686 0332 0133     		bl	get_line
+ 687              		.loc 1 256 0
+ 688 0334 1AA9     		ldrb	r3, [r4, #0]	@ zero_extendqisi2
+ 689              		.loc 1 255 0
+ 690 0336 1B93     		str	r4, [sp, #112]
+ 691              	.LVL57:
+ 692              		.loc 1 256 0
+ 693 0338 FFF7FEFF 		cmp	r3, #46
+ 694 033c 0028     		beq	.L262
+ 695 033e F3D1     		.loc 1 257 0
+ 696 0340 76E6     		cmp	r3, #31
+ 697              		bhi	.L90
+ 698              		ldr	r3, [sp, #108]
+ 250:ff_test_term.c **** 					break;
+ 251:ff_test_term.c **** 				}
+ 252:ff_test_term.c **** 				for (;;) {
+ 253:ff_test_term.c **** 					xprintf("%04X %02X-", (WORD)(p1), (WORD)Buff[p1]);
+ 699              	.L90:
+ 700 0342 1B9B     		.loc 1 258 0
+ 701 0344 864D     		add	r0, sp, #112
+ 702              		add	r1, sp, #104
+ 254:ff_test_term.c **** 					get_line(Line, sizeof(Line));
+ 703              	xatoi
+ 704 0346 874C     		cbz	r0, .L92
+ 705              		.loc 1 259 0
+ 706 0348 99B2     		ldr	r3, [sp, #108]
+ 707 034a EA5C     		ldr	r2, [sp, #104]
+ 708 034c 8648     		strb	r2, [r5, r3]
+ 709 034e FFF7FEFF 	.LVL59:
+ 710              	.L258:
+ 711 0352 2046     		adds	r3, r3, #1
+ 712 0354 4FF48061 		str	r3, [sp, #108]
+ 713 0358 FFF7FEFF 	.LVL60:
+ 255:ff_test_term.c **** 					ptr = Line;
+ 256:ff_test_term.c **** 					if (*ptr == '.') break;
+ 714              	VL61:
+ 715 035c 2378     	.L92:
+ 716              		.loc 1 261 0
+ 717 035e 1C94     		ldr	r0, .L266+12
+ 718              		bl	xputs
+ 719              		b	.L263
+ 720 0360 2E2B     	.LVL62:
+ 721 0362 3FF465AE 	.L80:
+ 257:ff_test_term.c **** 					if (*ptr < ' ') { p1++; continue; }
+ 722              	266 0
+ 723 0366 1F2B     		add	r4, sp, #112
+ 724 0368 01D8     		mov	r0, r4
+ 725 036a 1B9B     		add	r1, sp, #108
+ 726 036c 07E0     		bl	xatoi
+ 727              		cmp	r0, #0
+ 728              		beq	.L262
+ 258:ff_test_term.c **** 					if (xatoi(&ptr, &p2))
+ 729              	 267 0
+ 730 036e 1CA8     		mov	r0, r4
+ 731 0370 1AA9     		add	r1, sp, #104
+ 732 0372 FFF7FEFF 		bl	xatoi
+ 733 0376 28B1     		cmp	r0, #0
+ 259:ff_test_term.c **** 						Buff[p1++] = (BYTE)p2;
+ 734              	.L262
+ 735 0378 1B9B     		.loc 1 268 0
+ 736 037a 1A9A     		mov	r0, r4
+ 737 037c EA54     		add	r1, sp, #100
+ 738              		bl	xatoi
+ 739              		cbnz	r0, .L96
+ 740 037e 0133     		movs	r3, #1
+ 741 0380 1B93     		str	r3, [sp, #100]
+ 742              	.LVL63:
+ 743 0382 DEE7     	.L96:
+ 744              		.loc 1 269 0
+ 745              		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 260:ff_test_term.c **** 					else
+ 261:ff_test_term.c **** 						xputs("???\n");
+ 746              	66
+ 747 0384 7948     		ldr	r2, [sp, #104]
+ 748 0386 FFF7FEFF 		ldrb	r3, [sp, #100]	@ zero_extendqisi2
+ 749 038a DAE7     		bl	disk_read
+ 750              		b	.L257
+ 751              	.L81:
+ 262:ff_test_term.c **** 				}
+ 263:ff_test_term.c **** 				break;
+ 264:ff_test_term.c **** 
+ 265:ff_test_term.c **** 			case 'r' :	/* br <phy_drv#> <sector> [<n>] - Read disk into R/W buffer */
+ 266:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 752              	1 273 0
+ 753 038c 1CAC     		add	r4, sp, #112
+ 754 038e 2046     		mov	r0, r4
+ 755 0390 1BA9     		add	r1, sp, #108
+ 756 0392 FFF7FEFF 		bl	xatoi
+ 757 0396 0028     		cmp	r0, #0
+ 758 0398 3FF44AAE 		beq	.L262
+ 267:ff_test_term.c **** 				if (!xatoi(&ptr, &p2)) break;
+ 759              	 274 0
+ 760 039c 2046     		mov	r0, r4
+ 761 039e 1AA9     		add	r1, sp, #104
+ 762 03a0 FFF7FEFF 		bl	xatoi
+ 763 03a4 0028     		cmp	r0, #0
+ 764 03a6 3FF443AE 		beq	.L262
+ 268:ff_test_term.c **** 				if (!xatoi(&ptr, &p3)) p3 = 1;
+ 765              	1 275 0
+ 766 03aa 2046     		mov	r0, r4
+ 767 03ac 19A9     		add	r1, sp, #100
+ 768 03ae FFF7FEFF 		bl	xatoi
+ 769 03b2 08B9     		cbnz	r0, .L100
+ 770 03b4 0123     		movs	r3, #1
+ 771 03b6 1993     		str	r3, [sp, #100]
+ 772              	.LVL64:
+ 773              	.L100:
+ 269:ff_test_term.c **** 				xprintf("rc=%u\n", disk_read((BYTE)p1, Buff, p2, p3));
+ 774              	76 0
+ 775 03b8 9DF86C00 		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 776 03bc 6849     		ldr	r1, .L266
+ 777 03be 1A9A     		ldr	r2, [sp, #104]
+ 778 03c0 9DF86430 		ldrb	r3, [sp, #100]	@ zero_extendqisi2
+ 779 03c4 FFF7FEFF 		bl	disk_write
+ 780 03c8 1DE0     	.LVL65:
+ 781              	.L257:
+ 270:ff_test_term.c **** 				break;
+ 271:ff_test_term.c **** 
+ 272:ff_test_term.c **** 			case 'w' :	/* bw <phy_drv#> <sector> [<n>] - Write R/W buffer into disk */
+ 273:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 782              	 r0
+ 783 03ca 1CAC     		ldr	r0, .L266+16
+ 784 03cc 2046     		b	.L253
+ 785 03ce 1BA9     	.LVL66:
+ 786 03d0 FFF7FEFF 	.L79:
+ 787 03d4 0028     		.loc 1 280 0
+ 788 03d6 3FF42BAE 		add	r0, sp, #112
+ 274:ff_test_term.c **** 				if (!xatoi(&ptr, &p2)) break;
+ 789              	, sp, #108
+ 790 03da 2046     		bl	xatoi
+ 791 03dc 1AA9     		cmp	r0, #0
+ 792 03de FFF7FEFF 		beq	.L262
+ 793 03e2 0028     		.loc 1 281 0
+ 794 03e4 3FF424AE 		ldrb	r1, [sp, #108]	@ zero_extendqisi2
+ 275:ff_test_term.c **** 				if (!xatoi(&ptr, &p3)) p3 = 1;
+ 795              	2, #4096
+ 796 03e8 2046     		ldr	r0, .L266
+ 797 03ea 19A9     		bl	xmemset
+ 798 03ec FFF7FEFF 		b	.L262
+ 799 03f0 08B9     	.L36:
+ 800 03f2 0123     		.loc 1 288 0
+ 801 03f4 1993     		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+ 802              		adds	r2, r4, #2
+ 803              		subs	r3, r3, #97
+ 276:ff_test_term.c **** 				xprintf("rc=%u\n", disk_write((BYTE)p1, Buff, p2, p3));
+ 804              	[sp, #112]
+ 805 03f6 9DF86C00 	.LVL67:
+ 806 03fa 5949     		cmp	r3, #25
+ 807 03fc 1A9A     		bhi	.L262
+ 808 03fe 9DF86430 		adr	r2, .L123
+ 809 0402 FFF7FEFF 		ldr	pc, [r2, r3, lsl #2]
+ 810              		.align	2
+ 811              	.L123:
+ 812 0406 0146     		.word	.L103+1
+ 813 0408 5948     		.word	.L262+1
+ 814 040a A5E6     		.word	.L104+1
+ 815              		.word	.L105+1
+ 816              		.word	.L106+1
+ 277:ff_test_term.c **** 				break;
+ 278:ff_test_term.c **** 
+ 279:ff_test_term.c **** 			case 'f' :	/* bf <val> - Fill working buffer */
+ 280:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 817              	1
+ 818 040c 1CA8     		.word	.L107+1
+ 819 040e 1BA9     		.word	.L262+1
+ 820 0410 FFF7FEFF 		.word	.L108+1
+ 821 0414 0028     		.word	.L109+1
+ 822 0416 3FF40BAE 		.word	.L110+1
+ 281:ff_test_term.c **** 				xmemset(Buff, (BYTE)p1, sizeof(Buff));
+ 823              		.L111+1
+ 824 041a 9DF86C10 		.word	.L112+1
+ 825 041e 4FF48052 		.word	.L113+1
+ 826 0422 4F48     		.word	.L114+1
+ 827 0424 FFF7FEFF 		.word	.L262+1
+ 828 0428 02E6     		.word	.L262+1
+ 829              		.word	.L115+1
+ 282:ff_test_term.c **** 				break;
+ 283:ff_test_term.c **** 
+ 284:ff_test_term.c **** 			}
+ 285:ff_test_term.c **** 			break;
+ 286:ff_test_term.c **** 
+ 287:ff_test_term.c **** 		case 'f' :
+ 288:ff_test_term.c **** 			switch (*ptr++) {
+ 830              	.L116+1
+ 831 042a 6378     		.word	.L117+1
+ 832 042c A21C     		.word	.L118+1
+ 833 042e 613B     		.word	.L119+1
+ 834 0430 1C92     		.word	.L120+1
+ 835              		.word	.L121+1
+ 836 0432 192B     		.word	.L262+1
+ 837 0434 3FF6FCAD 		.word	.L122+1
+ 838 0438 01A2     	.L108:
+ 839 043a 52F823F0 		.loc 1 291 0
+ 840 043e C046     		add	r0, sp, #112
+ 841              		add	r1, sp, #108
+ 842 0440 D9080000 		bl	xatoi
+ 843 0444 31000000 		cmp	r0, #0
+ 844 0448 DB060000 		beq	.L262
+ 845 044c 0F070000 		.loc 1 292 0
+ 846 0450 E3060000 		ldr	r2, [sp, #108]
+ 847 0454 31000000 		ldr	r1, .L266+20
+ 848 0458 850A0000 		mov	r3, #564
+ 849 045c 31000000 		uxtb	r0, r2
+ 850 0460 A9040000 		mla	r1, r2, r3, r1
+ 851 0464 930A0000 		bl	f_mount
+ 852 0468 CB080000 		b	.L254
+ 853 046c 95050000 	.L125:
+ 854 0470 AB0A0000 		.loc 1 296 0
+ 855 0474 7F080000 		adds	r3, r0, #1
+ 856 0478 B3060000 		str	r3, [sp, #112]
+ 857 047c 31000000 	.LVL68:
+ 858 0480 31000000 	.L116:
+ 859 0484 63070000 		ldr	r0, [sp, #112]
+ 860 0488 CF040000 		ldrb	r3, [r0, #0]	@ zero_extendqisi2
+ 861 048c 13090000 		cmp	r3, #32
+ 862 0490 B1080000 		beq	.L125
+ 863 0494 BF080000 		.loc 1 297 0
+ 864 0498 CB070000 		add	r1, sp, #104
+ 865 049c BB090000 		add	r2, sp, #84
+ 866 04a0 31000000 		bl	f_getfree
+ 867 04a4 250B0000 		.loc 1 298 0
+ 868              		mov	r7, r0
+ 289:ff_test_term.c **** 
+ 290:ff_test_term.c **** 			case 'i' :	/* fi <log drv#> - Initialize logical drive */
+ 291:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 869              	dr	r0, [sp, #84]
+ 870 04a8 1CA8     		ldr	r2, .L266+24
+ 871 04aa 1BA9     		ldrb	r3, [r0, #0]	@ zero_extendqisi2
+ 872 04ac FFF7FEFF 		ldr	r4, [r0, #28]
+ 873 04b0 0028     		ldr	r5, [r0, #36]
+ 874 04b2 3FF4BDAD 	.LVL69:
+ 292:ff_test_term.c **** 				put_rc(f_mount((BYTE)p1, &Fatfs[p1]));
+ 875              	6, [r0, #40]
+ 876 04b6 1B9A     		and	r3, r3, #3
+ 877 04b8 2E49     		ldrh	lr, [r0, #8]
+ 878 04ba 4FF40D73 		ldr	ip, [r0, #32]
+ 879 04be D0B2     		ldrb	r1, [r2, r3]	@ zero_extendqisi2
+ 880 04c0 02FB0311 		subs	r4, r4, #2
+ 881 04c4 FFF7FEFF 		ldrb	r2, [r0, #2]	@ zero_extendqisi2
+ 882 04c8 12E3     		ldrb	r3, [r0, #3]	@ zero_extendqisi2
+ 883              		ldr	r0, [r0, #44]
+ 293:ff_test_term.c **** 				break;
+ 294:ff_test_term.c **** 
+ 295:ff_test_term.c **** 			case 's' :	/* fs - Show logical drive status */
+ 296:ff_test_term.c **** 				while (_USE_LFN && *ptr == ' ') ptr++;
+ 884              	[sp, #8]
+ 885 04ca 431C     		str	r5, [sp, #12]
+ 886 04cc 1C93     		str	r6, [sp, #16]
+ 887              		.loc 1 306 0
+ 888              		ldr	r5, .L266+28
+ 889 04ce 1C98     		ldr	r6, .L266+32
+ 890 04d0 0378     		ldr	r4, .L266+36
+ 891 04d2 202B     		.loc 1 299 0
+ 892 04d4 F9D0     		str	r0, [sp, #20]
+ 297:ff_test_term.c **** 				res = f_getfree(ptr, (DWORD*)&p2, &fs);
+ 893              	 r2, #9
+ 894 04d6 1AA9     		ldr	r0, .L266+40
+ 895 04d8 15AA     		str	lr, [sp, #0]
+ 896 04da FFF7FEFF 		str	ip, [sp, #4]
+ 298:ff_test_term.c **** 				if (res) { put_rc(res); break; }
+ 897              	xprintf
+ 898 04de 0746     		.loc 1 306 0
+ 899 04e0 0028     		strh	r7, [r6, #0]	@ movhi
+ 900 04e2 40F00583 		strh	r7, [r5, #0]	@ movhi
+ 299:ff_test_term.c **** 				xprintf("FAT type = FAT%u\nBytes/Cluster = %lu\nNumber of FATs = %u\n"
+ 901              		r7, [r4, #0]
+ 902 04e6 1598     		.loc 1 307 0
+ 903 04e8 234A     		ldr	r0, [sp, #112]
+ 904 04ea 0378     		bl	scan_files
+ 905 04ec C469     		.loc 1 308 0
+ 906 04ee 456A     		cmp	r0, #0
+ 907              		bne	.L254
+ 908 04f0 866A     		.loc 1 309 0
+ 909 04f2 03F00303 		ldr	r0, [sp, #84]
+ 910 04f6 B0F808E0 		ldrh	r1, [r5, #0]
+ 911 04fa D0F820C0 		ldrb	r5, [r0, #2]	@ zero_extendqisi2
+ 912 04fe D15C     		ldr	r2, [r4, #0]
+ 913 0500 023C     		ldr	r4, [r0, #28]
+ 914 0502 8278     		ldr	r0, [sp, #104]
+ 915 0504 C378     		lsrs	r5, r5, #1
+ 916 0506 C06A     		mul	r0, r0, r5
+ 917 0508 0294     		subs	r4, r4, #2
+ 918 050a 0395     		mul	r4, r4, r5
+ 919 050c 0496     		ldrh	r3, [r6, #0]
+ 300:ff_test_term.c **** 						"Root DIR entries = %u\nSectors/FAT = %lu\nNumber of clusters = %lu\n"
+ 301:ff_test_term.c **** 						"FAT start (lba) = %lu\nDIR start (lba,clustor) = %lu\nData start (lba) = %lu\n\n...",
+ 302:ff_test_term.c **** 						ft[fs->fs_type & 3], (DWORD)fs->csize * 512, fs->n_fats,
+ 303:ff_test_term.c **** 						fs->n_rootdir, fs->fsize, (DWORD)fs->n_fatent - 2,
+ 304:ff_test_term.c **** 						fs->fatbase, fs->dirbase, fs->database
+ 305:ff_test_term.c **** 				);
+ 306:ff_test_term.c **** 				acc_size = acc_files = acc_dirs = 0;
+ 920              	ldr	r0, .L266+44
+ 921 050e 1B4D     		str	r4, [sp, #0]
+ 922 0510 1B4E     		bl	xprintf
+ 923 0512 1C4C     		.loc 1 314 0
+ 924              		b	.L262
+ 925 0514 0590     	.L267:
+ 926 0516 5202     		.align	2
+ 927 0518 1B48     	.L266:
+ 928 051a CDF800E0 		.word	Buff
+ 929 051e CDF804C0 		.word	Line
+ 930 0522 FFF7FEFF 		.word	.LC16
+ 931              		.word	.LC17
+ 932 0526 3780     		.word	.LC18
+ 933 0528 2F80     		.word	Fatfs
+ 934 052a 2760     		.word	.LANCHOR1
+ 307:ff_test_term.c **** 				res = scan_files(ptr);
+ 935              	s
+ 936 052c 1C98     		.word	acc_dirs
+ 937 052e FFF7FEFF 		.word	acc_size
+ 308:ff_test_term.c **** 				if (res) { put_rc(res); break; }
+ 938              	ord	.LC19
+ 939 0532 0028     		.word	.LC20
+ 940 0534 40F0DC82 	.LVL70:
+ 309:ff_test_term.c **** 				xprintf("\r%u files, %lu bytes.\n%u folders.\n"
+ 941              	31:
+ 942 0538 1598     		.loc 1 317 0
+ 943 053a 2988     		adds	r3, r1, #1
+ 944 053c 8578     		str	r3, [sp, #112]
+ 945 053e 2268     	.LVL71:
+ 946 0540 C469     	.L111:
+ 947 0542 1A98     		ldr	r1, [sp, #112]
+ 948 0544 6D08     		ldrb	r3, [r1, #0]	@ zero_extendqisi2
+ 949 0546 00FB05F0 		cmp	r3, #32
+ 950 054a 023C     		beq	.L131
+ 951 054c 04FB05F4 		.loc 1 318 0
+ 952 0550 3388     		ldr	r0, .L268
+ 953 0552 0190     		bl	f_opendir
+ 954 0554 0D48     		.loc 1 319 0
+ 955 0556 0094     		cmp	r0, #0
+ 956 0558 FFF7FEFF 		bne	.L254
+ 310:ff_test_term.c **** 						"%lu KB total disk space.\n%lu KB available.\n",
+ 311:ff_test_term.c **** 						acc_files, acc_size, acc_dirs,
+ 312:ff_test_term.c **** 						(fs->n_fatent - 2) * (fs->csize / 2), p2 * (fs->csize / 2)
+ 313:ff_test_term.c **** 				);
+ 314:ff_test_term.c **** 				break;
+ 957              	tr	r0, [sp, #92]
+ 958 055c 68E5     	.LVL72:
+ 959              		str	r0, [sp, #96]
+ 960 055e C046     	.LVL73:
+ 961              		str	r0, [sp, #108]
+ 962 0560 00000000 	.LVL74:
+ 963 0564 00000000 	.L135:
+ 964 0568 14050000 		.loc 1 322 0
+ 965 056c 1F050000 		ldr	r4, .L268+4
+ 966 0570 24050000 		ldr	r0, .L268
+ 967 0574 00000000 		mov	r1, r4
+ 968 0578 00000000 		bl	f_readdir
+ 969 057c 00000000 		.loc 1 323 0
+ 970 0580 00000000 		cmp	r0, #0
+ 971 0584 00000000 		bne	.L136
+ 972 0588 2B050000 		ldrb	r3, [r4, #9]	@ zero_extendqisi2
+ 973 058c F5050000 		cmp	r3, #0
+ 974              		beq	.L136
+ 975              		.loc 1 324 0
+ 315:ff_test_term.c **** 
+ 316:ff_test_term.c **** 			case 'l' :	/* fl [<path>] - Directory listing */
+ 317:ff_test_term.c **** 				while (*ptr == ' ') ptr++;
+ 976              	@ zero_extendqisi2
+ 977 0590 4B1C     		tst	r3, #16
+ 978 0592 1C93     		beq	.L139
+ 979              		.loc 1 325 0
+ 980              		ldr	r3, [sp, #92]
+ 981 0594 1C99     		adds	r3, r3, #1
+ 982 0596 0B78     		str	r3, [sp, #92]
+ 983 0598 202B     	.LVL75:
+ 984 059a F9D0     		b	.L141
+ 318:ff_test_term.c **** 				res = f_opendir(&Dir, ptr);
+ 985              	loc 1 327 0
+ 986 059c A148     		ldr	r3, [sp, #96]
+ 987 059e FFF7FEFF 		ldr	r2, [r4, #0]
+ 319:ff_test_term.c **** 				if (res) { put_rc(res); break; }
+ 988              	ds	r3, r3, #1
+ 989 05a2 0028     		str	r3, [sp, #96]
+ 990 05a4 40F0A482 	.LVL76:
+ 320:ff_test_term.c **** 				p1 = s1 = s2 = 0;
+ 991              	r	r3, [sp, #108]
+ 992 05a8 1790     		adds	r3, r3, r2
+ 993              		str	r3, [sp, #108]
+ 994 05aa 1890     	.LVL77:
+ 995              	.L141:
+ 996 05ac 1B90     		.loc 1 329 0
+ 997              		ldr	r5, .L268+4
+ 998              	.LVL78:
+ 321:ff_test_term.c **** 				for(;;) {
+ 322:ff_test_term.c **** 					res = f_readdir(&Dir, &Finfo);
+ 999              	, [r5, #8]	@ zero_extendqisi2
+ 1000 05ae 9E4C     		ldrh	r6, [r5, #4]
+ 1001 05b0 9C48     		tst	r0, #16
+ 1002 05b2 2146     		ite	eq
+ 1003 05b4 FFF7FEFF 		moveq	r1, #45
+ 323:ff_test_term.c **** 					if ((res != FR_OK) || !Finfo.fname[0]) break;
+ 1004              	e	r1, #68
+ 1005 05b8 0028     		tst	r0, #1
+ 1006 05ba 64D1     		ite	eq
+ 1007 05bc 637A     		moveq	r2, #45
+ 1008 05be 002B     		movne	r2, #82
+ 1009 05c0 61D0     		tst	r0, #2
+ 324:ff_test_term.c **** 					if (Finfo.fattrib & AM_DIR) {
+ 1010              	q
+ 1011 05c2 237A     		moveq	r3, #45
+ 1012 05c4 13F0100F 		movne	r3, #72
+ 1013 05c8 03D0     		tst	r0, #4
+ 325:ff_test_term.c **** 						s2++;
+ 1014              		eq
+ 1015 05ca 179B     		moveq	sl, #45
+ 1016 05cc 0133     		movne	sl, #83
+ 1017 05ce 1793     		tst	r0, #32
+ 1018              		ite	eq
+ 1019 05d0 06E0     		moveq	r9, #45
+ 1020              		movne	r9, #65
+ 326:ff_test_term.c **** 					} else {
+ 327:ff_test_term.c **** 						s1++; p1 += Finfo.fsize;
+ 1021              	0, r6, #9
+ 1022 05d2 189B     		ldrh	r4, [r5, #6]
+ 1023 05d4 2268     		add	r0, r0, #1968
+ 1024 05d6 0133     		ldr	ip, [r5], #9
+ 1025 05d8 1893     		adds	r0, r0, #12
+ 1026              		lsr	lr, r4, #11
+ 1027 05da 1B9B     		ubfx	r8, r6, #5, #4
+ 1028 05dc 9B18     		str	r0, [sp, #8]
+ 1029 05de 1B93     		and	r6, r6, #31
+ 1030              		ldr	r0, .L268+8
+ 1031              		ubfx	r4, r4, #5, #6
+ 328:ff_test_term.c **** 					}
+ 329:ff_test_term.c **** 					xprintf("%c%c%c%c%c %u/%02u/%02u %02u:%02u %9lu  %s",
+ 1032              	p, #20]
+ 1033 05e0 914D     		str	ip, [sp, #28]
+ 1034              		str	sl, [sp, #0]
+ 1035 05e2 287A     		str	r9, [sp, #4]
+ 1036 05e4 AE88     		str	r8, [sp, #12]
+ 1037 05e6 10F0100F 		str	r6, [sp, #16]
+ 1038 05ea 0CBF     		str	r4, [sp, #24]
+ 1039 05ec 2D21     		str	r5, [sp, #32]
+ 1040 05ee 4421     		bl	xprintf
+ 1041 05f0 10F0010F 		.loc 1 339 0
+ 1042 05f4 0CBF     		mov	r0, r5
+ 1043 05f6 2D22     		bl	xstrlen
+ 1044 05f8 5222     		str	r0, [sp, #104]
+ 1045 05fa 10F0020F 	.LVL79:
+ 1046 05fe 0CBF     		b	.L157
+ 1047 0600 2D23     	.LVL80:
+ 1048 0602 4823     	.L158:
+ 1049 0604 10F0040F 		.loc 1 340 0
+ 1050 0608 0CBF     		movs	r0, #32
+ 1051 060a 4FF02D0A 		bl	xputc
+ 1052 060e 4FF0530A 	.LVL81:
+ 1053 0612 10F0200F 		.loc 1 339 0
+ 1054 0616 0CBF     		ldr	r3, [sp, #104]
+ 1055 0618 4FF02D09 		adds	r3, r3, #1
+ 1056 061c 4FF04109 		str	r3, [sp, #104]
+ 1057 0620 700A     	.LVL82:
+ 1058 0622 EC88     	.L157:
+ 1059 0624 00F5F660 		ldr	r3, [sp, #104]
+ 1060 0628 55F809CB 		cmp	r3, #13
+ 1061 062c 0C30     		ble	.L158
+ 1062 062e 4FEAD42E 	.LVL83:
+ 1063 0632 C6F34318 		.loc 1 341 0
+ 1064 0636 0290     		ldr	r0, .L268+12
+ 1065 0638 06F01F06 		ldr	r1, .L268+16
+ 1066 063c 7B48     		bl	xprintf
+ 1067 063e C4F34514 	.LVL84:
+ 1068 0642 CDF814E0 		.loc 1 345 0
+ 1069 0646 CDF81CC0 		b	.L135
+ 1070 064a CDF800A0 	.LVL85:
+ 1071 064e CDF80490 	.L136:
+ 1072 0652 CDF80C80 		.loc 1 346 0
+ 1073 0656 0496     		ldr	r0, .L268+20
+ 1074 0658 0694     		ldr	r1, [sp, #96]
+ 1075 065a 0895     		ldr	r2, [sp, #108]
+ 1076 065c FFF7FEFF 		ldr	r3, [sp, #92]
+ 330:ff_test_term.c **** 							(Finfo.fattrib & AM_DIR) ? 'D' : '-',
+ 331:ff_test_term.c **** 							(Finfo.fattrib & AM_RDO) ? 'R' : '-',
+ 332:ff_test_term.c **** 							(Finfo.fattrib & AM_HID) ? 'H' : '-',
+ 333:ff_test_term.c **** 							(Finfo.fattrib & AM_SYS) ? 'S' : '-',
+ 334:ff_test_term.c **** 							(Finfo.fattrib & AM_ARC) ? 'A' : '-',
+ 335:ff_test_term.c **** 							(Finfo.fdate >> 9) + 1980, (Finfo.fdate >> 5) & 15, Finfo.fdate & 31,
+ 336:ff_test_term.c **** 							(Finfo.ftime >> 11), (Finfo.ftime >> 5) & 63,
+ 337:ff_test_term.c **** 							Finfo.fsize, &(Finfo.fname[0]));
+ 338:ff_test_term.c **** #if _USE_LFN
+ 339:ff_test_term.c **** 					for (p2 = xstrlen(Finfo.fname); p2 < 14; p2++)
+ 1077              	
+ 1078 0660 2846     		add	r1, sp, #108
+ 1079 0662 FFF7FEFF 		add	r2, sp, #84
+ 1080 0666 1A90     		bl	f_getfree
+ 1081              		cmp	r0, #0
+ 1082 0668 05E0     		bne	.L262
+ 1083              		.loc 1 348 0
+ 1084              		ldr	r3, [sp, #84]
+ 340:ff_test_term.c **** 						xputc(' ');
+ 1085              	, [sp, #108]
+ 1086 066a 2020     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 1087 066c FFF7FEFF 		lsls	r1, r1, #9
+ 1088              		ldr	r0, .L268+24
+ 1089              		mul	r1, r3, r1
+ 1090 0670 1A9B     		b	.L253
+ 1091 0672 0133     	.LVL86:
+ 1092 0674 1A93     	.L114:
+ 1093              		.loc 1 352 0
+ 1094              		add	r0, sp, #112
+ 1095 0676 1A9B     		add	r1, sp, #108
+ 1096 0678 0D2B     		bl	xatoi
+ 1097 067a F6DD     		cmp	r0, #0
+ 1098              		beq	.L262
+ 341:ff_test_term.c **** 					xprintf("%s\n", Lfname);
+ 1099              	:
+ 1100 067c 6C48     		.loc 1 353 0
+ 1101 067e 6D49     		adds	r3, r1, #1
+ 1102 0680 FFF7FEFF 		str	r3, [sp, #112]
+ 1103              	.LVL87:
+ 342:ff_test_term.c **** #else
+ 343:ff_test_term.c **** 					xputc('\n');
+ 344:ff_test_term.c **** #endif
+ 345:ff_test_term.c **** 				}
+ 1104              	:
+ 1105 0684 93E7     		ldr	r1, [sp, #112]
+ 1106              		ldrb	r3, [r1, #0]	@ zero_extendqisi2
+ 1107              		cmp	r3, #32
+ 346:ff_test_term.c **** 				xprintf("%4u File(s),%10lu bytes total\n%4u Dir(s)", s1, p1, s2);
+ 1108              		.L162
+ 1109 0686 6C48     		.loc 1 354 0
+ 1110 0688 1899     		ldrb	r2, [sp, #108]	@ zero_extendqisi2
+ 1111 068a 1B9A     		ldr	r0, .L268+28
+ 1112 068c 179B     		bl	f_open
+ 1113 068e FFF7FEFF 		b	.L254
+ 347:ff_test_term.c **** 				if (f_getfree(ptr, (DWORD*)&p1, &fs) == FR_OK)
+ 1114              	
+ 1115 0692 1C98     		.loc 1 358 0
+ 1116 0694 1BA9     		ldr	r0, .L268+28
+ 1117 0696 15AA     		bl	f_close
+ 1118 0698 FFF7FEFF 		b	.L254
+ 1119 069c 0028     	.L106:
+ 1120 069e 7FF4C7AC 		.loc 1 362 0
+ 348:ff_test_term.c **** 					xprintf(", %10lu bytes free\n", p1 * fs->csize * 512);
+ 1121              	0, sp, #112
+ 1122 06a2 159B     		add	r1, sp, #108
+ 1123 06a4 1B99     		bl	xatoi
+ 1124 06a6 9B78     		cmp	r0, #0
+ 1125 06a8 4902     		beq	.L262
+ 1126 06aa 6448     		.loc 1 363 0
+ 1127 06ac 03FB01F1 		ldr	r5, .L268+28
+ 1128 06b0 52E5     	.LVL88:
+ 1129              		ldr	r1, [sp, #108]
+ 1130              		mov	r0, r5
+ 349:ff_test_term.c **** 				break;
+ 350:ff_test_term.c **** 
+ 351:ff_test_term.c **** 			case 'o' :	/* fo <mode> <file> - Open a file */
+ 352:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 1131              	k
+ 1132 06b2 1CA8     		mov	r4, r0
+ 1133 06b4 1BA9     		.loc 1 364 0
+ 1134 06b6 FFF7FEFF 		bl	put_rc
+ 1135 06ba 0028     		.loc 1 365 0
+ 1136 06bc 3FF4B8AC 		cmp	r4, #0
+ 1137 06c0 01E0     		bne	.L262
+ 1138              		.loc 1 366 0
+ 353:ff_test_term.c **** 				while (*ptr == ' ') ptr++;
+ 1139              	 [r5, #8]
+ 1140 06c2 4B1C     		ldr	r0, .L268+32
+ 1141 06c4 1C93     		mov	r2, r1
+ 1142              		b	.L256
+ 1143              	.LVL89:
+ 1144 06c6 1C99     	.L105:
+ 1145 06c8 0B78     		.loc 1 370 0
+ 1146 06ca 202B     		add	r0, sp, #112
+ 1147 06cc F9D0     		add	r1, sp, #108
+ 354:ff_test_term.c **** 				put_rc(f_open(&File1, ptr, (BYTE)p1));
+ 1148              	
+ 1149 06ce 9DF86C20 		cmp	r0, #0
+ 1150 06d2 5B48     		beq	.L262
+ 1151 06d4 FFF7FEFF 		.loc 1 371 0
+ 1152 06d8 0AE2     		ldr	r3, .L268+28
+ 1153              		ldr	r4, [r3, #8]
+ 355:ff_test_term.c **** 				break;
+ 356:ff_test_term.c **** 
+ 357:ff_test_term.c **** 			case 'c' :	/* fc - Close a file */
+ 358:ff_test_term.c **** 				put_rc(f_close(&File1));
+ 1154              	0:
+ 1155 06da 5948     		.loc 1 372 0
+ 1156 06dc FFF7FEFF 		b	.L167
+ 1157 06e0 06E2     	.L168:
+ 1158              		.loc 1 373 0
+ 359:ff_test_term.c **** 				break;
+ 360:ff_test_term.c **** 
+ 361:ff_test_term.c **** 			case 'e' :	/* fe - Seek file pointer */
+ 362:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 1159              	r2, #15
+ 1160 06e2 1CA8     		bls	.L169
+ 1161 06e4 1BA9     		movs	r3, #16
+ 1162 06e6 FFF7FEFF 		str	r3, [sp, #88]
+ 1163 06ea 0028     	.LVL91:
+ 1164 06ec 3FF4A0AC 		sub	r3, r2, #16
+ 363:ff_test_term.c **** 				res = f_lseek(&File1, p1);
+ 1165              	59
+ 1166 06f0 534D     	.L169:
+ 1167              		.loc 1 374 0
+ 1168 06f2 1B99     		str	r2, [sp, #88]
+ 1169 06f4 2846     	.LVL92:
+ 1170 06f6 FFF7FEFF 		movs	r3, #0
+ 1171 06fa 0446     	.L259:
+ 364:ff_test_term.c **** 				put_rc(res);
+ 1172              	, [sp, #108]
+ 1173 06fc FFF7FEFF 	.LVL93:
+ 365:ff_test_term.c **** 				if (res == FR_OK)
+ 1174              	loc 1 375 0
+ 1175 0700 002C     		ldr	r0, .L268+28
+ 1176 0702 7FF495AC 		ldr	r1, .L268+36
+ 366:ff_test_term.c **** 					xprintf("fptr=%lu(0x%lX)\n", File1.fptr, File1.fptr);
+ 1177              	r	r2, [sp, #88]
+ 1178 0706 A968     		add	r3, sp, #88
+ 1179 0708 4E48     		bl	f_read
+ 1180 070a 0A46     		.loc 1 376 0
+ 1181 070c 5AE0     		cmp	r0, #0
+ 1182              		bne	.L254
+ 1183              		.loc 1 377 0
+ 367:ff_test_term.c **** 				break;
+ 368:ff_test_term.c **** 
+ 369:ff_test_term.c **** 			case 'd' :	/* fd <len> - read and dump file from current fp */
+ 370:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 1184              	, [sp, #88]
+ 1185 070e 1CA8     		cmp	r2, #0
+ 1186 0710 1BA9     		beq	.L262
+ 1187 0712 FFF7FEFF 		.loc 1 378 0
+ 1188 0716 0028     		mov	r1, r4
+ 1189 0718 3FF48AAC 		ldr	r0, .L268+36
+ 371:ff_test_term.c **** 				ofs = File1.fptr;
+ 1190              	t_dump
+ 1191 071c 484B     		.loc 1 379 0
+ 1192 071e 9C68     		adds	r4, r4, #16
+ 1193              	.LVL94:
+ 372:ff_test_term.c **** 				while (p1) {
+ 1194              	7:
+ 1195 0720 1BE0     		.loc 1 372 0
+ 1196              		ldr	r2, [sp, #108]
+ 373:ff_test_term.c **** 					if ((UINT)p1 >= 16) { cnt = 16; p1 -= 16; }
+ 1197              	p	r2, #0
+ 1198 0722 0F2A     		bne	.L168
+ 1199 0724 04D9     		b	.L262
+ 1200 0726 1023     	.LVL95:
+ 1201 0728 1693     	.L115:
+ 1202              		.loc 1 384 0
+ 1203 072a A2F11003 		add	r0, sp, #112
+ 1204 072e 01E0     		add	r1, sp, #108
+ 1205              		bl	xatoi
+ 374:ff_test_term.c **** 					else 				{ cnt = p1; p1 = 0; }
+ 1206              	#0
+ 1207 0730 1692     		beq	.L262
+ 1208              		.loc 1 386 0
+ 1209 0732 0023     		ldr	r3, .L268+40
+ 1210              		.loc 1 385 0
+ 1211 0734 1B93     		movs	r2, #0
+ 1212              		str	r2, [sp, #104]
+ 375:ff_test_term.c **** 					res = f_read(&File1, Buff, cnt, &cnt);
+ 1213              	
+ 1214 0736 4248     		.loc 1 386 0
+ 1215 0738 4349     		str	r2, [r3, #0]
+ 1216 073a 169A     		.loc 1 387 0
+ 1217 073c 16AB     		b	.L176
+ 1218 073e FFF7FEFF 	.LVL97:
+ 376:ff_test_term.c **** 					if (res != FR_OK) { put_rc(res); break; }
+ 1219              	:
+ 1220 0742 0028     		.loc 1 388 0
+ 1221 0744 40F0D481 		cmp	r3, fp
+ 377:ff_test_term.c **** 					if (!cnt) break;
+ 1222              	oc 1 389 0
+ 1223 0748 169A     		itete	cs
+ 1224 074a 002A     		rsbcs	r3, fp, r3
+ 1225 074c 3FF470AC 		.loc 1 391 0
+ 378:ff_test_term.c **** 					put_dump(Buff, ofs, cnt);
+ 1226              	cc	r3, [sp, #88]
+ 1227 0750 2146     	.LVL98:
+ 1228 0752 3D48     		.loc 1 389 0
+ 1229 0754 FFF7FEFF 		strcs	fp, [sp, #88]
+ 379:ff_test_term.c **** 					ofs += 16;
+ 1230              	99:
+ 1231 0758 1034     		.loc 1 391 0
+ 1232              		movcc	r3, #0
+ 1233              		str	r3, [sp, #108]
+ 1234              	.LVL100:
+ 1235 075a 1B9A     		.loc 1 393 0
+ 1236 075c 002A     		ldr	r0, .L268+28
+ 1237 075e E0D1     		ldr	r1, .L268+36
+ 1238 0760 66E4     		ldr	r2, [sp, #88]
+ 1239              		add	r3, sp, #92
+ 1240              		bl	f_read
+ 380:ff_test_term.c **** 				}
+ 381:ff_test_term.c **** 				break;
+ 382:ff_test_term.c **** 
+ 383:ff_test_term.c **** 			case 'r' :	/* fr <len> - read file */
+ 384:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 1241              	 0
+ 1242 0762 1CA8     		cbz	r0, .L181
+ 1243 0764 1BA9     		bl	put_rc
+ 1244 0766 FFF7FEFF 		b	.L183
+ 1245 076a 0028     	.L181:
+ 1246 076c 3FF460AC 		.loc 1 395 0
+ 385:ff_test_term.c **** 				p2 = 0;
+ 386:ff_test_term.c **** 				Timer = 0;
+ 1247              	3, [sp, #92]
+ 1248 0770 364B     		ldr	r2, [sp, #104]
+ 1249              		adds	r2, r2, r3
+ 1250 0772 0022     		str	r2, [sp, #104]
+ 1251 0774 1A92     	.LVL101:
+ 1252              		.loc 1 396 0
+ 1253              		ldr	r2, [sp, #88]
+ 1254 0776 1A60     		cmp	r2, r3
+ 387:ff_test_term.c **** 				while (p1) {
+ 1255              	83
+ 1256 0778 19E0     	.LVL102:
+ 1257              	.L176:
+ 1258              		.loc 1 387 0
+ 388:ff_test_term.c **** 					if ((UINT)p1 >= blen) {
+ 1259              		r3, [sp, #108]
+ 1260 077a 5B45     		cmp	r3, #0
+ 389:ff_test_term.c **** 						cnt = blen; p1 -= blen;
+ 1261              	ne	.L177
+ 1262 077c 2BBF     	.LVL103:
+ 1263 077e CBEB0303 	.L183:
+ 390:ff_test_term.c **** 					} else {
+ 391:ff_test_term.c **** 						cnt = p1; p1 = 0;
+ 1264              	oc 1 398 0
+ 1265 0782 1693     		ldr	r3, .L268+40
+ 1266              		ldr	r1, [sp, #104]
+ 1267              		ldr	r2, [r3, #0]
+ 1268 0784 CDF858B0 		cbz	r2, .L186
+ 1269              		ldr	r3, [r3, #0]
+ 1270              		udiv	r2, r1, r3
+ 1271 0788 0023     	.L186:
+ 1272 078a 1B93     		ldr	r0, .L268+44
+ 1273              	.LVL104:
+ 392:ff_test_term.c **** 					}
+ 393:ff_test_term.c **** 					res = f_read(&File1, Buff, cnt, &s2);
+ 1274              		xprintf
+ 1275 078c 2C48     		.loc 1 399 0
+ 1276 078e 2E49     		b	.L262
+ 1277 0790 169A     	.L120:
+ 1278 0792 17AB     		.loc 1 402 0
+ 1279 0794 FFF7FEFF 		add	r4, sp, #112
+ 394:ff_test_term.c **** 					if (res != FR_OK) { put_rc(res); break; }
+ 1280              	0, r4
+ 1281 0798 10B1     		add	r1, sp, #108
+ 1282 079a FFF7FEFF 		bl	xatoi
+ 1283 079e 09E0     		cmp	r0, #0
+ 1284              		beq	.L262
+ 395:ff_test_term.c **** 					p2 += s2;
+ 1285              	r0, r4
+ 1286 07a0 179B     		add	r1, sp, #104
+ 1287 07a2 1A9A     		bl	xatoi
+ 1288 07a4 D218     		cmp	r0, #0
+ 1289 07a6 1A92     		beq	.L262
+ 1290              		.loc 1 403 0
+ 396:ff_test_term.c **** 					if (cnt != s2) break;
+ 1291              	2, fp
+ 1292 07a8 169A     		ldr	r0, .L268+36
+ 1293 07aa 9A42     		ldrb	r1, [sp, #104]	@ zero_extendqisi2
+ 1294 07ac 02D1     		bl	xmemset
+ 1295              		.loc 1 405 0
+ 1296              		ldr	r3, .L268+40
+ 1297              		.loc 1 404 0
+ 1298 07ae 1B9B     		movs	r2, #0
+ 1299 07b0 002B     		str	r2, [sp, #104]
+ 1300 07b2 E2D1     	.LVL105:
+ 1301              		.loc 1 405 0
+ 1302              		str	r2, [r3, #0]
+ 397:ff_test_term.c **** 				}
+ 398:ff_test_term.c **** 				xprintf("%lu bytes read with %lu kB/sec.\n", p2, Timer ? (p2 / Timer) : 0);
+ 1303              	0
+ 1304 07b4 254B     		b	.L189
+ 1305 07b6 1A99     	.LVL106:
+ 1306 07b8 1A68     	.L190:
+ 1307 07ba 12B1     		.loc 1 407 0
+ 1308 07bc 1B68     		cmp	r3, fp
+ 1309 07be B1FBF3F2 		.loc 1 408 0
+ 1310              		itete	cs
+ 1311 07c2 2348     		rsbcs	r3, fp, r3
+ 1312              		.loc 1 410 0
+ 1313              		strcc	r3, [sp, #88]
+ 1314 07c4 FFF7FEFF 	.LVL107:
+ 399:ff_test_term.c **** 				break;
+ 1315              	0
+ 1316 07c8 32E4     		strcs	fp, [sp, #88]
+ 1317              	.LVL108:
+ 400:ff_test_term.c **** 
+ 401:ff_test_term.c **** 			case 'w' :	/* fw <len> <val> - write file */
+ 402:ff_test_term.c **** 				if (!xatoi(&ptr, &p1) || !xatoi(&ptr, &p2)) break;
+ 1318              	oc 1 410 0
+ 1319 07ca 1CAC     		movcc	r3, #0
+ 1320 07cc 2046     		str	r3, [sp, #108]
+ 1321 07ce 1BA9     	.LVL109:
+ 1322 07d0 FFF7FEFF 		.loc 1 412 0
+ 1323 07d4 0028     		ldr	r0, .L268+28
+ 1324 07d6 3FF42BAC 		ldr	r1, .L268+36
+ 1325 07da 2046     		ldr	r2, [sp, #88]
+ 1326 07dc 1AA9     		add	r3, sp, #92
+ 1327 07de FFF7FEFF 		bl	f_write
+ 1328 07e2 0028     		.loc 1 413 0
+ 1329 07e4 3FF424AC 		cbz	r0, .L194
+ 403:ff_test_term.c **** 				xmemset(Buff, (BYTE)p2, blen);
+ 1330              	b	.L196
+ 1331 07e8 5A46     	.L269:
+ 1332 07ea 1748     		.align	2
+ 1333 07ec 9DF86810 	.L268:
+ 1334 07f0 FFF7FEFF 		.word	Dir
+ 404:ff_test_term.c **** 				p2 = 0;
+ 405:ff_test_term.c **** 				Timer = 0;
+ 1335              	d	Finfo
+ 1336 07f4 154B     		.word	.LC21
+ 1337              		.word	.LC22
+ 1338 07f6 0022     		.word	Lfname
+ 1339 07f8 1A92     		.word	.LC23
+ 1340              		.word	.LC24
+ 1341              		.word	File1
+ 1342 07fa 1A60     		.word	.LC25
+ 406:ff_test_term.c **** 				while (p1) {
+ 1343              	uff
+ 1344 07fc 31E0     		.word	Timer
+ 1345              		.word	.LC26
+ 1346              	.L194:
+ 407:ff_test_term.c **** 					if ((UINT)p1 >= blen) {
+ 1347              	c 1 414 0
+ 1348 07fe 5B45     		ldr	r3, [sp, #92]
+ 408:ff_test_term.c **** 						cnt = blen; p1 -= blen;
+ 1349              	dr	r2, [sp, #104]
+ 1350 0800 2BBF     		adds	r2, r2, r3
+ 1351 0802 CBEB0303 		str	r2, [sp, #104]
+ 409:ff_test_term.c **** 					} else {
+ 410:ff_test_term.c **** 						cnt = p1; p1 = 0;
+ 1352              	L110:
+ 1353 0806 1693     		.loc 1 415 0
+ 1354              		ldr	r2, [sp, #88]
+ 1355              		cmp	r2, r3
+ 1356 0808 CDF858B0 		bne	.L196
+ 1357              	.LVL111:
+ 1358              	.L189:
+ 1359 080c 0023     		.loc 1 406 0
+ 1360 080e 1B93     		ldr	r3, [sp, #108]
+ 1361              		cmp	r3, #0
+ 411:ff_test_term.c **** 					}
+ 412:ff_test_term.c **** 					res = f_write(&File1, Buff, cnt, &s2);
+ 1362              	
+ 1363 0810 0B48     	.LVL112:
+ 1364 0812 0D49     	.L196:
+ 1365 0814 169A     		.loc 1 417 0
+ 1366 0816 17AB     		ldr	r3, .L270
+ 1367 0818 FFF7FEFF 		ldr	r1, [sp, #104]
+ 413:ff_test_term.c **** 					if (res != FR_OK) { put_rc(res); break; }
+ 1368              	r2, [r3, #0]
+ 1369 081c D0B1     		cbz	r2, .L199
+ 1370 081e FFF7FEFF 		ldr	r3, [r3, #0]
+ 1371 0822 21E0     		udiv	r2, r1, r3
+ 1372              	.L199:
+ 1373              		ldr	r0, .L270+4
+ 1374              		b	.L256
+ 1375 0824 00000000 	.LVL113:
+ 1376 0828 00000000 	.L200:
+ 1377 082c 43060000 		.loc 1 421 0
+ 1378 0830 6E060000 		adds	r3, r0, #1
+ 1379 0834 00000000 		str	r3, [sp, #112]
+ 1380 0838 72060000 	.LVL114:
+ 1381 083c 9B060000 	.L113:
+ 1382 0840 00000000 		ldr	r0, [sp, #112]
+ 1383 0844 AF060000 		ldrb	r3, [r0, #0]	@ zero_extendqisi2
+ 1384 0848 00000000 		cmp	r3, #32
+ 1385 084c 00000000 		beq	.L200
+ 1386 0850 C0060000 		.loc 1 422 0
+ 1387              		movs	r1, #32
+ 414:ff_test_term.c **** 					p2 += s2;
+ 1388              	423 0
+ 1389 0854 179B     		mov	r1, r0
+ 1390 0856 1A9A     	.LVL115:
+ 1391 0858 D218     		cmp	r0, #0
+ 1392 085a 1A92     		beq	.L262
+ 1393              		.loc 1 424 0
+ 415:ff_test_term.c **** 					if (cnt != s2) break;
+ 1394              	r3, #0
+ 1395 085c 169A     		strb	r3, [r1], #1
+ 1396 085e 9A42     		.loc 1 425 0
+ 1397 0860 02D1     		b	.L203
+ 1398              	.L204:
+ 1399              		adds	r1, r1, #1
+ 1400              	.LVL116:
+ 1401 0862 1B9B     	.L203:
+ 1402 0864 002B     		ldrb	r3, [r1, #0]	@ zero_extendqisi2
+ 1403 0866 CAD1     		cmp	r3, #32
+ 1404              		beq	.L204
+ 1405              		.loc 1 426 0
+ 416:ff_test_term.c **** 				}
+ 417:ff_test_term.c **** 				xprintf("%lu bytes written with %lu kB/sec.\n", p2, Timer ? (p2 / Timer) : 0);
+ 1406              	, #112]
+ 1407 0868 A34B     		bl	f_rename
+ 1408 086a 1A99     	.LVL117:
+ 1409 086c 1A68     		b	.L254
+ 1410 086e 12B1     	.LVL118:
+ 1411 0870 1B68     	.L206:
+ 1412 0872 B1FBF3F2 		.loc 1 430 0
+ 1413              		adds	r3, r0, #1
+ 1414 0876 A148     		str	r3, [sp, #112]
+ 1415 0878 A4E7     	.LVL119:
+ 1416              	.L118:
+ 1417              		ldr	r0, [sp, #112]
+ 418:ff_test_term.c **** 				break;
+ 419:ff_test_term.c **** 
+ 420:ff_test_term.c **** 			case 'n' :	/* fn <old_name> <new_name> - Change file/dir name */
+ 421:ff_test_term.c **** 				while (*ptr == ' ') ptr++;
+ 1418              	0, #0]	@ zero_extendqisi2
+ 1419 087a 431C     		cmp	r3, #32
+ 1420 087c 1C93     		beq	.L206
+ 1421              		.loc 1 431 0
+ 1422              		bl	f_unlink
+ 1423 087e 1C98     		b	.L254
+ 1424 0880 0378     	.L119:
+ 1425 0882 202B     		.loc 1 435 0
+ 1426 0884 F9D0     		ldr	r0, .L270+8
+ 422:ff_test_term.c **** 				ptr2 = xstrchr(ptr, ' ');
+ 1427              	ncate
+ 1428 0886 2021     		b	.L254
+ 1429 0888 FFF7FEFF 	.L208:
+ 423:ff_test_term.c **** 				if (!ptr2) break;
+ 1430              	oc 1 439 0
+ 1431 088c 0146     		adds	r3, r0, #1
+ 1432              		str	r3, [sp, #112]
+ 1433 088e 0028     	.LVL120:
+ 1434 0890 3FF4CEAB 	.L110:
+ 424:ff_test_term.c **** 				*ptr2++ = 0;
+ 1435              	r0, [sp, #112]
+ 1436 0894 0023     		ldrb	r3, [r0, #0]	@ zero_extendqisi2
+ 1437 0896 01F8013B 		cmp	r3, #32
+ 425:ff_test_term.c **** 				while (*ptr2 == ' ') ptr2++;
+ 1438              	q	.L208
+ 1439 089a 00E0     		.loc 1 440 0
+ 1440              		bl	f_mkdir
+ 1441 089c 0131     		b	.L254
+ 1442              	.L103:
+ 1443              		.loc 1 444 0
+ 1444 089e 0B78     		add	r4, sp, #112
+ 1445 08a0 202B     		mov	r0, r4
+ 1446 08a2 FBD0     		add	r1, sp, #108
+ 426:ff_test_term.c **** 				put_rc(f_rename(ptr, ptr2));
+ 1447              	
+ 1448 08a4 1C98     		cmp	r0, #0
+ 1449 08a6 FFF7FEFF 		beq	.L262
+ 1450              		mov	r0, r4
+ 1451 08aa 21E1     		add	r1, sp, #104
+ 1452              		bl	xatoi
+ 1453              		cmp	r0, #0
+ 427:ff_test_term.c **** 				break;
+ 428:ff_test_term.c **** 
+ 429:ff_test_term.c **** 			case 'u' :	/* fu <name> - Unlink a file or dir */
+ 430:ff_test_term.c **** 				while (*ptr == ' ') ptr++;
+ 1454              	L262
+ 1455 08ac 431C     		b	.L211
+ 1456 08ae 1C93     	.L212:
+ 1457              		.loc 1 445 0
+ 1458              		adds	r3, r0, #1
+ 1459 08b0 1C98     		str	r3, [sp, #112]
+ 1460 08b2 0378     	.LVL121:
+ 1461 08b4 202B     	.L211:
+ 1462 08b6 F9D0     		ldr	r0, [sp, #112]
+ 431:ff_test_term.c **** 				put_rc(f_unlink(ptr));
+ 1463              	 [r0, #0]	@ zero_extendqisi2
+ 1464 08b8 FFF7FEFF 		cmp	r3, #32
+ 1465 08bc 18E1     		beq	.L212
+ 1466              		.loc 1 446 0
+ 432:ff_test_term.c **** 				break;
+ 433:ff_test_term.c **** 
+ 434:ff_test_term.c **** 			case 'v' :	/* fv - Truncate file */
+ 435:ff_test_term.c **** 				put_rc(f_truncate(&File1));
+ 1467              	b	r1, [sp, #108]	@ zero_extendqisi2
+ 1468 08be 9048     		ldrb	r2, [sp, #104]	@ zero_extendqisi2
+ 1469 08c0 FFF7FEFF 		bl	f_chmod
+ 1470 08c4 14E1     		b	.L254
+ 1471              	.L117:
+ 436:ff_test_term.c **** 				break;
+ 437:ff_test_term.c **** 
+ 438:ff_test_term.c **** 			case 'k' :	/* fk <name> - Create a directory */
+ 439:ff_test_term.c **** 				while (*ptr == ' ') ptr++;
+ 1472              	 1 450 0
+ 1473 08c6 431C     		add	r4, sp, #112
+ 1474 08c8 1C93     		add	r8, sp, #108
+ 1475              		mov	r0, r4
+ 1476              		mov	r1, r8
+ 1477 08ca 1C98     		bl	xatoi
+ 1478 08cc 0378     		cmp	r0, #0
+ 1479 08ce 202B     		beq	.L262
+ 1480 08d0 F9D0     		add	r7, sp, #104
+ 440:ff_test_term.c **** 				put_rc(f_mkdir(ptr));
+ 1481              	r4
+ 1482 08d2 FFF7FEFF 		mov	r1, r7
+ 1483 08d6 0BE1     		bl	xatoi
+ 1484              		cmp	r0, #0
+ 441:ff_test_term.c **** 				break;
+ 442:ff_test_term.c **** 
+ 443:ff_test_term.c **** 			case 'a' :	/* fa <atrr> <mask> <name> - Change file/dir attribute */
+ 444:ff_test_term.c **** 				if (!xatoi(&ptr, &p1) || !xatoi(&ptr, &p2)) break;
+ 1485              		.L262
+ 1486 08d8 1CAC     		add	r6, sp, #100
+ 1487 08da 2046     		mov	r0, r4
+ 1488 08dc 1BA9     		mov	r1, r6
+ 1489 08de FFF7FEFF 		bl	xatoi
+ 1490 08e2 0028     		cmp	r0, #0
+ 1491 08e4 3FF4A4AB 		beq	.L262
+ 1492 08e8 2046     		.loc 1 451 0
+ 1493 08ea 1AA9     		ldr	r3, [sp, #108]
+ 1494 08ec FFF7FEFF 		ldr	r2, [sp, #104]
+ 1495 08f0 0028     		sub	r3, r3, #1968
+ 1496 08f2 3FF49DAB 		and	r2, r2, #15
+ 1497 08f6 01E0     		subs	r3, r3, #12
+ 1498              		lsls	r2, r2, #5
+ 445:ff_test_term.c **** 				while (*ptr == ' ') ptr++;
+ 1499              	3, lsl #9
+ 1500 08f8 431C     		ldr	r3, [sp, #100]
+ 1501 08fa 1C93     		ldr	r5, .L270+12
+ 1502              	.LVL122:
+ 1503              		and	r3, r3, #31
+ 1504 08fc 1C98     		orrs	r2, r2, r3
+ 1505 08fe 0378     		strh	r2, [r5, #4]	@ movhi
+ 1506 0900 202B     		.loc 1 452 0
+ 1507 0902 F9D0     		mov	r0, r4
+ 446:ff_test_term.c **** 				put_rc(f_chmod(ptr, p1, p2));
+ 1508              	r8
+ 1509 0904 9DF86C10 		bl	xatoi
+ 1510 0908 9DF86820 		cmp	r0, #0
+ 1511 090c FFF7FEFF 		beq	.L262
+ 1512 0910 EEE0     		mov	r0, r4
+ 1513              		mov	r1, r7
+ 447:ff_test_term.c **** 				break;
+ 448:ff_test_term.c **** 
+ 449:ff_test_term.c **** 			case 't' :	/* ft <year> <month> <day> <hour> <min> <sec> <name> - Change timestamp */
+ 450:ff_test_term.c **** 				if (!xatoi(&ptr, &p1) || !xatoi(&ptr, &p2) || !xatoi(&ptr, &p3)) break;
+ 1514              	toi
+ 1515 0912 1CAC     		cmp	r0, #0
+ 1516 0914 0DF16C08 		beq	.L262
+ 1517 0918 2046     		mov	r0, r4
+ 1518 091a 4146     		mov	r1, r6
+ 1519 091c FFF7FEFF 		bl	xatoi
+ 1520 0920 0028     		cmp	r0, #0
+ 1521 0922 3FF485AB 		beq	.L262
+ 1522 0926 1AAF     		.loc 1 453 0
+ 1523 0928 2046     		ldr	r2, [sp, #108]
+ 1524 092a 3946     		ldr	r3, [sp, #104]
+ 1525 092c FFF7FEFF 		and	r2, r2, #31
+ 1526 0930 0028     		and	r3, r3, #63
+ 1527 0932 3FF47DAB 		lsls	r2, r2, #11
+ 1528 0936 19AE     		orr	r2, r2, r3, lsl #5
+ 1529 0938 2046     		ldr	r3, [sp, #100]
+ 1530 093a 3146     		.loc 1 454 0
+ 1531 093c FFF7FEFF 		ldr	r0, [sp, #112]
+ 1532 0940 0028     		.loc 1 453 0
+ 1533 0942 3FF475AB 		ubfx	r3, r3, #1, #5
+ 451:ff_test_term.c **** 				Finfo.fdate = ((p1 - 1980) << 9) | ((p2 & 15) << 5) | (p3 & 31);
+ 1534              	rh	r2, [r5, #6]	@ movhi
+ 1535 0946 1B9B     		.loc 1 454 0
+ 1536 0948 1A9A     		mov	r1, r5
+ 1537 094a A3F5F663 		bl	f_utime
+ 1538 094e 02F00F02 		b	.L254
+ 1539 0952 0C3B     	.LVL123:
+ 1540 0954 5201     	.L220:
+ 1541 0956 42EA4322 		.loc 1 458 0
+ 1542 095a 199B     		adds	r3, r0, #1
+ 1543 095c 694D     		str	r3, [sp, #112]
+ 1544              	.LVL124:
+ 1545 095e 03F01F03 	.L121:
+ 1546 0962 1A43     		ldr	r0, [sp, #112]
+ 1547 0964 AA80     		ldrb	r3, [r0, #0]	@ zero_extendqisi2
+ 452:ff_test_term.c **** 				if (!xatoi(&ptr, &p1) || !xatoi(&ptr, &p2) || !xatoi(&ptr, &p3)) break;
+ 1548              	beq	.L220
+ 1549 0966 2046     		.loc 1 459 0
+ 1550 0968 4146     		movs	r1, #32
+ 1551 096a FFF7FEFF 		bl	xstrchr
+ 1552 096e 0028     		.loc 1 460 0
+ 1553 0970 3FF45EAB 		mov	r1, r0
+ 1554 0974 2046     	.LVL125:
+ 1555 0976 3946     		cmp	r0, #0
+ 1556 0978 FFF7FEFF 		beq	.L262
+ 1557 097c 0028     		.loc 1 461 0
+ 1558 097e 3FF457AB 		movs	r3, #0
+ 1559 0982 2046     		strb	r3, [r1], #1
+ 1560 0984 3146     		mov	r5, r1
+ 1561 0986 FFF7FEFF 		.loc 1 462 0
+ 1562 098a 0028     		b	.L223
+ 1563 098c 3FF450AB 	.LVL126:
+ 453:ff_test_term.c **** 				Finfo.ftime = ((p1 & 31) << 11) | ((p2 & 63) << 5) | ((p3 >> 1) & 31);
+ 1564              	 r5, #1
+ 1565 0990 1B9A     	.LVL127:
+ 1566 0992 1A9B     	.L223:
+ 1567 0994 02F01F02 		ldrb	r3, [r5, #0]	@ zero_extendqisi2
+ 1568 0998 03F03F03 		cmp	r3, #32
+ 1569 099c D202     		beq	.L224
+ 1570 099e 42EA4312 		.loc 1 463 0
+ 1571 09a2 199B     		ldr	r0, .L270+16
+ 454:ff_test_term.c **** 				put_rc(f_utime(ptr, &Finfo));
+ 1572              	 [sp, #112]
+ 1573 09a4 1C98     		bl	xprintf
+ 1574              		.loc 1 464 0
+ 1575 09a6 C3F34403 		ldr	r0, .L270+8
+ 1576 09aa 1A43     		ldr	r1, [sp, #112]
+ 1577 09ac EA80     		movs	r2, #1
+ 1578              		bl	f_open
+ 1579 09ae 2946     		mov	r4, r0
+ 1580 09b0 FFF7FEFF 		.loc 1 465 0
+ 1581 09b4 9CE0     		movs	r0, #10
+ 1582              		bl	xputc
+ 1583              		.loc 1 466 0
+ 455:ff_test_term.c **** 				break;
+ 456:ff_test_term.c **** 
+ 457:ff_test_term.c **** 			case 'x' : /* fx <src_name> <dst_name> - Copy file */
+ 458:ff_test_term.c **** 				while (*ptr == ' ') ptr++;
+ 1584              	26
+ 1585 09b6 431C     		.loc 1 467 0
+ 1586 09b8 1C93     		mov	r0, r4
+ 1587              	.LVL128:
+ 1588              		b	.L254
+ 1589 09ba 1C98     	.LVL129:
+ 1590 09bc 0378     	.L226:
+ 1591 09be 202B     		.loc 1 470 0
+ 1592 09c0 F9D0     		ldr	r0, .L270+20
+ 459:ff_test_term.c **** 				ptr2 = xstrchr(ptr, ' ');
+ 1593              	r5
+ 1594 09c2 2021     		bl	xprintf
+ 1595 09c4 FFF7FEFF 		.loc 1 471 0
+ 460:ff_test_term.c **** 				if (!ptr2) break;
+ 1596              	r	r0, .L270+24
+ 1597 09c8 0146     		mov	r1, r5
+ 1598              		movs	r2, #10
+ 1599 09ca 0028     		bl	f_open
+ 1600 09cc 3FF430AB 		mov	r4, r0
+ 461:ff_test_term.c **** 				*ptr2++ = 0;
+ 1601              	 1 472 0
+ 1602 09d0 0023     		movs	r0, #10
+ 1603 09d2 01F8013B 		bl	xputc
+ 1604 09d6 0D46     		.loc 1 473 0
+ 462:ff_test_term.c **** 				while (*ptr2 == ' ') ptr2++;
+ 1605              		r4, .L228
+ 1606 09d8 00E0     		.loc 1 474 0
+ 1607              		mov	r0, r4
+ 1608              	.LVL130:
+ 1609 09da 0135     		bl	put_rc
+ 1610              	.LVL131:
+ 1611              		.loc 1 475 0
+ 1612 09dc 2B78     		ldr	r0, .L270+8
+ 1613 09de 202B     		b	.L255
+ 1614 09e0 FBD0     	.L228:
+ 463:ff_test_term.c **** 				xprintf("Opening \"%s\"", ptr);
+ 1615              	8 0
+ 1616 09e2 4948     		ldr	r0, .L270+28
+ 1617 09e4 1C99     		bl	xprintf
+ 1618 09e6 FFF7FEFF 		.loc 1 479 0
+ 464:ff_test_term.c **** 				res = f_open(&File1, ptr, FA_OPEN_EXISTING | FA_READ);
+ 1619              		r3, .L270
+ 1620 09ea 4548     		.loc 1 480 0
+ 1621 09ec 1C99     		str	r4, [sp, #108]
+ 1622 09ee 0122     	.LVL132:
+ 1623 09f0 FFF7FEFF 		.loc 1 479 0
+ 1624 09f4 0446     		str	r4, [r3, #0]
+ 465:ff_test_term.c **** 				xputc('\n');
+ 1625              	3:
+ 1626 09f6 0A20     	.L230:
+ 1627 09f8 FFF7FEFF 		.loc 1 482 0
+ 466:ff_test_term.c **** 				if (res) {
+ 1628              	r	r0, .L270+8
+ 1629 09fc 0CB1     		ldr	r1, .L270+32
+ 467:ff_test_term.c **** 					put_rc(res);
+ 1630              	ov	r2, fp
+ 1631 09fe 2046     		add	r3, sp, #96
+ 1632              		bl	f_read
+ 1633 0a00 76E0     		.loc 1 483 0
+ 1634              		cbnz	r0, .L231
+ 1635              		ldr	r2, [sp, #96]
+ 468:ff_test_term.c **** 					break;
+ 469:ff_test_term.c **** 				}
+ 470:ff_test_term.c **** 				xprintf("Creating \"%s\"", ptr2);
+ 1636              	2, .L231
+ 1637 0a02 4248     		.loc 1 484 0
+ 1638 0a04 2946     		add	r3, sp, #92
+ 1639 0a06 FFF7FEFF 		ldr	r0, .L270+24
+ 471:ff_test_term.c **** 				res = f_open(&File2, ptr2, FA_CREATE_ALWAYS | FA_WRITE);
+ 1640              		r1, .L270+32
+ 1641 0a0a 4148     		bl	f_write
+ 1642 0a0c 2946     		.loc 1 485 0
+ 1643 0a0e 0A22     		ldr	r3, [sp, #108]
+ 1644 0a10 FFF7FEFF 		ldr	r2, [sp, #92]
+ 1645 0a14 0446     		adds	r3, r3, r2
+ 472:ff_test_term.c **** 				xputc('\n');
+ 1646              	3, [sp, #108]
+ 1647 0a16 0A20     	.LVL134:
+ 1648 0a18 FFF7FEFF 		.loc 1 486 0
+ 473:ff_test_term.c **** 				if (res) {
+ 1649              	nz	r0, .L231
+ 1650 0a1c 24B1     	.LVL135:
+ 474:ff_test_term.c **** 					put_rc(res);
+ 1651              	dr	r3, [sp, #96]
+ 1652 0a1e 2046     		cmp	r2, r3
+ 1653              		bcs	.L230
+ 1654 0a20 FFF7FEFF 	.LVL136:
+ 1655              	.L231:
+ 475:ff_test_term.c **** 					f_close(&File1);
+ 1656              	 1 488 0
+ 1657 0a24 3648     		ldr	r3, .L270
+ 1658 0a26 27E0     		ldr	r1, [sp, #108]
+ 1659              		ldr	r2, [r3, #0]
+ 476:ff_test_term.c **** 					break;
+ 477:ff_test_term.c **** 				}
+ 478:ff_test_term.c **** 				xprintf("Copying file...");
+ 1660              		r0, .L270+36
+ 1661 0a28 3A48     		udiv	r2, r1, r2
+ 1662 0a2a FFF7FEFF 		bl	xprintf
+ 479:ff_test_term.c **** 				Timer = 0;
+ 1663              	oc 1 489 0
+ 1664 0a2e 324B     		ldr	r0, .L270+8
+ 480:ff_test_term.c **** 				p1 = 0;
+ 1665              	l	f_close
+ 1666 0a30 1B94     		.loc 1 490 0
+ 1667              		ldr	r0, .L270+24
+ 1668              	.LVL137:
+ 1669 0a32 1C60     	.L255:
+ 1670              		bl	f_close
+ 1671              		.loc 1 491 0
+ 481:ff_test_term.c **** 				for (;;) {
+ 482:ff_test_term.c **** 					res = f_read(&File1, Buff, blen, &s1);
+ 1672              	2
+ 1673 0a34 3248     	.L235:
+ 1674 0a36 3849     		.loc 1 494 0
+ 1675 0a38 5A46     		adds	r3, r0, #1
+ 1676 0a3a 18AB     		str	r3, [sp, #112]
+ 1677 0a3c FFF7FEFF 	.LVL138:
+ 483:ff_test_term.c **** 					if (res || s1 == 0) break;   /* error or eof */
+ 1678              	
+ 1679 0a40 70B9     		ldr	r0, [sp, #112]
+ 1680 0a42 189A     		ldrb	r3, [r0, #0]	@ zero_extendqisi2
+ 1681 0a44 62B1     		cmp	r3, #32
+ 484:ff_test_term.c **** 					res = f_write(&File2, Buff, s1, &s2);
+ 1682              	q	.L235
+ 1683 0a46 17AB     		.loc 1 495 0
+ 1684 0a48 3148     		bl	f_chdir
+ 1685 0a4a 3349     		b	.L254
+ 1686 0a4c FFF7FEFF 	.L109:
+ 485:ff_test_term.c **** 					p1 += s2;
+ 1687              	 1 499 0
+ 1688 0a50 1B9B     		add	r0, sp, #112
+ 1689 0a52 179A     		add	r1, sp, #108
+ 1690 0a54 9B18     		bl	xatoi
+ 1691 0a56 1B93     		cmp	r0, #0
+ 1692              		beq	.L262
+ 486:ff_test_term.c **** 					if (res || s2 < s1) break;   /* error or disk full */
+ 1693              	1 500 0
+ 1694 0a58 10B9     		ldrb	r0, [sp, #108]	@ zero_extendqisi2
+ 1695              		bl	f_chdrive
+ 1696 0a5a 189B     		b	.L254
+ 1697 0a5c 9A42     	.L112:
+ 1698 0a5e E9D2     		.loc 1 506 0
+ 1699              		add	r4, sp, #112
+ 1700              		mov	r0, r4
+ 487:ff_test_term.c **** 				}
+ 488:ff_test_term.c **** 				xprintf("%lu bytes copied with %lu kB/sec.\n", p1, p1 / Timer);
+ 1701              	 sp, #104
+ 1702 0a60 254B     		bl	xatoi
+ 1703 0a62 1B99     		cmp	r0, #0
+ 1704 0a64 1A68     		beq	.L262
+ 1705 0a66 2D48     		mov	r0, r4
+ 1706 0a68 B1FBF2F2 		add	r1, sp, #100
+ 1707 0a6c FFF7FEFF 		bl	xatoi
+ 489:ff_test_term.c **** 				f_close(&File1);
+ 1708              	, #0
+ 1709 0a70 2348     		beq	.L262
+ 1710 0a72 FFF7FEFF 		.loc 1 507 0
+ 490:ff_test_term.c **** 				f_close(&File2);
+ 1711              	r	r0, .L270+40
+ 1712 0a76 2648     		bl	xprintf
+ 1713              		.loc 1 508 0
+ 1714              		ldr	r0, [sp, #112]
+ 1715 0a78 FFF7FEFF 		mov	r1, #1024
+ 491:ff_test_term.c **** 				break;
+ 1716              	et_line
+ 1717 0a7c FFF7D8BA 		.loc 1 509 0
+ 1718              		ldr	r3, [sp, #112]
+ 492:ff_test_term.c **** #if _FS_RPATH
+ 493:ff_test_term.c **** 			case 'g' :	/* fg <path> - Change current directory */
+ 494:ff_test_term.c **** 				while (*ptr == ' ') ptr++;
+ 1719              	rb	r3, [r3, #0]	@ zero_extendqisi2
+ 1720 0a80 431C     		cmp	r3, #89
+ 1721 0a82 1C93     		bne	.L262
+ 1722              		.loc 1 510 0
+ 1723              		movs	r0, #0
+ 1724 0a84 1C98     		ldrb	r1, [sp, #104]	@ zero_extendqisi2
+ 1725 0a86 0378     		ldrh	r2, [sp, #100]
+ 1726 0a88 202B     		bl	f_mkfs
+ 1727 0a8a F9D0     	.LVL139:
+ 495:ff_test_term.c **** 				put_rc(f_chdir(ptr));
+ 1728              	l	put_rc
+ 1729 0a8c FFF7FEFF 	.LVL140:
+ 1730 0a90 2EE0     		b	.L262
+ 1731              	.L271:
+ 496:ff_test_term.c **** 				break;
+ 497:ff_test_term.c **** 
+ 498:ff_test_term.c **** 			case 'j' :	/* fj <drive#> - Change current drive */
+ 499:ff_test_term.c **** 				if (xatoi(&ptr, &p1)) {
+ 1732              	ign	2
+ 1733 0a92 1CA8     	.L270:
+ 1734 0a94 1BA9     		.word	Timer
+ 1735 0a96 FFF7FEFF 		.word	.LC27
+ 1736 0a9a 0028     		.word	File1
+ 1737 0a9c 3FF4C8AA 		.word	Finfo
+ 500:ff_test_term.c **** 					put_rc(f_chdrive((BYTE)p1));
+ 1738              		.LC28
+ 1739 0aa0 9DF86C00 		.word	.LC29
+ 1740 0aa4 FFF7FEFF 		.word	File2
+ 1741 0aa8 22E0     		.word	.LC30
+ 1742              		.word	Buff
+ 501:ff_test_term.c **** 				}
+ 502:ff_test_term.c **** 				break;
+ 503:ff_test_term.c **** #endif
+ 504:ff_test_term.c **** #if _USE_MKFS
+ 505:ff_test_term.c **** 			case 'm' :	/* fm <partition rule> <cluster size> - Create file system */
+ 506:ff_test_term.c **** 				if (!xatoi(&ptr, &p2) || !xatoi(&ptr, &p3)) break;
+ 1743              	d	.LC31
+ 1744 0aaa 1CAC     		.word	.LC32
+ 1745 0aac 2046     	.LVL141:
+ 1746 0aae 1AA9     	.L122:
+ 1747 0ab0 FFF7FEFF 		.loc 1 514 0
+ 1748 0ab4 0028     		add	r0, sp, #112
+ 1749 0ab6 3FF4BBAA 		add	r1, sp, #108
+ 1750 0aba 2046     		bl	xatoi
+ 1751 0abc 19A9     		cbz	r0, .L241
+ 1752 0abe FFF7FEFF 		ldr	r3, [sp, #108]
+ 1753 0ac2 0028     		cmp	r3, #0
+ 1754 0ac4 3FF4B4AA 		ble	.L241
+ 507:ff_test_term.c **** 				xprintf("The card will be formatted. Are you sure? (Y/n)=");
+ 1755              	0
+ 1756 0ac8 1548     		cmp	r3, #4096
+ 1757 0aca FFF7FEFF 		it	ls
+ 508:ff_test_term.c **** 				get_line(ptr, sizeof(Line));
+ 1758              	vls	fp, r3
+ 1759 0ace 1C98     	.L241:
+ 1760 0ad0 4FF48061 		.loc 1 516 0
+ 1761 0ad4 FFF7FEFF 		ldr	r0, .L272
+ 509:ff_test_term.c **** 				if (*ptr == 'Y')
+ 1762              		r1, fp
+ 1763 0ad8 1C9B     		b	.L253
+ 1764 0ada 1B78     	.LVL142:
+ 1765 0adc 592B     	.L38:
+ 1766 0ade 7FF4A7AA 		.loc 1 522 0
+ 510:ff_test_term.c **** 					put_rc(f_mkfs(0, (BYTE)p2, (WORD)p3));
+ 1767              	r4, sp, #112
+ 1768 0ae2 0020     		add	r5, sp, #108
+ 1769 0ae4 9DF86810 	.LVL143:
+ 1770 0ae8 BDF86420 		mov	r0, r4
+ 1771 0aec FFF7FEFF 		mov	r1, r5
+ 1772              		bl	xatoi
+ 1773              		cbz	r0, .L245
+ 1774 0af0 FFF7FEFF 		.loc 1 523 0
+ 1775              		ldrh	r3, [sp, #108]
+ 1776 0af4 FFF79CBA 	.LVL144:
+ 1777              		.loc 1 524 0
+ 1778              		mov	r1, r5
+ 1779              		mov	r0, r4
+ 1780 0af8 00000000 		.loc 1 523 0
+ 1781 0afc E1060000 		str	r3, [sp, #80]
+ 1782 0b00 00000000 		.loc 1 524 0
+ 1783 0b04 00000000 		bl	xatoi
+ 1784 0b08 05070000 	.LVL145:
+ 1785 0b0c 12070000 		ldrb	r3, [sp, #108]	@ zero_extendqisi2
+ 1786 0b10 00000000 	.LVL146:
+ 1787 0b14 20070000 		.loc 1 525 0
+ 1788 0b18 00000000 		mov	r1, r5
+ 1789 0b1c 30070000 		mov	r0, r4
+ 1790 0b20 53070000 		.loc 1 524 0
+ 1791              		str	r3, [sp, #76]
+ 1792              		.loc 1 525 0
+ 511:ff_test_term.c **** 				break;
+ 512:ff_test_term.c **** #endif
+ 513:ff_test_term.c **** 			case 'z' :	/* fz [<rw size>] - Change R/W length for fr/fw/fx command */
+ 514:ff_test_term.c **** 				if (xatoi(&ptr, &p1) && p1 >= 1 && (unsigned long)p1 <= sizeof(Buff))
+ 1793              	3, [sp, #108]	@ zero_extendqisi2
+ 1794 0b24 1CA8     	.LVL148:
+ 1795 0b26 1BA9     		.loc 1 526 0
+ 1796 0b28 FFF7FEFF 		mov	r1, r5
+ 1797 0b2c 30B1     		mov	r0, r4
+ 1798 0b2e 1B9B     		.loc 1 525 0
+ 1799 0b30 002B     		str	r3, [sp, #64]
+ 1800 0b32 03DD     		.loc 1 526 0
+ 515:ff_test_term.c **** 					blen = p1;
+ 1801              	i
+ 1802 0b34 B3F5805F 	.LVL149:
+ 1803 0b38 98BF     		ldrb	r3, [sp, #108]	@ zero_extendqisi2
+ 1804 0b3a 9B46     	.LVL150:
+ 1805              		.loc 1 527 0
+ 516:ff_test_term.c **** 				xprintf("blen=%u\n", blen);
+ 1806              	r1, r5
+ 1807 0b3c 2348     		mov	r0, r4
+ 1808 0b3e 5946     		.loc 1 526 0
+ 1809 0b40 FFF70ABB 		str	r3, [sp, #60]
+ 1810              		.loc 1 527 0
+ 1811              		bl	xatoi
+ 517:ff_test_term.c **** 				break;
+ 518:ff_test_term.c **** 			}
+ 519:ff_test_term.c **** 			break;
+ 520:ff_test_term.c **** 
+ 521:ff_test_term.c **** 		case 't' :	/* t [<year> <mon> <mday> <hour> <min> <sec>] */
+ 522:ff_test_term.c **** 			if (xatoi(&ptr, &p1)) {
+ 1812              	1:
+ 1813 0b44 1CAC     		ldrb	r3, [sp, #108]	@ zero_extendqisi2
+ 1814 0b46 1BAD     	.LVL152:
+ 1815              		.loc 1 528 0
+ 1816 0b48 2046     		mov	r0, r4
+ 1817 0b4a 2946     		mov	r1, r5
+ 1818 0b4c FFF7FEFF 		.loc 1 527 0
+ 1819 0b50 58B3     		str	r3, [sp, #56]
+ 523:ff_test_term.c **** 				rtc.YEAR = (WORD)p1;
+ 1820              	528 0
+ 1821 0b52 BDF86C30 		bl	xatoi
+ 1822              	.LVL153:
+ 524:ff_test_term.c **** 				xatoi(&ptr, &p1); rtc.MONTH = (BYTE)p1;
+ 1823              	p	r0, #0
+ 1824 0b56 2946     		beq	.L262
+ 1825 0b58 2046     		.loc 1 529 0
+ 1826              		ldrb	r3, [sp, #108]	@ zero_extendqisi2
+ 1827 0b5a 1493     	.LVL154:
+ 1828              		.loc 1 530 0
+ 1829 0b5c FFF7FEFF 		add	r0, sp, #52
+ 1830              		.loc 1 529 0
+ 1831 0b60 9DF86C30 		str	r3, [sp, #52]
+ 1832              		.loc 1 530 0
+ 525:ff_test_term.c **** 				xatoi(&ptr, &p1); rtc.DOM = (BYTE)p1;
+ 1833              	l_settime
+ 1834 0b64 2946     	.LVL155:
+ 1835 0b66 2046     	.L245:
+ 1836              		.loc 1 532 0
+ 1837 0b68 1393     		add	r0, sp, #52
+ 1838              		bl	rtc_cal_gettime
+ 1839 0b6a FFF7FEFF 		.loc 1 533 0
+ 1840              		ldr	r3, [sp, #60]
+ 1841 0b6e 9DF86C30 		ldr	r0, .L272+4
+ 1842              		str	r3, [sp, #0]
+ 526:ff_test_term.c **** 				xatoi(&ptr, &p1); rtc.HOUR = (BYTE)p1;
+ 1843              	sp, #56]
+ 1844 0b72 2946     		ldr	r1, [sp, #80]
+ 1845 0b74 2046     		str	r3, [sp, #4]
+ 1846              		ldr	r3, [sp, #52]
+ 1847 0b76 1093     		ldr	r2, [sp, #76]
+ 1848              		str	r3, [sp, #8]
+ 1849 0b78 FFF7FEFF 		ldr	r3, [sp, #64]
+ 1850              		bl	xprintf
+ 1851 0b7c 9DF86C30 		b	.L262
+ 1852              	.L273:
+ 527:ff_test_term.c **** 				xatoi(&ptr, &p1); rtc.MIN = (BYTE)p1;
+ 1853              	.L272:
+ 1854 0b80 2946     		.word	.LC33
+ 1855 0b82 2046     		.word	.LC34
+ 1856              	.LFE34:
+ 1858              		.comm	acc_size,4,4
+ 1859 0b86 FFF7FEFF 		.comm	acc_files,2,2
+ 1860              		.comm	acc_dirs,2,2
+ 1861 0b8a 9DF86C30 		.comm	Finfo,32,4
+ 1862              		.comm	Lfname,256,1
+ 528:ff_test_term.c **** 				if (!xatoi(&ptr, &p1)) break;
+ 1863              	e,1024,1
+ 1864 0b8e 2046     		.comm	Fatfs,1128,4
+ 1865 0b90 2946     		.comm	File1,548,4
+ 1866              		.comm	File2,548,4
+ 1867 0b92 0E93     		.comm	Dir,36,4
+ 1868              		.comm	Buff,4096,1
+ 1869 0b94 FFF7FEFF 		.comm	Timer,4,4
+ 1870              		.section	.rodata
+ 1871 0b98 0028     		.set	.LANCHOR0,. + 0
+ 1872 0b9a 3FF449AA 	.LC0:
+ 529:ff_test_term.c **** 				rtc.SEC = (BYTE)p1;
+ 1873              	K\000DISK_ERR\000INT_ERR\000NOT_READY\000NO_FILE\000"
+ 1874 0b9e 9DF86C30 		.ascii	"NO_PATH\000INVALID_NAME\000DENIED\000EXIST\000INVAL"
+ 1875              		.ascii	"ID_OBJECT\000WRITE_PROTECTED\000INVALID_DRIVE\000NO"
+ 530:ff_test_term.c **** 				rtc_cal_settime(&rtc);
+ 1876              	scii	"T_ENABLED\000NO_FILE_SYSTEM\000MKFS_ABORTED\000TIME"
+ 1877 0ba2 0DA8     		.ascii	"OUT\000LOCKED\000NOT_ENOUGH_CORE\000TOO_MANY_OPEN_F"
+ 1878              		.ascii	"ILES\000\000"
+ 1879 0ba4 0D93     		.section	.rodata.str1.1,"aMS",%progbits,1
+ 1880              	.LC1:
+ 1881 0ba6 FFF7FEFF 		.ascii	"rc=%u FR_%s\012\000"
+ 1882              	.LC2:
+ 1883              		.ascii	"\012FatFs module test monitor for LPC17xx/SSP\012\000"
+ 531:ff_test_term.c **** 			}
+ 532:ff_test_term.c **** 			rtc_cal_gettime(&rtc);
+ 1884              	ascii	"LFN Enabled\000"
+ 1885 0baa 0DA8     	.LC4:
+ 1886 0bac FFF7FEFF 		.ascii	", Code page: %u\012\000"
+ 533:ff_test_term.c **** 			xprintf("%u/%u/%u %02u:%02u:%02u\n",
+ 1887              	5:
+ 1888 0bb0 0F9B     		.ascii	"md <address> [<len>] - Dump system memory\012\012dd"
+ 1889 0bb2 0748     		.ascii	" [<lba>] - Dump sector\012di [<drive>] - Initialize"
+ 1890 0bb4 0093     		.ascii	" disk\012ds [<drive>] - Show disk status\012\012bd "
+ 1891 0bb6 0E9B     		.ascii	"<ofs> - Dump working buffer\012be <ofs> [<data>] .."
+ 1892 0bb8 1499     		.ascii	". - Edit working buffer\012br <lba> [<num>] - Read "
+ 1893 0bba 0193     		.ascii	"disk into working buffer\012bw <lba> [<num>] - Writ"
+ 1894 0bbc 0D9B     		.ascii	"e working buffer into disk\012bf <val> - Fill worki"
+ 1895 0bbe 139A     		.ascii	"ng buffer\012\012fi - Force initialized the volume\012"
+ 1896 0bc0 0293     		.ascii	"fs - Show volume status\012fl [<path>] - Show a dir"
+ 1897 0bc2 109B     		.ascii	"ectory\012fo <mode> <file> - Open a file\012fc - Cl"
+ 1898 0bc4 FFF7FEFF 		.ascii	"ose the file\012fe <ofs> - Move fp\012fd <len> - Re"
+ 1899 0bc8 FFF732BA 		.ascii	"ad and dump the file\012fr <len> - Read the file\012"
+ 1900              		.ascii	"fw <len> <val> - Write to the file\012fn <object na"
+ 1901              		.ascii	"me> <new name> - Rename an object\012fu <object nam"
+ 1902              		.ascii	"e> - Unlink an object\012fv - Truncate the file at "
+ 1903 0bcc 84070000 		.ascii	"current fp\012fk <dir name> - Create a directory\012"
+ 1904 0bd0 8D070000 		.ascii	"fa <atrr> <mask> <object name> - Change object attr"
+ 1905              		.ascii	"ibute\012ft <year> <month> <day> <hour> <min> <sec>"
+ 1906              		.ascii	" <object name> - Change timestamp of an object\012f"
+ 1907              		.ascii	"x <src file> <dst file> - Copy a file\012fg <path> "
+ 1908              		.ascii	"- Change current directory\012fm <rule> <cluster si"
+ 1909              		.ascii	"ze> - Create file system\012fz [<len>] - Change R/W"
+ 1910              		.ascii	" block length for fr/fw/fx command\012\012\000"
+ 1911              	.LC6:
+ 1912              		.ascii	"rc=%d\012\000"
+ 1913              	.LC7:
+ 1914              		.ascii	"Sector:%lu\012\000"
+ 1915              	.LC8:
+ 1916              		.ascii	"Drive size: %lu sectors\012\000"
+ 1917              	.LC9:
+ 1918              		.ascii	"Sector size: %u\012\000"
+ 1919              	.LC10:
+ 1920              		.ascii	"Erase block size: %lu sectors\012\000"
+ 1921              	.LC11:
+ 1922 0000 4F4B0044 		.ascii	"MMC/SDC type: %u\012\000"
+ 1922      49534B5F 
+ 1922      45525200 
+ 1922      494E545F 
+ 1922      45525200 
+ 1923 0026 4E4F5F50 	.LC12:
+ 1923      41544800 
+ 1923      494E5641 
+ 1923      4C49445F 
+ 1923      4E414D45 
+ 1924 004d 49445F4F 		.ascii	"CSD:\012\000"
+ 1924      424A4543 
+ 1924      54005752 
+ 1924      4954455F 
+ 1924      50524F54 
+ 1925 0077 545F454E 	.LC13:
+ 1925      41424C45 
+ 1925      44004E4F 
+ 1925      5F46494C 
+ 1925      455F5359 
+ 1926 00a1 4F555400 		.ascii	"CID:\012\000"
+ 1926      4C4F434B 
+ 1926      4544004E 
+ 1926      4F545F45 
+ 1926      4E4F5547 
+ 1927 00cb 494C4553 	.LC14:
+ 1927      0000
+ 1928              		.ascii	"OCR:\012\000"
+ 1929              	.LC15:
+ 1930 0000 72633D25 		.ascii	"SD Status:\012\000"
+ 1930      75204652 
+ 1930      5F25730A 
+ 1930      00
+ 1931              	.LC16:
+ 1932 000d 0A466174 		.ascii	"%04X %02X-\000"
+ 1932      4673206D 
+ 1932      6F64756C 
+ 1932      65207465 
+ 1932      7374206D 
+ 1933              	.LC17:
+ 1934 0039 4C464E20 		.ascii	"???\012\000"
+ 1934      456E6162 
+ 1934      6C656400 
+ 1935              	.LC18:
+ 1936 0045 2C20436F 		.ascii	"rc=%u\012\000"
+ 1936      64652070 
+ 1936      6167653A 
+ 1936      2025750A 
+ 1936      00
+ 1937              	.LC19:
+ 1938 0056 6D64203C 		.ascii	"FAT type = FAT%u\012Bytes/Cluster = %lu\012Number o"
+ 1938      61646472 
+ 1938      6573733E 
+ 1938      205B3C6C 
+ 1938      656E3E5D 
+ 1939 0083 205B3C6C 		.ascii	"f FATs = %u\012Root DIR entries = %u\012Sectors/FAT"
+ 1939      62613E5D 
+ 1939      202D2044 
+ 1939      756D7020 
+ 1939      73656374 
+ 1940 00b3 20646973 		.ascii	" = %lu\012Number of clusters = %lu\012FAT start (lb"
+ 1940      6B0A6473 
+ 1940      205B3C64 
+ 1940      72697665 
+ 1940      3E5D202D 
+ 1941 00dd 3C6F6673 		.ascii	"a) = %lu\012DIR start (lba,clustor) = %lu\012Data s"
+ 1941      3E202D20 
+ 1941      44756D70 
+ 1941      20776F72 
+ 1941      6B696E67 
+ 1942 010d 2E202D20 		.ascii	"tart (lba) = %lu\012\012...\000"
+ 1942      45646974 
+ 1942      20776F72 
+ 1942      6B696E67 
+ 1942      20627566 
+ 1943 013d 6469736B 	.LC20:
+ 1943      20696E74 
+ 1943      6F20776F 
+ 1943      726B696E 
+ 1943      67206275 
+ 1944 016d 6520776F 		.ascii	"\015%u files, %lu bytes.\012%u folders.\012%lu KB t"
+ 1944      726B696E 
+ 1944      67206275 
+ 1944      66666572 
+ 1944      20696E74 
+ 1945 019d 6E672062 		.ascii	"otal disk space.\012%lu KB available.\012\000"
+ 1945      75666665 
+ 1945      720A0A66 
+ 1945      69202D20 
+ 1945      466F7263 
+ 1946 01ca 6673202D 	.LC21:
+ 1946      2053686F 
+ 1946      7720766F 
+ 1946      6C756D65 
+ 1946      20737461 
+ 1947 01fa 6563746F 		.ascii	"%c%c%c%c%c %u/%02u/%02u %02u:%02u %9lu  %s\000"
+ 1947      72790A66 
+ 1947      6F203C6D 
+ 1947      6F64653E 
+ 1947      203C6669 
+ 1948 0227 6F736520 	.LC22:
+ 1948      74686520 
+ 1948      66696C65 
+ 1948      0A666520 
+ 1948      3C6F6673 
+ 1949 0254 61642061 		.ascii	"%s\012\000"
+ 1949      6E642064 
+ 1949      756D7020 
+ 1949      74686520 
+ 1949      66696C65 
+ 1950 0282 6677203C 	.LC23:
+ 1950      6C656E3E 
+ 1950      203C7661 
+ 1950      6C3E202D 
+ 1950      20577269 
+ 1951 02b2 6D653E20 		.ascii	"%4u File(s),%10lu bytes total\012%4u Dir(s)\000"
+ 1951      3C6E6577 
+ 1951      206E616D 
+ 1951      653E202D 
+ 1951      2052656E 
+ 1952 02e2 653E202D 	.LC24:
+ 1952      20556E6C 
+ 1952      696E6B20 
+ 1952      616E206F 
+ 1952      626A6563 
+ 1953 0312 63757272 		.ascii	", %10lu bytes free\012\000"
+ 1953      656E7420 
+ 1953      66700A66 
+ 1953      6B203C64 
+ 1953      6972206E 
+ 1954 0340 6661203C 	.LC25:
+ 1954      61747272 
+ 1954      3E203C6D 
+ 1954      61736B3E 
+ 1954      203C6F62 
+ 1955 0373 69627574 		.ascii	"fptr=%lu(0x%lX)\012\000"
+ 1955      650A6674 
+ 1955      203C7965 
+ 1955      61723E20 
+ 1955      3C6D6F6E 
+ 1956 03a3 203C6F62 	.LC26:
+ 1956      6A656374 
+ 1956      206E616D 
+ 1956      653E202D 
+ 1956      20436861 
+ 1957 03d3 78203C73 		.ascii	"%lu bytes read with %lu kB/sec.\012\000"
+ 1957      72632066 
+ 1957      696C653E 
+ 1957      203C6473 
+ 1957      74206669 
+ 1958 0403 2D204368 	.LC27:
+ 1958      616E6765 
+ 1958      20637572 
+ 1958      72656E74 
+ 1958      20646972 
+ 1959 0433 7A653E20 		.ascii	"%lu bytes written with %lu kB/sec.\012\000"
+ 1959      2D204372 
+ 1959      65617465 
+ 1959      2066696C 
+ 1959      65207379 
+ 1960 0463 20626C6F 	.LC28:
+ 1960      636B206C 
+ 1960      656E6774 
+ 1960      6820666F 
+ 1960      72206672 
+ 1961              		.ascii	"Opening \"%s\"\000"
+ 1962 0488 72633D25 	.LC29:
+ 1962      640A00
+ 1963              		.ascii	"Creating \"%s\"\000"
+ 1964 048f 53656374 	.LC30:
+ 1964      6F723A25 
+ 1964      6C750A00 
+ 1965              		.ascii	"Copying file...\000"
+ 1966 049b 44726976 	.LC31:
+ 1966      65207369 
+ 1966      7A653A20 
+ 1966      256C7520 
+ 1966      73656374 
+ 1967              		.ascii	"%lu bytes copied with %lu kB/sec.\012\000"
+ 1968 04b4 53656374 	.LC32:
+ 1968      6F722073 
+ 1968      697A653A 
+ 1968      2025750A 
+ 1968      00
+ 1969              		.ascii	"The card will be formatted. Are you sure? (Y/n)=\000"
+ 1970 04c5 45726173 	.LC33:
+ 1970      6520626C 
+ 1970      6F636B20 
+ 1970      73697A65 
+ 1970      3A20256C 
+ 1971              		.ascii	"blen=%u\012\000"
+ 1972 04e4 4D4D432F 	.LC34:
+ 1972      53444320 
+ 1972      74797065 
+ 1972      3A202575 
+ 1972      0A00
+ 1973              		.ascii	"%u/%u/%u %02u:%02u:%02u\012\000"
+ 1974 04f6 4353443A 		.section	.rodata.ft.3244,"a",%progbits
+ 1974      0A00
+ 1975              		.set	.LANCHOR1,. + 0
+ 1978 0502 4F43523A 	ft.3244:
+ 1978      0A00
+ 1979              		.byte	0
+ 1980 0508 53442053 		.byte	12
+ 1980      74617475 
+ 1980      733A0A00 
+ 1981              		.byte	16
+ 1982 0514 25303458 		.byte	32
+ 1982      20253032 
+ 1982      582D00
+ 1983              		.section	.debug_frame,"",%progbits
+ 1984 051f 3F3F3F0A 	.Lframe0:
+ 1984      00
+ 1985              		.4byte	.LECIE0-.LSCIE0
+ 1986 0524 72633D25 	.LSCIE0:
+ 1986      750A00
+ 1987              		.4byte	0xffffffff
+ 1988 052b 46415420 		.byte	0x1
+ 1988      74797065 
+ 1988      203D2046 
+ 1988      41542575 
+ 1988      0A427974 
+ 1989 0558 66204641 		.ascii	"\000"
+ 1989      5473203D 
+ 1989      2025750A 
+ 1989      526F6F74 
+ 1989      20444952 
+ 1990 0585 203D2025 		.uleb128 0x1
+ 1990      6C750A4E 
+ 1990      756D6265 
+ 1990      72206F66 
+ 1990      20636C75 
+ 1991 05b2 6129203D 		.sleb128 -4
+ 1991      20256C75 
+ 1991      0A444952 
+ 1991      20737461 
+ 1991      72742028 
+ 1992 05df 74617274 		.byte	0xe
+ 1992      20286C62 
+ 1992      6129203D 
+ 1992      20256C75 
+ 1992      0A0A2E2E 
+ 1993              		.byte	0xc
+ 1994 05f5 0D257520 		.uleb128 0xd
+ 1994      66696C65 
+ 1994      732C2025 
+ 1994      6C752062 
+ 1994      79746573 
+ 1995 061f 6F74616C 		.uleb128 0x0
+ 1995      20646973 
+ 1995      6B207370 
+ 1995      6163652E 
+ 1995      0A256C75 
+ 1996              		.align	2
+ 1997 0643 25632563 	.LECIE0:
+ 1997      25632563 
+ 1997      25632025 
+ 1997      752F2530 
+ 1997      32752F25 
+ 1998              	.LSFDE0:
+ 1999 066e 25730A00 		.4byte	.LEFDE0-.LASFDE0
+ 2000              	.LASFDE0:
+ 2001 0672 25347520 		.4byte	.Lframe0
+ 2001      46696C65 
+ 2001      2873292C 
+ 2001      2531306C 
+ 2001      75206279 
+ 2002              		.4byte	.LFB31
+ 2003 069b 2C202531 		.4byte	.LFE31-.LFB31
+ 2003      306C7520 
+ 2003      62797465 
+ 2003      73206672 
+ 2003      65650A00 
+ 2004              		.align	2
+ 2005 06af 66707472 	.LEFDE0:
+ 2005      3D256C75 
+ 2005      28307825 
+ 2005      6C58290A 
+ 2005      00
+ 2006              	.LSFDE2:
+ 2007 06c0 256C7520 		.4byte	.LEFDE2-.LASFDE2
+ 2007      62797465 
+ 2007      73207265 
+ 2007      61642077 
+ 2007      69746820 
+ 2008              	.LASFDE2:
+ 2009 06e1 256C7520 		.4byte	.Lframe0
+ 2009      62797465 
+ 2009      73207772 
+ 2009      69747465 
+ 2009      6E207769 
+ 2010              		.4byte	.LFB33
+ 2011 0705 4F70656E 		.4byte	.LFE33-.LFB33
+ 2011      696E6720 
+ 2011      22257322 
+ 2011      00
+ 2012              		.byte	0x4
+ 2013 0712 43726561 		.4byte	.LCFI0-.LFB33
+ 2013      74696E67 
+ 2013      20222573 
+ 2013      2200
+ 2014              		.byte	0xe
+ 2015 0720 436F7079 		.uleb128 0x8
+ 2015      696E6720 
+ 2015      66696C65 
+ 2015      2E2E2E00 
+ 2016              		.byte	0x8e
+ 2017 0730 256C7520 		.uleb128 0x1
+ 2017      62797465 
+ 2017      7320636F 
+ 2017      70696564 
+ 2017      20776974 
+ 2018              		.byte	0x84
+ 2019 0753 54686520 		.uleb128 0x2
+ 2019      63617264 
+ 2019      2077696C 
+ 2019      6C206265 
+ 2019      20666F72 
+ 2020              		.align	2
+ 2021 0784 626C656E 	.LEFDE2:
+ 2021      3D25750A 
+ 2021      00
+ 2022              	.LSFDE4:
+ 2023 078d 25752F25 		.4byte	.LEFDE4-.LASFDE4
+ 2023      752F2575 
+ 2023      20253032 
+ 2023      753A2530 
+ 2023      32753A25 
+ 2024              	.LASFDE4:
+ 2025              		.4byte	.Lframe0
+ 2026              		.4byte	.LFB32
+ 2027              		.4byte	.LFE32-.LFB32
+ 2028              		.byte	0x4
+ 2029 0000 00       		.4byte	.LCFI1-.LFB32
+ 2030 0001 0C       		.byte	0xe
+ 2031 0002 10       		.uleb128 0x14
+ 2032 0003 20       		.byte	0x8e
+ 2133              		.4byte	.LCFI2
+DEFINED SYMBOLS
+                            *ABS*:00000000 ff_test_term.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:28     .text.ff_test_term_timer_callback:00000000 ff_test_term_timer_callback
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:25     .text.ff_test_term_timer_callback:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:48     .text.ff_test_term_timer_callback:0000000c $d
+                            *COM*:00000004 Timer
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:53     .text.put_rc:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:56     .text.put_rc:00000000 put_rc
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:97     .text.put_rc:00000028 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:103    .text.scan_files:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:106    .text.scan_files:00000000 scan_files
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:221    .text.scan_files:00000088 $d
+                            *COM*:00000002 acc_dirs
+                            *COM*:00000002 acc_files
+                            *COM*:00000004 acc_size
+                            *COM*:00000020 Finfo
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:233    .text.ff_test_term:00000000 ff_test_term
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:230    .text.ff_test_term:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:602    .text.ff_test_term:00000288 $d
+                            *COM*:00000100 Lfname
+                            *COM*:00000400 Line
+                            *COM*:00001000 Buff
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:622    .text.ff_test_term:000002d0 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:842    .text.ff_test_term:00000440 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:870    .text.ff_test_term:000004a8 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:962    .text.ff_test_term:00000560 $d
+                            *COM*:00000468 Fatfs
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:977    .text.ff_test_term:00000590 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:1375   .text.ff_test_term:00000824 $d
+                            *COM*:00000024 Dir
+                            *COM*:00000224 File1
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:1389   .text.ff_test_term:00000854 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:1780   .text.ff_test_term:00000af8 $d
+                            *COM*:00000224 File2
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:1794   .text.ff_test_term:00000b24 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:1903   .text.ff_test_term:00000bcc $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:2028   .rodata.ft.3244:00000000 ft.3244
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:2029   .rodata.ft.3244:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccYldaaa.s:2137   .debug_loc:00000000 $d
+
+UNDEFINED SYMBOLS
+xprintf
+f_opendir
+xstrlen
+xstrcpy
+f_readdir
+xputs
+xputc
+get_line
+xatoi
+put_dump
+disk_read
+disk_initialize
+disk_ioctl
+disk_write
+xmemset
+f_mount
+f_getfree
+f_open
+f_close
+f_lseek
+f_read
+f_write
+xstrchr
+f_rename
+f_unlink
+f_truncate
+f_mkdir
+f_chmod
+f_utime
+f_chdir
+f_chdrive
+f_mkfs
+rtc_cal_settime
+rtc_cal_gettime

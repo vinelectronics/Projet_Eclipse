@@ -1,0 +1,1305 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"ccsbcs.c"
+  21              	.Ltext0:
+  22              		.section	.text.ff_convert,"ax",%progbits
+  23              		.align	2
+  24              		.global	ff_convert
+  25              		.thumb
+  26              		.thumb_func
+  28              	ff_convert:
+  29              	.LFB2:
+  30              		.file 1 "Libraries/fat_sd/option/ccsbcs.c"
+   1:Libraries/fat_sd/option/ccsbcs.c **** /*------------------------------------------------------------------------*/
+   2:Libraries/fat_sd/option/ccsbcs.c **** /* Unicode - Local code bidirectional converter  (C)ChaN, 2009            */
+   3:Libraries/fat_sd/option/ccsbcs.c **** /* (SBCS code pages)                                                      */
+   4:Libraries/fat_sd/option/ccsbcs.c **** /*------------------------------------------------------------------------*/
+   5:Libraries/fat_sd/option/ccsbcs.c **** /*  437   U.S. (OEM)
+   6:Libraries/fat_sd/option/ccsbcs.c **** /   720   Arabic (OEM)
+   7:Libraries/fat_sd/option/ccsbcs.c **** /   1256  Arabic (Windows)
+   8:Libraries/fat_sd/option/ccsbcs.c **** /   737   Greek (OEM)
+   9:Libraries/fat_sd/option/ccsbcs.c **** /   1253  Greek (Windows)
+  10:Libraries/fat_sd/option/ccsbcs.c **** /   1250  Central Europe (Windows)
+  11:Libraries/fat_sd/option/ccsbcs.c **** /   775   Baltic (OEM)
+  12:Libraries/fat_sd/option/ccsbcs.c **** /   1257  Baltic (Windows)
+  13:Libraries/fat_sd/option/ccsbcs.c **** /   850   Multilingual Latin 1 (OEM)
+  14:Libraries/fat_sd/option/ccsbcs.c **** /   852   Latin 2 (OEM)
+  15:Libraries/fat_sd/option/ccsbcs.c **** /   1252  Latin 1 (Windows)
+  16:Libraries/fat_sd/option/ccsbcs.c **** /   855   Cyrillic (OEM)
+  17:Libraries/fat_sd/option/ccsbcs.c **** /   1251  Cyrillic (Windows)
+  18:Libraries/fat_sd/option/ccsbcs.c **** /   866   Russian (OEM)
+  19:Libraries/fat_sd/option/ccsbcs.c **** /   857   Turkish (OEM)
+  20:Libraries/fat_sd/option/ccsbcs.c **** /   1254  Turkish (Windows)
+  21:Libraries/fat_sd/option/ccsbcs.c **** /   858   Multilingual Latin 1 + Euro (OEM)
+  22:Libraries/fat_sd/option/ccsbcs.c **** /   862   Hebrew (OEM)
+  23:Libraries/fat_sd/option/ccsbcs.c **** /   1255  Hebrew (Windows)
+  24:Libraries/fat_sd/option/ccsbcs.c **** /   874   Thai (OEM, Windows)
+  25:Libraries/fat_sd/option/ccsbcs.c **** /   1258  Vietnam (OEM, Windows)
+  26:Libraries/fat_sd/option/ccsbcs.c **** */
+  27:Libraries/fat_sd/option/ccsbcs.c **** 
+  28:Libraries/fat_sd/option/ccsbcs.c **** #include "../ff.h"
+  29:Libraries/fat_sd/option/ccsbcs.c **** 
+  30:Libraries/fat_sd/option/ccsbcs.c **** 
+  31:Libraries/fat_sd/option/ccsbcs.c **** #if _CODE_PAGE == 437
+  32:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+  33:Libraries/fat_sd/option/ccsbcs.c **** static
+  34:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP437(0x80-0xFF) to Unicode conversion table */
+  35:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C7, 0x00FC, 0x00E9, 0x00E2, 0x00E4, 0x00E0, 0x00E5, 0x00E7,
+  36:Libraries/fat_sd/option/ccsbcs.c **** 	0x00EA, 0x00EB, 0x00E8, 0x00EF, 0x00EE, 0x00EC, 0x00C4, 0x00C5,
+  37:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C9, 0x00E6, 0x00C6, 0x00F4, 0x00F6, 0x00F2, 0x00FB, 0x00F9,
+  38:Libraries/fat_sd/option/ccsbcs.c **** 	0x00FF, 0x00D6, 0x00DC, 0x00A2, 0x00A3, 0x00A5, 0x20A7, 0x0192,
+  39:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E1, 0x00ED, 0x00F3, 0x00FA, 0x00F1, 0x00D1, 0x00AA, 0x00BA,
+  40:Libraries/fat_sd/option/ccsbcs.c **** 	0x00BF, 0x2310, 0x00AC, 0x00BD, 0x00BC, 0x00A1, 0x00AB, 0x00BB,
+  41:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x2561, 0x2562, 0x2556,
+  42:Libraries/fat_sd/option/ccsbcs.c **** 	0x2555, 0x2563, 0x2551, 0x2557, 0x255D, 0x255C, 0x255B, 0x2510,
+  43:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x255E, 0x255F,
+  44:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x2567,
+  45:Libraries/fat_sd/option/ccsbcs.c **** 	0x2568, 0x2564, 0x2565, 0x2559, 0x2558, 0x2552, 0x2553, 0x256B,
+  46:Libraries/fat_sd/option/ccsbcs.c **** 	0x256A, 0x2518, 0x250C, 0x2588, 0x2584, 0x258C, 0x2590, 0x2580,
+  47:Libraries/fat_sd/option/ccsbcs.c **** 	0x03B1, 0x00DF, 0x0393, 0x03C0, 0x03A3, 0x03C3, 0x00B5, 0x03C4,
+  48:Libraries/fat_sd/option/ccsbcs.c **** 	0x03A6, 0x0398, 0x03A9, 0x03B4, 0x221E, 0x03C6, 0x03B5, 0x2229,
+  49:Libraries/fat_sd/option/ccsbcs.c **** 	0x2261, 0x00B1, 0x2265, 0x2264, 0x2320, 0x2321, 0x00F7, 0x2248,
+  50:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x2219, 0x00B7, 0x221A, 0x207F, 0x00B2, 0x25A0, 0x00A0
+  51:Libraries/fat_sd/option/ccsbcs.c **** };
+  52:Libraries/fat_sd/option/ccsbcs.c **** 
+  53:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 720
+  54:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+  55:Libraries/fat_sd/option/ccsbcs.c **** static
+  56:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP720(0x80-0xFF) to Unicode conversion table */
+  57:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x0000, 0x00E9, 0x00E2, 0x0000, 0x00E0, 0x0000, 0x00E7,
+  58:Libraries/fat_sd/option/ccsbcs.c **** 	0x00EA, 0x00EB, 0x00E8, 0x00EF, 0x00EE, 0x0000, 0x0000, 0x0000,
+  59:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x0651, 0x0652, 0x00F4, 0x00A4, 0x0640, 0x00FB, 0x00F9,
+  60:Libraries/fat_sd/option/ccsbcs.c **** 	0x0621, 0x0622, 0x0623, 0x0624, 0x00A3, 0x0625, 0x0626, 0x0627,
+  61:Libraries/fat_sd/option/ccsbcs.c **** 	0x0628, 0x0629, 0x062A, 0x062B, 0x062C, 0x062D, 0x062E, 0x062F,
+  62:Libraries/fat_sd/option/ccsbcs.c **** 	0x0630, 0x0631, 0x0632, 0x0633, 0x0634, 0x0635, 0x00AB, 0x00BB,
+  63:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x2561, 0x2562, 0x2556,
+  64:Libraries/fat_sd/option/ccsbcs.c **** 	0x2555, 0x2563, 0x2551, 0x2557, 0x255D, 0x255C, 0x255B, 0x2510,
+  65:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x255E, 0x255F,
+  66:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x2567,
+  67:Libraries/fat_sd/option/ccsbcs.c **** 	0x2568, 0x2564, 0x2565, 0x2559, 0x2558, 0x2552, 0x2553, 0x256B,
+  68:Libraries/fat_sd/option/ccsbcs.c **** 	0x256A, 0x2518, 0x250C, 0x2588, 0x2584, 0x258C, 0x2590, 0x2580,
+  69:Libraries/fat_sd/option/ccsbcs.c **** 	0x0636, 0x0637, 0x0638, 0x0639, 0x063A, 0x0641, 0x00B5, 0x0642,
+  70:Libraries/fat_sd/option/ccsbcs.c **** 	0x0643, 0x0644, 0x0645, 0x0646, 0x0647, 0x0648, 0x0649, 0x064A,
+  71:Libraries/fat_sd/option/ccsbcs.c **** 	0x2261, 0x064B, 0x064C, 0x064D, 0x064E, 0x064F, 0xO650, 0x2248,
+  72:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x2219, 0x00B7, 0x221A, 0x207F, 0x00B2, 0x25A0, 0x00A0
+  73:Libraries/fat_sd/option/ccsbcs.c **** };
+  74:Libraries/fat_sd/option/ccsbcs.c **** 
+  75:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 737
+  76:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+  77:Libraries/fat_sd/option/ccsbcs.c **** static
+  78:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP737(0x80-0xFF) to Unicode conversion table */
+  79:Libraries/fat_sd/option/ccsbcs.c **** 	0x0391, 0x0392, 0x0393, 0x0394, 0x0395, 0x0396, 0x0397, 0x0398,
+  80:Libraries/fat_sd/option/ccsbcs.c **** 	0x0399, 0x039A, 0x039B, 0x039C, 0x039D, 0x039E, 0x039F, 0x03A0,
+  81:Libraries/fat_sd/option/ccsbcs.c **** 	0x03A1, 0x03A3, 0x03A4, 0x03A5, 0x03A6, 0x03A7, 0x03A8, 0x03A9,
+  82:Libraries/fat_sd/option/ccsbcs.c **** 	0x03B1, 0x03B2, 0x03B3, 0x03B4, 0x03B5, 0x03B6, 0x03B7, 0x03B8,
+  83:Libraries/fat_sd/option/ccsbcs.c **** 	0x03B9, 0x03BA, 0x03BB, 0x03BC, 0x03BD, 0x03BE, 0x03BF, 0x03C0,
+  84:Libraries/fat_sd/option/ccsbcs.c **** 	0x03C1, 0x03C3, 0x03C2, 0x03C4, 0x03C5, 0x03C6, 0x03C7, 0x03C8,
+  85:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x2561, 0x2562, 0x2556,
+  86:Libraries/fat_sd/option/ccsbcs.c **** 	0x2555, 0x2563, 0x2551, 0x2557, 0x255D, 0x255C, 0x255B, 0x2510,
+  87:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x255E, 0x255F,
+  88:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x2567,
+  89:Libraries/fat_sd/option/ccsbcs.c **** 	0x2568, 0x2564, 0x2565, 0x2559, 0x2558, 0x2552, 0x2553, 0x256B,
+  90:Libraries/fat_sd/option/ccsbcs.c **** 	0x256A, 0x2518, 0x250C, 0x2588, 0x2584, 0x258C, 0x2590, 0x2580,
+  91:Libraries/fat_sd/option/ccsbcs.c **** 	0x03C9, 0x03AC, 0x03AD, 0x03AE, 0x03CA, 0x03AF, 0x03CC, 0x03CD,
+  92:Libraries/fat_sd/option/ccsbcs.c **** 	0x03CB, 0x03CE, 0x0386, 0x0388, 0x0389, 0x038A, 0x038C, 0x038E,
+  93:Libraries/fat_sd/option/ccsbcs.c **** 	0x038F, 0x00B1, 0x2265, 0x2264, 0x03AA, 0x03AB, 0x00F7, 0x2248,
+  94:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x2219, 0x00B7, 0x221A, 0x207F, 0x00B2, 0x25A0, 0x00A0
+  95:Libraries/fat_sd/option/ccsbcs.c **** };
+  96:Libraries/fat_sd/option/ccsbcs.c **** 
+  97:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 775
+  98:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+  99:Libraries/fat_sd/option/ccsbcs.c **** static
+ 100:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP775(0x80-0xFF) to Unicode conversion table */
+ 101:Libraries/fat_sd/option/ccsbcs.c **** 	0x0106, 0x00FC, 0x00E9, 0x0101, 0x00E4, 0x0123, 0x00E5, 0x0107,
+ 102:Libraries/fat_sd/option/ccsbcs.c **** 	0x0142, 0x0113, 0x0156, 0x0157, 0x012B, 0x0179, 0x00C4, 0x00C5,
+ 103:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C9, 0x00E6, 0x00C6, 0x014D, 0x00F6, 0x0122, 0x00A2, 0x015A,
+ 104:Libraries/fat_sd/option/ccsbcs.c **** 	0x015B, 0x00D6, 0x00DC, 0x00F8, 0x00A3, 0x00D8, 0x00D7, 0x00A4,
+ 105:Libraries/fat_sd/option/ccsbcs.c **** 	0x0100, 0x012A, 0x00F3, 0x017B, 0x017C, 0x017A, 0x201D, 0x00A6,
+ 106:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A9, 0x00AE, 0x00AC, 0x00BD, 0x00BC, 0x0141, 0x00AB, 0x00BB,
+ 107:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x0104, 0x010C, 0x0118,
+ 108:Libraries/fat_sd/option/ccsbcs.c **** 	0x0116, 0x2563, 0x2551, 0x2557, 0x255D, 0x012E, 0x0160, 0x2510,
+ 109:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x0172, 0x016A,
+ 110:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x017D,
+ 111:Libraries/fat_sd/option/ccsbcs.c **** 	0x0105, 0x010D, 0x0119, 0x0117, 0x012F, 0x0161, 0x0173, 0x016B,
+ 112:Libraries/fat_sd/option/ccsbcs.c **** 	0x017E, 0x2518, 0x250C, 0x2588, 0x2584, 0x258C, 0x2590, 0x2580,
+ 113:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D3, 0x00DF, 0x014C, 0x0143, 0x00F5, 0x00D5, 0x00B5, 0x0144,
+ 114:Libraries/fat_sd/option/ccsbcs.c **** 	0x0136, 0x0137, 0x013B, 0x013C, 0x0146, 0x0112, 0x0145, 0x2019,
+ 115:Libraries/fat_sd/option/ccsbcs.c **** 	0x00AD, 0x00B1, 0x201C, 0x00BE, 0x00B6, 0x00A7, 0x00F7, 0x201E,
+ 116:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x2219, 0x00B7, 0x00B9, 0x00B3, 0x00B2, 0x25A0, 0x00A0
+ 117:Libraries/fat_sd/option/ccsbcs.c **** };
+ 118:Libraries/fat_sd/option/ccsbcs.c **** 
+ 119:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 850
+ 120:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 121:Libraries/fat_sd/option/ccsbcs.c **** static
+ 122:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP850(0x80-0xFF) to Unicode conversion table */
+ 123:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C7, 0x00FC, 0x00E9, 0x00E2, 0x00E4, 0x00E0, 0x00E5, 0x00E7,
+ 124:Libraries/fat_sd/option/ccsbcs.c **** 	0x00EA, 0x00EB, 0x00E8, 0x00EF, 0x00EE, 0x00EC, 0x00C4, 0x00C5,
+ 125:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C9, 0x00E6, 0x00C6, 0x00F4, 0x00F6, 0x00F2, 0x00FB, 0x00F9,
+ 126:Libraries/fat_sd/option/ccsbcs.c **** 	0x00FF, 0x00D6, 0x00DC, 0x00F8, 0x00A3, 0x00D8, 0x00D7, 0x0192,
+ 127:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E1, 0x00ED, 0x00F3, 0x00FA, 0x00F1, 0x00D1, 0x00AA, 0x00BA,
+ 128:Libraries/fat_sd/option/ccsbcs.c **** 	0x00BF, 0x00AE, 0x00AC, 0x00BD, 0x00BC, 0x00A1, 0x00AB, 0x00BB,
+ 129:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x00C1, 0x00C2, 0x00C0,
+ 130:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A9, 0x2563, 0x2551, 0x2557, 0x255D, 0x00A2, 0x00A5, 0x2510,
+ 131:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x00E3, 0x00C3,
+ 132:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x00A4,
+ 133:Libraries/fat_sd/option/ccsbcs.c **** 	0x00F0, 0x00D0, 0x00CA, 0x00CB, 0x00C8, 0x0131, 0x00CD, 0x00CE,
+ 134:Libraries/fat_sd/option/ccsbcs.c **** 	0x00CF, 0x2518, 0x250C, 0x2588, 0x2584, 0x00A6, 0x00CC, 0x2580,
+ 135:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D3, 0x00DF, 0x00D4, 0x00D2, 0x00F5, 0x00D5, 0x00B5, 0x00FE,
+ 136:Libraries/fat_sd/option/ccsbcs.c **** 	0x00DE, 0x00DA, 0x00DB, 0x00D9, 0x00FD, 0x00DD, 0x00AF, 0x00B4,
+ 137:Libraries/fat_sd/option/ccsbcs.c **** 	0x00AD, 0x00B1, 0x2017, 0x00BE, 0x00B6, 0x00A7, 0x00F7, 0x00B8,
+ 138:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00A8, 0x00B7, 0x00B9, 0x00B3, 0x00B2, 0x25A0, 0x00A0
+ 139:Libraries/fat_sd/option/ccsbcs.c **** };
+ 140:Libraries/fat_sd/option/ccsbcs.c **** 
+ 141:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 852
+ 142:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 143:Libraries/fat_sd/option/ccsbcs.c **** static
+ 144:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP852(0x80-0xFF) to Unicode conversion table */
+ 145:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C7, 0x00FC, 0x00E9, 0x00E2, 0x00E4, 0x016F, 0x0107, 0x00E7,
+ 146:Libraries/fat_sd/option/ccsbcs.c **** 	0x0142, 0x00EB, 0x0150, 0x0151, 0x00EE, 0x0179, 0x00C4, 0x0106,
+ 147:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C9, 0x0139, 0x013A, 0x00F4, 0x00F6, 0x013D, 0x013E, 0x015A,
+ 148:Libraries/fat_sd/option/ccsbcs.c **** 	0x015B, 0x00D6, 0x00DC, 0x0164, 0x0165, 0x0141, 0x00D7, 0x010D,
+ 149:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E1, 0x00ED, 0x00F3, 0x00FA, 0x0104, 0x0105, 0x017D, 0x017E,
+ 150:Libraries/fat_sd/option/ccsbcs.c **** 	0x0118, 0x0119, 0x00AC, 0x017A, 0x010C, 0x015F, 0x00AB, 0x00BB,
+ 151:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x00C1, 0x00C2, 0x011A,
+ 152:Libraries/fat_sd/option/ccsbcs.c **** 	0x015E, 0x2563, 0x2551, 0x2557, 0x255D, 0x017B, 0x017C, 0x2510,
+ 153:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x0102, 0x0103,
+ 154:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x00A4,
+ 155:Libraries/fat_sd/option/ccsbcs.c **** 	0x0111, 0x0110, 0x010E, 0x00CB, 0x010F, 0x0147, 0x00CD, 0x00CE,
+ 156:Libraries/fat_sd/option/ccsbcs.c **** 	0x011B, 0x2518, 0x250C, 0x2588, 0x2584, 0x0162, 0x016E, 0x2580,
+ 157:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D3, 0x00DF, 0x00D4, 0x0143, 0x0144, 0x0148, 0x0160, 0x0161,
+ 158:Libraries/fat_sd/option/ccsbcs.c **** 	0x0154, 0x00DA, 0x0155, 0x0170, 0x00FD, 0x00DD, 0x0163, 0x00B4,
+ 159:Libraries/fat_sd/option/ccsbcs.c **** 	0x00AD, 0x02DD, 0x02DB, 0x02C7, 0x02D8, 0x00A7, 0x00F7, 0x00B8,
+ 160:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00A8, 0x02D9, 0x0171, 0x0158, 0x0159, 0x25A0, 0x00A0
+ 161:Libraries/fat_sd/option/ccsbcs.c **** };
+ 162:Libraries/fat_sd/option/ccsbcs.c **** 
+ 163:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 855
+ 164:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 165:Libraries/fat_sd/option/ccsbcs.c **** static
+ 166:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP855(0x80-0xFF) to Unicode conversion table */
+ 167:Libraries/fat_sd/option/ccsbcs.c **** 	0x0452, 0x0402, 0x0453, 0x0403, 0x0451, 0x0401, 0x0454, 0x0404,
+ 168:Libraries/fat_sd/option/ccsbcs.c **** 	0x0455, 0x0405, 0x0456, 0x0406, 0x0457, 0x0407, 0x0458, 0x0408,
+ 169:Libraries/fat_sd/option/ccsbcs.c **** 	0x0459, 0x0409, 0x045A, 0x040A, 0x045B, 0x040B, 0x045C, 0x040C,
+ 170:Libraries/fat_sd/option/ccsbcs.c **** 	0x045E, 0x040E, 0x045F, 0x040F, 0x044E, 0x042E, 0x044A, 0x042A,
+ 171:Libraries/fat_sd/option/ccsbcs.c **** 	0x0430, 0x0410, 0x0431, 0x0411, 0x0446, 0x0426, 0x0434, 0x0414,
+ 172:Libraries/fat_sd/option/ccsbcs.c **** 	0x0435, 0x0415, 0x0444, 0x0424, 0x0433, 0x0413, 0x00AB, 0x00BB,
+ 173:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x0445, 0x0425, 0x0438,
+ 174:Libraries/fat_sd/option/ccsbcs.c **** 	0x0418, 0x2563, 0x2551, 0x2557, 0x255D, 0x0439, 0x0419, 0x2510,
+ 175:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x043A, 0x041A,
+ 176:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x00A4,
+ 177:Libraries/fat_sd/option/ccsbcs.c **** 	0x043B, 0x041B, 0x043C, 0x041C, 0x043D, 0x041D, 0x043E, 0x041E,
+ 178:Libraries/fat_sd/option/ccsbcs.c **** 	0x043F, 0x2518, 0x250C, 0x2588, 0x2584, 0x041F, 0x044F, 0x2580,
+ 179:Libraries/fat_sd/option/ccsbcs.c **** 	0x042F, 0x0440, 0x0420, 0x0441, 0x0421, 0x0442, 0x0422, 0x0443,
+ 180:Libraries/fat_sd/option/ccsbcs.c **** 	0x0423, 0x0436, 0x0416, 0x0432, 0x0412, 0x044C, 0x042C, 0x2116,
+ 181:Libraries/fat_sd/option/ccsbcs.c **** 	0x00AD, 0x044B, 0x042B, 0x0437, 0x0417, 0x0448, 0x0428, 0x044D,
+ 182:Libraries/fat_sd/option/ccsbcs.c **** 	0x042D, 0x0449, 0x0429, 0x0447, 0x0427, 0x00A7, 0x25A0, 0x00A0
+ 183:Libraries/fat_sd/option/ccsbcs.c **** };
+ 184:Libraries/fat_sd/option/ccsbcs.c **** 
+ 185:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 857
+ 186:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 187:Libraries/fat_sd/option/ccsbcs.c **** static
+ 188:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP857(0x80-0xFF) to Unicode conversion table */
+ 189:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C7, 0x00FC, 0x00E9, 0x00E2, 0x00E4, 0x00E0, 0x00E5, 0x00E7,
+ 190:Libraries/fat_sd/option/ccsbcs.c **** 	0x00EA, 0x00EB, 0x00E8, 0x00EF, 0x00EE, 0x0131, 0x00C4, 0x00C5,
+ 191:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C9, 0x00E6, 0x00C6, 0x00F4, 0x00F6, 0x00F2, 0x00FB, 0x00F9,
+ 192:Libraries/fat_sd/option/ccsbcs.c **** 	0x0130, 0x00D6, 0x00DC, 0x00F8, 0x00A3, 0x00D8, 0x015E, 0x015F,
+ 193:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E1, 0x00ED, 0x00F3, 0x00FA, 0x00F1, 0x00D1, 0x011E, 0x011F,
+ 194:Libraries/fat_sd/option/ccsbcs.c **** 	0x00BF, 0x00AE, 0x00AC, 0x00BD, 0x00BC, 0x00A1, 0x00AB, 0x00BB,
+ 195:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x00C1, 0x00C2, 0x00C0,
+ 196:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A9, 0x2563, 0x2551, 0x2557, 0x255D, 0x00A2, 0x00A5, 0x2510,
+ 197:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x00E3, 0x00C3,
+ 198:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x00A4,
+ 199:Libraries/fat_sd/option/ccsbcs.c **** 	0x00BA, 0x00AA, 0x00CA, 0x00CB, 0x00C8, 0x0000, 0x00CD, 0x00CE,
+ 200:Libraries/fat_sd/option/ccsbcs.c **** 	0x00CF, 0x2518, 0x250C, 0x2588, 0x2584, 0x00A6, 0x00CC, 0x2580,
+ 201:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D3, 0x00DF, 0x00D4, 0x00D2, 0x00F5, 0x00D5, 0x00B5, 0x0000,
+ 202:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D7, 0x00DA, 0x00DB, 0x00D9, 0x00EC, 0x00FF, 0x00AF, 0x00B4,
+ 203:Libraries/fat_sd/option/ccsbcs.c **** 	0x00AD, 0x00B1, 0x0000, 0x00BE, 0x00B6, 0x00A7, 0x00F7, 0x00B8,
+ 204:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00A8, 0x00B7, 0x00B9, 0x00B3, 0x00B2, 0x25A0, 0x00A0
+ 205:Libraries/fat_sd/option/ccsbcs.c **** };
+ 206:Libraries/fat_sd/option/ccsbcs.c **** 
+ 207:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 858
+ 208:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 209:Libraries/fat_sd/option/ccsbcs.c **** static
+ 210:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP858(0x80-0xFF) to Unicode conversion table */
+ 211:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C7, 0x00FC, 0x00E9, 0x00E2, 0x00E4, 0x00E0, 0x00E5, 0x00E7,
+ 212:Libraries/fat_sd/option/ccsbcs.c **** 	0x00EA, 0x00EB, 0x00E8, 0x00EF, 0x00EE, 0x00EC, 0x00C4, 0x00C5,
+ 213:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C9, 0x00E6, 0x00C6, 0x00F4, 0x00F6, 0x00F2, 0x00FB, 0x00F9,
+ 214:Libraries/fat_sd/option/ccsbcs.c **** 	0x00FF, 0x00D6, 0x00DC, 0x00F8, 0x00A3, 0x00D8, 0x00D7, 0x0192,
+ 215:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E1, 0x00ED, 0x00F3, 0x00FA, 0x00F1, 0x00D1, 0x00AA, 0x00BA,
+ 216:Libraries/fat_sd/option/ccsbcs.c **** 	0x00BF, 0x00AE, 0x00AC, 0x00BD, 0x00BC, 0x00A1, 0x00AB, 0x00BB,
+ 217:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x00C1, 0x00C2, 0x00C0,
+ 218:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A9, 0x2563, 0x2551, 0x2557, 0x2550, 0x00A2, 0x00A5, 0x2510,
+ 219:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x00E3, 0x00C3,
+ 220:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x00A4,
+ 221:Libraries/fat_sd/option/ccsbcs.c **** 	0x00F0, 0x00D0, 0x00CA, 0x00CB, 0x00C8, 0x20AC, 0x00CD, 0x00CE,
+ 222:Libraries/fat_sd/option/ccsbcs.c **** 	0x00CF, 0x2518, 0x250C, 0x2588, 0x2584, 0x00C6, 0x00CC, 0x2580,
+ 223:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D3, 0x00DF, 0x00D4, 0x00D2, 0x00F5, 0x00D5, 0x00B5, 0x00FE,
+ 224:Libraries/fat_sd/option/ccsbcs.c **** 	0x00DE, 0x00DA, 0x00DB, 0x00D9, 0x00FD, 0x00DD, 0x00AF, 0x00B4,
+ 225:Libraries/fat_sd/option/ccsbcs.c **** 	0x00AD, 0x00B1, 0x2017, 0x00BE, 0x00B6, 0x00A7, 0x00F7, 0x00B8,
+ 226:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00A8, 0x00B7, 0x00B9, 0x00B3, 0x00B2, 0x25A0, 0x00A0
+ 227:Libraries/fat_sd/option/ccsbcs.c **** };
+ 228:Libraries/fat_sd/option/ccsbcs.c **** 
+ 229:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 862
+ 230:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 231:Libraries/fat_sd/option/ccsbcs.c **** static
+ 232:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP862(0x80-0xFF) to Unicode conversion table */
+ 233:Libraries/fat_sd/option/ccsbcs.c **** 	0x05D0, 0x05D1, 0x05D2, 0x05D3, 0x05D4, 0x05D5, 0x05D6, 0x05D7,
+ 234:Libraries/fat_sd/option/ccsbcs.c **** 	0x05D8, 0x05D9, 0x05DA, 0x05DB, 0x05DC, 0x05DD, 0x05DE, 0x05DF,
+ 235:Libraries/fat_sd/option/ccsbcs.c **** 	0x05E0, 0x05E1, 0x05E2, 0x05E3, 0x05E4, 0x05E5, 0x05E6, 0x05E7,
+ 236:Libraries/fat_sd/option/ccsbcs.c **** 	0x05E8, 0x05E9, 0x05EA, 0x00A2, 0x00A3, 0x00A5, 0x20A7, 0x0192,
+ 237:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E1, 0x00ED, 0x00F3, 0x00FA, 0x00F1, 0x00D1, 0x00AA, 0x00BA,
+ 238:Libraries/fat_sd/option/ccsbcs.c **** 	0x00BF, 0x2310, 0x00AC, 0x00BD, 0x00BC, 0x00A1, 0x00AB, 0x00BB,
+ 239:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x2561, 0x2562, 0x2556,
+ 240:Libraries/fat_sd/option/ccsbcs.c **** 	0x2555, 0x2563, 0x2551, 0x2557, 0x255D, 0x255C, 0x255B, 0x2510,
+ 241:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x255E, 0x255F,
+ 242:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x2567,
+ 243:Libraries/fat_sd/option/ccsbcs.c **** 	0x2568, 0x2564, 0x2565, 0x2559, 0x2558, 0x2552, 0x2553, 0x256B,
+ 244:Libraries/fat_sd/option/ccsbcs.c **** 	0x256A, 0x2518, 0x250C, 0x2588, 0x2584, 0x258C, 0x2590, 0x2580,
+ 245:Libraries/fat_sd/option/ccsbcs.c **** 	0x03B1, 0x00DF, 0x0393, 0x03C0, 0x03A3, 0x03C3, 0x00B5, 0x03C4,
+ 246:Libraries/fat_sd/option/ccsbcs.c **** 	0x03A6, 0x0398, 0x03A9, 0x03B4, 0x221E, 0x03C6, 0x03B5, 0x2229,
+ 247:Libraries/fat_sd/option/ccsbcs.c **** 	0x2261, 0x00B1, 0x2265, 0x2264, 0x2320, 0x2321, 0x00F7, 0x2248,
+ 248:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x2219, 0x00B7, 0x221A, 0x207F, 0x00B2, 0x25A0, 0x00A0
+ 249:Libraries/fat_sd/option/ccsbcs.c **** };
+ 250:Libraries/fat_sd/option/ccsbcs.c **** 
+ 251:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 866
+ 252:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 253:Libraries/fat_sd/option/ccsbcs.c **** static
+ 254:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP866(0x80-0xFF) to Unicode conversion table */
+ 255:Libraries/fat_sd/option/ccsbcs.c **** 	0x0410, 0x0411, 0x0412, 0x0413, 0x0414, 0x0415, 0x0416, 0x0417,
+ 256:Libraries/fat_sd/option/ccsbcs.c **** 	0x0418, 0x0419, 0x041A, 0x041B, 0x041C, 0x041D, 0x041E, 0x041F,
+ 257:Libraries/fat_sd/option/ccsbcs.c **** 	0x0420, 0x0421, 0x0422, 0x0423, 0x0424, 0x0425, 0x0426, 0x0427,
+ 258:Libraries/fat_sd/option/ccsbcs.c **** 	0x0428, 0x0429, 0x042A, 0x042B, 0x042C, 0x042D, 0x042E, 0x042F,
+ 259:Libraries/fat_sd/option/ccsbcs.c **** 	0x0430, 0x0431, 0x0432, 0x0433, 0x0434, 0x0435, 0x0436, 0x0437,
+ 260:Libraries/fat_sd/option/ccsbcs.c **** 	0x0438, 0x0439, 0x043A, 0x043B, 0x043C, 0x043D, 0x043E, 0x043F,
+ 261:Libraries/fat_sd/option/ccsbcs.c **** 	0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x2561, 0x2562, 0x2556,
+ 262:Libraries/fat_sd/option/ccsbcs.c **** 	0x2555, 0x2563, 0x2551, 0x2557, 0x255D, 0x255C, 0x255B, 0x2510,
+ 263:Libraries/fat_sd/option/ccsbcs.c **** 	0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x255E, 0x255F,
+ 264:Libraries/fat_sd/option/ccsbcs.c **** 	0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x2567,
+ 265:Libraries/fat_sd/option/ccsbcs.c **** 	0x2568, 0x2564, 0x2565, 0x2559, 0x2558, 0x2552, 0x2553, 0x256B,
+ 266:Libraries/fat_sd/option/ccsbcs.c **** 	0x256A, 0x2518, 0x250C, 0x2588, 0x2584, 0x258C, 0x2590, 0x2580,
+ 267:Libraries/fat_sd/option/ccsbcs.c **** 	0x0440, 0x0441, 0x0442, 0x0443, 0x0444, 0x0445, 0x0446, 0x0447,
+ 268:Libraries/fat_sd/option/ccsbcs.c **** 	0x0448, 0x0449, 0x044A, 0x044B, 0x044C, 0x044D, 0x044E, 0x044F,
+ 269:Libraries/fat_sd/option/ccsbcs.c **** 	0x0401, 0x0451, 0x0404, 0x0454, 0x0407, 0x0457, 0x040E, 0x045E,
+ 270:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x2219, 0x00B7, 0x221A, 0x2116, 0x00A4, 0x25A0, 0x00A0
+ 271:Libraries/fat_sd/option/ccsbcs.c **** };
+ 272:Libraries/fat_sd/option/ccsbcs.c **** 
+ 273:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 874
+ 274:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 275:Libraries/fat_sd/option/ccsbcs.c **** static
+ 276:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP874(0x80-0xFF) to Unicode conversion table */
+ 277:Libraries/fat_sd/option/ccsbcs.c **** 	0x20AC, 0x0000, 0x0000, 0x0000, 0x0000, 0x2026, 0x0000, 0x0000,
+ 278:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+ 279:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+ 280:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+ 281:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A0, 0x0E01, 0x0E02, 0x0E03, 0x0E04, 0x0E05, 0x0E06, 0x0E07,
+ 282:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E08, 0x0E09, 0x0E0A, 0x0E0B, 0x0E0C, 0x0E0D, 0x0E0E, 0x0E0F,
+ 283:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E10, 0x0E11, 0x0E12, 0x0E13, 0x0E14, 0x0E15, 0x0E16, 0x0E17,
+ 284:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E18, 0x0E19, 0x0E1A, 0x0E1B, 0x0E1C, 0x0E1D, 0x0E1E, 0x0E1F,
+ 285:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E20, 0x0E21, 0x0E22, 0x0E23, 0x0E24, 0x0E25, 0x0E26, 0x0E27,
+ 286:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E28, 0x0E29, 0x0E2A, 0x0E2B, 0x0E2C, 0x0E2D, 0x0E2E, 0x0E2F,
+ 287:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E30, 0x0E31, 0x0E32, 0x0E33, 0x0E34, 0x0E35, 0x0E36, 0x0E37,
+ 288:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E38, 0x0E39, 0x0E3A, 0x0000, 0x0000, 0x0000, 0x0000, 0x0E3F,
+ 289:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E40, 0x0E41, 0x0E42, 0x0E43, 0x0E44, 0x0E45, 0x0E46, 0x0E47,
+ 290:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E48, 0x0E49, 0x0E4A, 0x0E4B, 0x0E4C, 0x0E4D, 0x0E4E, 0x0E4F,
+ 291:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E50, 0x0E51, 0x0E52, 0x0E53, 0x0E54, 0x0E55, 0x0E56, 0x0E57,
+ 292:Libraries/fat_sd/option/ccsbcs.c **** 	0x0E58, 0x0E59, 0x0E5A, 0x0E5B, 0x0000, 0x0000, 0x0000, 0x0000
+ 293:Libraries/fat_sd/option/ccsbcs.c **** };
+ 294:Libraries/fat_sd/option/ccsbcs.c **** 
+ 295:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 1250
+ 296:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 297:Libraries/fat_sd/option/ccsbcs.c **** static
+ 298:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP1250(0x80-0xFF) to Unicode conversion table */
+ 299:Libraries/fat_sd/option/ccsbcs.c **** 	0x20AC, 0x0000, 0x201A, 0x0000, 0x201E, 0x2026, 0x2020, 0x2021,
+ 300:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2030, 0x0160, 0x2039, 0x015A, 0x0164, 0x017D, 0x0179,
+ 301:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+ 302:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2122, 0x0161, 0x203A, 0x015B, 0x0165, 0x017E, 0x017A,
+ 303:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A0, 0x02C7, 0x02D8, 0x0141, 0x00A4, 0x0104, 0x00A6, 0x00A7,
+ 304:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A8, 0x00A9, 0x015E, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x017B,
+ 305:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00B1, 0x02DB, 0x0142, 0x00B4, 0x00B5, 0x00B6, 0x00B7,
+ 306:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B8, 0x0105, 0x015F, 0x00BB, 0x013D, 0x02DD, 0x013E, 0x017C,
+ 307:Libraries/fat_sd/option/ccsbcs.c **** 	0x0154, 0x00C1, 0x00C2, 0x0102, 0x00C4, 0x0139, 0x0106, 0x00C7,
+ 308:Libraries/fat_sd/option/ccsbcs.c **** 	0x010C, 0x00C9, 0x0118, 0x00CB, 0x011A, 0x00CD, 0x00CE, 0x010E,
+ 309:Libraries/fat_sd/option/ccsbcs.c **** 	0x0110, 0x0143, 0x0147, 0x00D3, 0x00D4, 0x0150, 0x00D6, 0x00D7,
+ 310:Libraries/fat_sd/option/ccsbcs.c **** 	0x0158, 0x016E, 0x00DA, 0x0170, 0x00DC, 0x00DD, 0x0162, 0x00DF,
+ 311:Libraries/fat_sd/option/ccsbcs.c **** 	0x0155, 0x00E1, 0x00E2, 0x0103, 0x00E4, 0x013A, 0x0107, 0x00E7,
+ 312:Libraries/fat_sd/option/ccsbcs.c **** 	0x010D, 0x00E9, 0x0119, 0x00EB, 0x011B, 0x00ED, 0x00EE, 0x010F,
+ 313:Libraries/fat_sd/option/ccsbcs.c **** 	0x0111, 0x0144, 0x0148, 0x00F3, 0x00F4, 0x0151, 0x00F6, 0x00F7,
+ 314:Libraries/fat_sd/option/ccsbcs.c **** 	0x0159, 0x016F, 0x00FA, 0x0171, 0x00FC, 0x00FD, 0x0163, 0x02D9
+ 315:Libraries/fat_sd/option/ccsbcs.c **** };
+ 316:Libraries/fat_sd/option/ccsbcs.c **** 
+ 317:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 1251
+ 318:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 319:Libraries/fat_sd/option/ccsbcs.c **** static
+ 320:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP1251(0x80-0xFF) to Unicode conversion table */
+ 321:Libraries/fat_sd/option/ccsbcs.c **** 	0x0402, 0x0403, 0x201A, 0x0453, 0x201E, 0x2026, 0x2020, 0x2021,
+ 322:Libraries/fat_sd/option/ccsbcs.c **** 	0x20AC, 0x2030, 0x0409, 0x2039, 0x040A, 0x040C, 0x040B, 0x040F,
+ 323:Libraries/fat_sd/option/ccsbcs.c **** 	0x0452, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+ 324:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2111, 0x0459, 0x203A, 0x045A, 0x045C, 0x045B, 0x045F,
+ 325:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A0, 0x040E, 0x045E, 0x0408, 0x00A4, 0x0490, 0x00A6, 0x00A7,
+ 326:Libraries/fat_sd/option/ccsbcs.c **** 	0x0401, 0x00A9, 0x0404, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x0407,
+ 327:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00B1, 0x0406, 0x0456, 0x0491, 0x00B5, 0x00B6, 0x00B7,
+ 328:Libraries/fat_sd/option/ccsbcs.c **** 	0x0451, 0x2116, 0x0454, 0x00BB, 0x0458, 0x0405, 0x0455, 0x0457,
+ 329:Libraries/fat_sd/option/ccsbcs.c **** 	0x0410, 0x0411, 0x0412, 0x0413, 0x0414, 0x0415, 0x0416, 0x0417,
+ 330:Libraries/fat_sd/option/ccsbcs.c **** 	0x0418, 0x0419, 0x041A, 0x041B, 0x041C, 0x041D, 0x041E, 0x041F,
+ 331:Libraries/fat_sd/option/ccsbcs.c **** 	0x0420, 0x0421, 0x0422, 0x0423, 0x0424, 0x0425, 0x0426, 0x0427,
+ 332:Libraries/fat_sd/option/ccsbcs.c **** 	0x0428, 0x0429, 0x042A, 0x042D, 0x042C, 0x042D, 0x042E, 0x042F,
+ 333:Libraries/fat_sd/option/ccsbcs.c **** 	0x0430, 0x0431, 0x0432, 0x0433, 0x0434, 0x0435, 0x0436, 0x0437,
+ 334:Libraries/fat_sd/option/ccsbcs.c **** 	0x0438, 0x0439, 0x043A, 0x043B, 0x043C, 0x043D, 0x043E, 0x043F,
+ 335:Libraries/fat_sd/option/ccsbcs.c **** 	0x0440, 0x0441, 0x0442, 0x0443, 0x0444, 0x0445, 0x0446, 0x0447,
+ 336:Libraries/fat_sd/option/ccsbcs.c **** 	0x0448, 0x0449, 0x044A, 0x044B, 0x044C, 0x044D, 0x044E, 0x044F
+ 337:Libraries/fat_sd/option/ccsbcs.c **** };
+ 338:Libraries/fat_sd/option/ccsbcs.c **** 
+ 339:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 1252
+ 340:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 341:Libraries/fat_sd/option/ccsbcs.c **** static
+ 342:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP1252(0x80-0xFF) to Unicode conversion table */
+ 343:Libraries/fat_sd/option/ccsbcs.c **** 	0x20AC, 0x0000, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+ 344:Libraries/fat_sd/option/ccsbcs.c **** 	0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0x0000, 0x017D, 0x0000,
+ 345:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+ 346:Libraries/fat_sd/option/ccsbcs.c **** 	0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0x0000, 0x017E, 0x0178,
+ 347:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A0, 0x00A1, 0x00A2, 0x00A3, 0x00A4, 0x00A5, 0x00A6, 0x00A7,
+ 348:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A8, 0x00A9, 0x00AA, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x00AF,
+ 349:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00B1, 0x00B2, 0x00B3, 0x00B4, 0x00B5, 0x00B6, 0x00B7,
+ 350:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B8, 0x00B9, 0x00BA, 0x00BB, 0x00BC, 0x00BD, 0x00BE, 0x00BF,
+ 351:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C0, 0x00C1, 0x00C2, 0x00C3, 0x00C4, 0x00C5, 0x00C6, 0x00C7,
+ 352:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C8, 0x00C9, 0x00CA, 0x00CB, 0x00CC, 0x00CD, 0x00CE, 0x00CF,
+ 353:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D0, 0x00D1, 0x00D2, 0x00D3, 0x00D4, 0x00D5, 0x00D6, 0x00D7,
+ 354:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D8, 0x00D9, 0x00DA, 0x00DB, 0x00DC, 0x00DD, 0x00DE, 0x00DF,
+ 355:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E0, 0x00E1, 0x00E2, 0x00E3, 0x00E4, 0x00E5, 0x00E6, 0x00E7,
+ 356:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E8, 0x00E9, 0x00EA, 0x00EB, 0x00EC, 0x00ED, 0x00EE, 0x00EF,
+ 357:Libraries/fat_sd/option/ccsbcs.c **** 	0x00F0, 0x00F1, 0x00F2, 0x00F3, 0x00F4, 0x00F5, 0x00F6, 0x00F7,
+ 358:Libraries/fat_sd/option/ccsbcs.c **** 	0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x00FD, 0x00FE, 0x00FF
+ 359:Libraries/fat_sd/option/ccsbcs.c **** };
+ 360:Libraries/fat_sd/option/ccsbcs.c **** 
+ 361:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 1253
+ 362:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 363:Libraries/fat_sd/option/ccsbcs.c **** static
+ 364:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP1253(0x80-0xFF) to Unicode conversion table */
+ 365:Libraries/fat_sd/option/ccsbcs.c **** 	0x20AC, 0x0000, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+ 366:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2030, 0x0000, 0x2039, 0x000C, 0x0000, 0x0000, 0x0000,
+ 367:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+ 368:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2122, 0x0000, 0x203A, 0x0000, 0x0000, 0x0000, 0x0000,
+ 369:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A0, 0x0385, 0x0386, 0x00A3, 0x00A4, 0x00A5, 0x00A6, 0x00A7,
+ 370:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A8, 0x00A9, 0x0000, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x2015,
+ 371:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00B1, 0x00B2, 0x00B3, 0x0384, 0x00B5, 0x00B6, 0x00B7,
+ 372:Libraries/fat_sd/option/ccsbcs.c **** 	0x0388, 0x0389, 0x038A, 0x00BB, 0x038C, 0x00BD, 0x038E, 0x038F,
+ 373:Libraries/fat_sd/option/ccsbcs.c **** 	0x0390, 0x0391, 0x0392, 0x0393, 0x0394, 0x0395, 0x0396, 0x0397,
+ 374:Libraries/fat_sd/option/ccsbcs.c **** 	0x0398, 0x0399, 0x039A, 0x039B, 0x039C, 0x039D, 0x039E, 0x039F,
+ 375:Libraries/fat_sd/option/ccsbcs.c **** 	0x03A0, 0x03A1, 0x0000, 0x03A3, 0x03A4, 0x03A5, 0x03A6, 0x03A7,
+ 376:Libraries/fat_sd/option/ccsbcs.c **** 	0x03A8, 0x03A9, 0x03AA, 0x03AD, 0x03AC, 0x03AD, 0x03AE, 0x03AF,
+ 377:Libraries/fat_sd/option/ccsbcs.c **** 	0x03B0, 0x03B1, 0x03B2, 0x03B3, 0x03B4, 0x03B5, 0x03B6, 0x03B7,
+ 378:Libraries/fat_sd/option/ccsbcs.c **** 	0x03B8, 0x03B9, 0x03BA, 0x03BB, 0x03BC, 0x03BD, 0x03BE, 0x03BF,
+ 379:Libraries/fat_sd/option/ccsbcs.c **** 	0x03C0, 0x03C1, 0x03C2, 0x03C3, 0x03C4, 0x03C5, 0x03C6, 0x03C7,
+ 380:Libraries/fat_sd/option/ccsbcs.c **** 	0x03C8, 0x03C9, 0x03CA, 0x03CB, 0x03CC, 0x03CD, 0x03CE, 0x0000
+ 381:Libraries/fat_sd/option/ccsbcs.c **** };
+ 382:Libraries/fat_sd/option/ccsbcs.c **** 
+ 383:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 1254
+ 384:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 385:Libraries/fat_sd/option/ccsbcs.c **** static
+ 386:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP1254(0x80-0xFF) to Unicode conversion table */
+ 387:Libraries/fat_sd/option/ccsbcs.c **** 	0x20AC, 0x0000, 0x210A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+ 388:Libraries/fat_sd/option/ccsbcs.c **** 	0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0x0000, 0x0000, 0x0000,
+ 389:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+ 390:Libraries/fat_sd/option/ccsbcs.c **** 	0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0x0000, 0x0000, 0x0178,
+ 391:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A0, 0x00A1, 0x00A2, 0x00A3, 0x00A4, 0x00A5, 0x00A6, 0x00A7,
+ 392:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A8, 0x00A9, 0x00AA, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x00AF,
+ 393:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00B1, 0x00B2, 0x00B3, 0x00B4, 0x00B5, 0x00B6, 0x00B7,
+ 394:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B8, 0x00B9, 0x00BA, 0x00BB, 0x00BC, 0x00BD, 0x00BE, 0x00BF,
+ 395:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C0, 0x00C1, 0x00C2, 0x00C3, 0x00C4, 0x00C5, 0x00C6, 0x00C7,
+ 396:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C8, 0x00C9, 0x00CA, 0x00CB, 0x00CC, 0x00CD, 0x00CE, 0x00CF,
+ 397:Libraries/fat_sd/option/ccsbcs.c **** 	0x011E, 0x00D1, 0x00D2, 0x00D3, 0x00D4, 0x00D5, 0x00D6, 0x00D7,
+ 398:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D8, 0x00D9, 0x00DA, 0x00BD, 0x00DC, 0x0130, 0x015E, 0x00DF,
+ 399:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E0, 0x00E1, 0x00E2, 0x00E3, 0x00E4, 0x00E5, 0x00E6, 0x00E7,
+ 400:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E8, 0x00E9, 0x00EA, 0x00EB, 0x00EC, 0x00ED, 0x00EE, 0x00EF,
+ 401:Libraries/fat_sd/option/ccsbcs.c **** 	0x011F, 0x00F1, 0x00F2, 0x00F3, 0x00F4, 0x00F5, 0x00F6, 0x00F7,
+ 402:Libraries/fat_sd/option/ccsbcs.c **** 	0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x0131, 0x015F, 0x00FF
+ 403:Libraries/fat_sd/option/ccsbcs.c **** };
+ 404:Libraries/fat_sd/option/ccsbcs.c **** 
+ 405:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 1255
+ 406:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 407:Libraries/fat_sd/option/ccsbcs.c **** static
+ 408:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP1255(0x80-0xFF) to Unicode conversion table */
+ 409:Libraries/fat_sd/option/ccsbcs.c **** 	0x20AC, 0x0000, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+ 410:Libraries/fat_sd/option/ccsbcs.c **** 	0x02C6, 0x2030, 0x0000, 0x2039, 0x0000, 0x0000, 0x0000, 0x0000,
+ 411:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+ 412:Libraries/fat_sd/option/ccsbcs.c **** 	0x02DC, 0x2122, 0x0000, 0x203A, 0x0000, 0x0000, 0x0000, 0x0000,
+ 413:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A0, 0x00A1, 0x00A2, 0x00A3, 0x00A4, 0x00A5, 0x00A6, 0x00A7,
+ 414:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A8, 0x00A9, 0x00D7, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x00AF,
+ 415:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00B1, 0x00B2, 0x00B3, 0x00B4, 0x00B5, 0x00B6, 0x00B7,
+ 416:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B8, 0x00B9, 0x00F7, 0x00BB, 0x00BC, 0x00BD, 0x00BE, 0x00BF,
+ 417:Libraries/fat_sd/option/ccsbcs.c **** 	0x05B0, 0x05B1, 0x05B2, 0x05B3, 0x05B4, 0x05B5, 0x05B6, 0x05B7,
+ 418:Libraries/fat_sd/option/ccsbcs.c **** 	0x05B8, 0x05B9, 0x0000, 0x05BB, 0x05BC, 0x05BD, 0x05BE, 0x05BF,
+ 419:Libraries/fat_sd/option/ccsbcs.c **** 	0x05C0, 0x05C1, 0x05C2, 0x05C3, 0x05F0, 0x05F1, 0x05F2, 0x05F3,
+ 420:Libraries/fat_sd/option/ccsbcs.c **** 	0x05F4, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+ 421:Libraries/fat_sd/option/ccsbcs.c **** 	0x05D0, 0x05D1, 0x05D2, 0x05D3, 0x05D4, 0x05D5, 0x05D6, 0x05D7,
+ 422:Libraries/fat_sd/option/ccsbcs.c **** 	0x05D8, 0x05D9, 0x05DA, 0x05DB, 0x05DC, 0x05DD, 0x05DE, 0x05DF,
+ 423:Libraries/fat_sd/option/ccsbcs.c **** 	0x05E0, 0x05E1, 0x05E2, 0x05E3, 0x05E4, 0x05E5, 0x05E6, 0x05E7,
+ 424:Libraries/fat_sd/option/ccsbcs.c **** 	0x05E8, 0x05E9, 0x05EA, 0x0000, 0x0000, 0x200E, 0x200F, 0x0000
+ 425:Libraries/fat_sd/option/ccsbcs.c **** };
+ 426:Libraries/fat_sd/option/ccsbcs.c **** 
+ 427:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 1256
+ 428:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 429:Libraries/fat_sd/option/ccsbcs.c **** static
+ 430:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP1256(0x80-0xFF) to Unicode conversion table */
+ 431:Libraries/fat_sd/option/ccsbcs.c **** 	0x20AC, 0x067E, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+ 432:Libraries/fat_sd/option/ccsbcs.c **** 	0x02C6, 0x2030, 0x0679, 0x2039, 0x0152, 0x0686, 0x0698, 0x0688,
+ 433:Libraries/fat_sd/option/ccsbcs.c **** 	0x06AF, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+ 434:Libraries/fat_sd/option/ccsbcs.c **** 	0x06A9, 0x2122, 0x0691, 0x203A, 0x0153, 0x200C, 0x200D, 0x06BA,
+ 435:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A0, 0x060C, 0x00A2, 0x00A3, 0x00A4, 0x00A5, 0x00A6, 0x00A7,
+ 436:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A8, 0x00A9, 0x06BE, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x00AF,
+ 437:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00B1, 0x00B2, 0x00B3, 0x00B4, 0x00B5, 0x00B6, 0x00B7,
+ 438:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B8, 0x00B9, 0x061B, 0x00BB, 0x00BC, 0x00BD, 0x00BE, 0x061F,
+ 439:Libraries/fat_sd/option/ccsbcs.c **** 	0x06C1, 0x0621, 0x0622, 0x0623, 0x0624, 0x0625, 0x0626, 0x0627,
+ 440:Libraries/fat_sd/option/ccsbcs.c **** 	0x0628, 0x0629, 0x062A, 0x062B, 0x062C, 0x062D, 0x062E, 0x062F,
+ 441:Libraries/fat_sd/option/ccsbcs.c **** 	0x0630, 0x0631, 0x0632, 0x0633, 0x0634, 0x0635, 0x0636, 0x00D7,
+ 442:Libraries/fat_sd/option/ccsbcs.c **** 	0x0637, 0x0638, 0x0639, 0x063A, 0x0640, 0x0640, 0x0642, 0x0643,
+ 443:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E0, 0x0644, 0x00E2, 0x0645, 0x0646, 0x0647, 0x0648, 0x00E7,
+ 444:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E8, 0x00E9, 0x00EA, 0x00EB, 0x0649, 0x064A, 0x00EE, 0x00EF,
+ 445:Libraries/fat_sd/option/ccsbcs.c **** 	0x064B, 0x064C, 0x064D, 0x064E, 0x00F4, 0x064F, 0x0650, 0x00F7,
+ 446:Libraries/fat_sd/option/ccsbcs.c **** 	0x0651, 0x00F9, 0x0652, 0x00FB, 0x00FC, 0x200E, 0x200F, 0x06D2
+ 447:Libraries/fat_sd/option/ccsbcs.c **** }
+ 448:Libraries/fat_sd/option/ccsbcs.c **** 
+ 449:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 1257
+ 450:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 451:Libraries/fat_sd/option/ccsbcs.c **** static
+ 452:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP1257(0x80-0xFF) to Unicode conversion table */
+ 453:Libraries/fat_sd/option/ccsbcs.c **** 	0x20AC, 0x0000, 0x201A, 0x0000, 0x201E, 0x2026, 0x2020, 0x2021,
+ 454:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2030, 0x0000, 0x2039, 0x0000, 0x00A8, 0x02C7, 0x00B8,
+ 455:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+ 456:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2122, 0x0000, 0x203A, 0x0000, 0x00AF, 0x02DB, 0x0000,
+ 457:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A0, 0x0000, 0x00A2, 0x00A3, 0x00A4, 0x0000, 0x00A6, 0x00A7,
+ 458:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D8, 0x00A9, 0x0156, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x00AF,
+ 459:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00B1, 0x00B2, 0x00B3, 0x00B4, 0x00B5, 0x00B6, 0x00B7,
+ 460:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B8, 0x00B9, 0x0157, 0x00BB, 0x00BC, 0x00BD, 0x00BE, 0x00E6,
+ 461:Libraries/fat_sd/option/ccsbcs.c **** 	0x0104, 0x012E, 0x0100, 0x0106, 0x00C4, 0x00C5, 0x0118, 0x0112,
+ 462:Libraries/fat_sd/option/ccsbcs.c **** 	0x010C, 0x00C9, 0x0179, 0x0116, 0x0122, 0x0136, 0x012A, 0x013B,
+ 463:Libraries/fat_sd/option/ccsbcs.c **** 	0x0160, 0x0143, 0x0145, 0x00D3, 0x014C, 0x00D5, 0x00D6, 0x00D7,
+ 464:Libraries/fat_sd/option/ccsbcs.c **** 	0x0172, 0x0141, 0x015A, 0x016A, 0x00DC, 0x017B, 0x017D, 0x00DF,
+ 465:Libraries/fat_sd/option/ccsbcs.c **** 	0x0105, 0x012F, 0x0101, 0x0107, 0x00E4, 0x00E5, 0x0119, 0x0113,
+ 466:Libraries/fat_sd/option/ccsbcs.c **** 	0x010D, 0x00E9, 0x017A, 0x0117, 0x0123, 0x0137, 0x012B, 0x013C,
+ 467:Libraries/fat_sd/option/ccsbcs.c **** 	0x0161, 0x0144, 0x0146, 0x00F3, 0x014D, 0x00F5, 0x00F6, 0x00F7,
+ 468:Libraries/fat_sd/option/ccsbcs.c **** 	0x0173, 0x014E, 0x015B, 0x016B, 0x00FC, 0x017C, 0x017E, 0x02D9
+ 469:Libraries/fat_sd/option/ccsbcs.c **** };
+ 470:Libraries/fat_sd/option/ccsbcs.c **** 
+ 471:Libraries/fat_sd/option/ccsbcs.c **** #elif _CODE_PAGE == 1258
+ 472:Libraries/fat_sd/option/ccsbcs.c **** #define _TBLDEF 1
+ 473:Libraries/fat_sd/option/ccsbcs.c **** static
+ 474:Libraries/fat_sd/option/ccsbcs.c **** const WCHAR Tbl[] = {	/*  CP1258(0x80-0xFF) to Unicode conversion table */
+ 475:Libraries/fat_sd/option/ccsbcs.c **** 	0x20AC, 0x0000, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+ 476:Libraries/fat_sd/option/ccsbcs.c **** 	0x02C6, 0x2030, 0x0000, 0x2039, 0x0152, 0x0000, 0x0000, 0x0000,
+ 477:Libraries/fat_sd/option/ccsbcs.c **** 	0x0000, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+ 478:Libraries/fat_sd/option/ccsbcs.c **** 	0x02DC, 0x2122, 0x0000, 0x203A, 0x0153, 0x0000, 0x0000, 0x0178,
+ 479:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A0, 0x00A1, 0x00A2, 0x00A3, 0x00A4, 0x00A5, 0x00A6, 0x00A7,
+ 480:Libraries/fat_sd/option/ccsbcs.c **** 	0x00A8, 0x00A9, 0x00AA, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x00AF,
+ 481:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B0, 0x00B1, 0x00B2, 0x00B3, 0x00B4, 0x00B5, 0x00B6, 0x00B7,
+ 482:Libraries/fat_sd/option/ccsbcs.c **** 	0x00B8, 0x00B9, 0x00BA, 0x00BB, 0x00BC, 0x00BD, 0x00BE, 0x00BF,
+ 483:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C0, 0x00C1, 0x00C2, 0x0102, 0x00C4, 0x00C5, 0x00C6, 0x00C7,
+ 484:Libraries/fat_sd/option/ccsbcs.c **** 	0x00C8, 0x00C9, 0x00CA, 0x00CB, 0x0300, 0x00CD, 0x00CE, 0x00CF,
+ 485:Libraries/fat_sd/option/ccsbcs.c **** 	0x0110, 0x00D1, 0x0309, 0x00D3, 0x00D4, 0x01A0, 0x00D6, 0x00D7,
+ 486:Libraries/fat_sd/option/ccsbcs.c **** 	0x00D8, 0x00D9, 0x00DA, 0x00DB, 0x00DC, 0x01AF, 0x0303, 0x00DF,
+ 487:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E0, 0x00E1, 0x00E2, 0x0103, 0x00E4, 0x00E5, 0x00E6, 0x00E7,
+ 488:Libraries/fat_sd/option/ccsbcs.c **** 	0x00E8, 0x00E9, 0x00EA, 0x00EB, 0x0301, 0x00ED, 0x00EE, 0x00EF,
+ 489:Libraries/fat_sd/option/ccsbcs.c **** 	0x0111, 0x00F1, 0x0323, 0x00F3, 0x00F4, 0x01A1, 0x00F6, 0x00F7,
+ 490:Libraries/fat_sd/option/ccsbcs.c **** 	0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x01B0, 0x20AB, 0x00FF
+ 491:Libraries/fat_sd/option/ccsbcs.c **** };
+ 492:Libraries/fat_sd/option/ccsbcs.c **** 
+ 493:Libraries/fat_sd/option/ccsbcs.c **** #endif
+ 494:Libraries/fat_sd/option/ccsbcs.c **** 
+ 495:Libraries/fat_sd/option/ccsbcs.c **** 
+ 496:Libraries/fat_sd/option/ccsbcs.c **** #if !_TBLDEF || !_USE_LFN
+ 497:Libraries/fat_sd/option/ccsbcs.c **** #error This file is not needed in current configuration. Remove from the project.
+ 498:Libraries/fat_sd/option/ccsbcs.c **** #endif
+ 499:Libraries/fat_sd/option/ccsbcs.c **** 
+ 500:Libraries/fat_sd/option/ccsbcs.c **** 
+ 501:Libraries/fat_sd/option/ccsbcs.c **** WCHAR ff_convert (	/* Converted character, Returns zero on error */
+ 502:Libraries/fat_sd/option/ccsbcs.c **** 	WCHAR	src,	/* Character code to be converted */
+ 503:Libraries/fat_sd/option/ccsbcs.c **** 	UINT	dir		/* 0: Unicode to OEMCP, 1: OEMCP to Unicode */
+ 504:Libraries/fat_sd/option/ccsbcs.c **** )
+ 505:Libraries/fat_sd/option/ccsbcs.c **** {
+  31              	tend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              	.LVL0:
+  35              		.loc 1 509 0
+ 506:Libraries/fat_sd/option/ccsbcs.c **** 	WCHAR c;
+ 507:Libraries/fat_sd/option/ccsbcs.c **** 
+ 508:Libraries/fat_sd/option/ccsbcs.c **** 
+ 509:Libraries/fat_sd/option/ccsbcs.c **** 	if (src < 0x80) {	/* ASCII */
+  36              	r0, #127
+  37 0000 7F28     		.loc 1 505 0
+  38              		@ lr needed for prologue
+  39              		.loc 1 509 0
+  40              		bls	.L4
+  41 0002 19D9     		.loc 1 513 0
+ 510:Libraries/fat_sd/option/ccsbcs.c **** 		c = src;
+ 511:Libraries/fat_sd/option/ccsbcs.c **** 
+ 512:Libraries/fat_sd/option/ccsbcs.c **** 	} else {
+ 513:Libraries/fat_sd/option/ccsbcs.c **** 		if (dir) {		/* OEMCP to Unicode */
+  42              	1, .L5
+  43 0004 51B1     		.loc 1 514 0
+ 514:Libraries/fat_sd/option/ccsbcs.c **** 			c = (src >= 0x100) ? 0 : Tbl[src - 0x80];
+  44              	mp	r0, #255
+  45 0006 FF28     		bls	.L7
+  46 0008 01D9     		movs	r0, #0
+  47 000a 0020     	.LVL1:
+  48              		b	.L4
+  49 000c 14E0     	.LVL2:
+  50              	.L7:
+  51              		ldr	r3, .L13
+  52 000e 0B4B     		add	r3, r3, r0, lsl #1
+  53 0010 03EB4003 		sub	r3, r3, #256
+  54 0014 A3F58073 		ldrh	r0, [r3, #0]
+  55 0018 1888     	.LVL3:
+  56              		b	.L4
+  57 001a 0DE0     	.LVL4:
+  58              	.L5:
+  59              		mov	r2, r1
+  60 001c 0A46     	.LVL5:
+  61              	.L9:
+  62              		.loc 1 518 0
+ 515:Libraries/fat_sd/option/ccsbcs.c **** 
+ 516:Libraries/fat_sd/option/ccsbcs.c **** 		} else {		/* Unicode to OEMCP */
+ 517:Libraries/fat_sd/option/ccsbcs.c **** 			for (c = 0; c < 0x80; c++) {
+ 518:Libraries/fat_sd/option/ccsbcs.c **** 				if (src == Tbl[c]) break;
+  63              		r3, [r3, r2, lsl #1]
+  64 001e 074B     		cmp	r3, r0
+  65 0020 33F81230 		beq	.L10
+  66 0024 8342     		.loc 1 517 0
+  67 0026 04D0     		adds	r3, r1, #1
+  68              		uxth	r1, r3
+  69 0028 4B1C     	.LVL6:
+  70 002a 99B2     		adds	r2, r2, #1
+  71              		cmp	r1, #128
+  72 002c 0132     		bne	.L9
+  73 002e 8029     	.LVL7:
+  74 0030 F5D1     	.L10:
+  75              		.loc 1 520 0
+  76              		add	r3, r1, #128
+ 519:Libraries/fat_sd/option/ccsbcs.c **** 			}
+ 520:Libraries/fat_sd/option/ccsbcs.c **** 			c = (c + 0x80) & 0xFF;
+  77              	LVL8:
+  78 0032 01F18003 	.L4:
+  79 0036 D8B2     	.LVL9:
+  80              		.loc 1 525 0
+  81              		bx	lr
+  82              	.L14:
+ 521:Libraries/fat_sd/option/ccsbcs.c **** 		}
+ 522:Libraries/fat_sd/option/ccsbcs.c **** 	}
+ 523:Libraries/fat_sd/option/ccsbcs.c **** 
+ 524:Libraries/fat_sd/option/ccsbcs.c **** 	return c;
+ 525:Libraries/fat_sd/option/ccsbcs.c **** }
+  83              	n	2
+  84 0038 7047     	.L13:
+  85              		.word	.LANCHOR0
+  86 003a C046     	.LFE2:
+  88 003c 00000000 		.section	.text.ff_wtoupper,"ax",%progbits
+  89              		.align	2
+  90              		.global	ff_wtoupper
+  91              		.thumb
+  92              		.thumb_func
+  94              	ff_wtoupper:
+  95              	.LFB3:
+  96              		.loc 1 531 0
+  97              		@ args = 0, pretend = 0, frame = 0
+  98              		@ frame_needed = 0, uses_anonymous_args = 0
+ 526:Libraries/fat_sd/option/ccsbcs.c **** 
+ 527:Libraries/fat_sd/option/ccsbcs.c **** 
+ 528:Libraries/fat_sd/option/ccsbcs.c **** WCHAR ff_wtoupper (	/* Upper converted character */
+ 529:Libraries/fat_sd/option/ccsbcs.c **** 	WCHAR chr		/* Input character */
+ 530:Libraries/fat_sd/option/ccsbcs.c **** )
+ 531:Libraries/fat_sd/option/ccsbcs.c **** {
+  99              	 save eliminated.
+ 100              	.LVL10:
+ 101              		mov	r2, r0
+ 102              		@ lr needed for prologue
+ 103              		.loc 1 531 0
+ 104 0000 0246     		movs	r0, #0
+ 105              	.LVL11:
+ 106              		.loc 1 537 0
+ 107 0002 0020     		b	.L16
+ 108              	.L17:
+ 532:Libraries/fat_sd/option/ccsbcs.c **** 	static const WCHAR tbl_lower[] = { 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6
+ 533:Libraries/fat_sd/option/ccsbcs.c **** 	static const WCHAR tbl_upper[] = { 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4
+ 534:Libraries/fat_sd/option/ccsbcs.c **** 	int i;
+ 535:Libraries/fat_sd/option/ccsbcs.c **** 
+ 536:Libraries/fat_sd/option/ccsbcs.c **** 
+ 537:Libraries/fat_sd/option/ccsbcs.c **** 	for (i = 0; tbl_lower[i] && chr != tbl_lower[i]; i++) ;
+ 109              	r0, #1
+ 110 0004 00E0     	.L16:
+ 111              		ldr	r3, .L23
+ 112 0006 0130     		ldrh	r3, [r3, r0, lsl #1]
+ 113              		cbz	r3, .L18
+ 114 0008 054B     		cmp	r2, r3
+ 115 000a 33F81030 		bne	.L17
+ 116 000e 2BB1     		.loc 1 539 0
+ 117 0010 9A42     		ldr	r3, .L23+4
+ 118 0012 F8D1     		ldrh	r0, [r3, r0, lsl #1]
+ 538:Libraries/fat_sd/option/ccsbcs.c **** 
+ 539:Libraries/fat_sd/option/ccsbcs.c **** 	return tbl_lower[i] ? tbl_upper[i] : chr;
+ 119              		.L21
+ 120 0014 034B     	.LVL13:
+ 121 0016 33F81000 	.L18:
+ 122              		mov	r0, r2
+ 123 001a 00E0     	.LVL14:
+ 124              	.L21:
+ 125              		.loc 1 540 0
+ 126 001c 1046     		bx	lr
+ 127              	.L24:
+ 128              		.align	2
+ 540:Libraries/fat_sd/option/ccsbcs.c **** }
+ 129              	rd	.LANCHOR1
+ 130 001e 7047     		.word	.LANCHOR2
+ 131              	.LFE3:
+ 133              		.section	.rodata.Tbl,"a",%progbits
+ 134 0020 00000000 		.align	1
+ 135 0024 00000000 		.set	.LANCHOR0,. + 0
+ 138              	Tbl:
+ 139              		.short	8364
+ 140              		.short	0
+ 141              		.short	8218
+ 142              		.short	402
+ 143              		.short	8222
+ 144 0000 AC20     		.short	8230
+ 145 0002 0000     		.short	8224
+ 146 0004 1A20     		.short	8225
+ 147 0006 9201     		.short	710
+ 148 0008 1E20     		.short	8240
+ 149 000a 2620     		.short	352
+ 150 000c 2020     		.short	8249
+ 151 000e 2120     		.short	338
+ 152 0010 C602     		.short	0
+ 153 0012 3020     		.short	381
+ 154 0014 6001     		.short	0
+ 155 0016 3920     		.short	0
+ 156 0018 5201     		.short	8216
+ 157 001a 0000     		.short	8217
+ 158 001c 7D01     		.short	8220
+ 159 001e 0000     		.short	8221
+ 160 0020 0000     		.short	8226
+ 161 0022 1820     		.short	8211
+ 162 0024 1920     		.short	8212
+ 163 0026 1C20     		.short	732
+ 164 0028 1D20     		.short	8482
+ 165 002a 2220     		.short	353
+ 166 002c 1320     		.short	8250
+ 167 002e 1420     		.short	339
+ 168 0030 DC02     		.short	0
+ 169 0032 2221     		.short	382
+ 170 0034 6101     		.short	376
+ 171 0036 3A20     		.short	160
+ 172 0038 5301     		.short	161
+ 173 003a 0000     		.short	162
+ 174 003c 7E01     		.short	163
+ 175 003e 7801     		.short	164
+ 176 0040 A000     		.short	165
+ 177 0042 A100     		.short	166
+ 178 0044 A200     		.short	167
+ 179 0046 A300     		.short	168
+ 180 0048 A400     		.short	169
+ 181 004a A500     		.short	170
+ 182 004c A600     		.short	171
+ 183 004e A700     		.short	172
+ 184 0050 A800     		.short	173
+ 185 0052 A900     		.short	174
+ 186 0054 AA00     		.short	175
+ 187 0056 AB00     		.short	176
+ 188 0058 AC00     		.short	177
+ 189 005a AD00     		.short	178
+ 190 005c AE00     		.short	179
+ 191 005e AF00     		.short	180
+ 192 0060 B000     		.short	181
+ 193 0062 B100     		.short	182
+ 194 0064 B200     		.short	183
+ 195 0066 B300     		.short	184
+ 196 0068 B400     		.short	185
+ 197 006a B500     		.short	186
+ 198 006c B600     		.short	187
+ 199 006e B700     		.short	188
+ 200 0070 B800     		.short	189
+ 201 0072 B900     		.short	190
+ 202 0074 BA00     		.short	191
+ 203 0076 BB00     		.short	192
+ 204 0078 BC00     		.short	193
+ 205 007a BD00     		.short	194
+ 206 007c BE00     		.short	195
+ 207 007e BF00     		.short	196
+ 208 0080 C000     		.short	197
+ 209 0082 C100     		.short	198
+ 210 0084 C200     		.short	199
+ 211 0086 C300     		.short	200
+ 212 0088 C400     		.short	201
+ 213 008a C500     		.short	202
+ 214 008c C600     		.short	203
+ 215 008e C700     		.short	204
+ 216 0090 C800     		.short	205
+ 217 0092 C900     		.short	206
+ 218 0094 CA00     		.short	207
+ 219 0096 CB00     		.short	208
+ 220 0098 CC00     		.short	209
+ 221 009a CD00     		.short	210
+ 222 009c CE00     		.short	211
+ 223 009e CF00     		.short	212
+ 224 00a0 D000     		.short	213
+ 225 00a2 D100     		.short	214
+ 226 00a4 D200     		.short	215
+ 227 00a6 D300     		.short	216
+ 228 00a8 D400     		.short	217
+ 229 00aa D500     		.short	218
+ 230 00ac D600     		.short	219
+ 231 00ae D700     		.short	220
+ 232 00b0 D800     		.short	221
+ 233 00b2 D900     		.short	222
+ 234 00b4 DA00     		.short	223
+ 235 00b6 DB00     		.short	224
+ 236 00b8 DC00     		.short	225
+ 237 00ba DD00     		.short	226
+ 238 00bc DE00     		.short	227
+ 239 00be DF00     		.short	228
+ 240 00c0 E000     		.short	229
+ 241 00c2 E100     		.short	230
+ 242 00c4 E200     		.short	231
+ 243 00c6 E300     		.short	232
+ 244 00c8 E400     		.short	233
+ 245 00ca E500     		.short	234
+ 246 00cc E600     		.short	235
+ 247 00ce E700     		.short	236
+ 248 00d0 E800     		.short	237
+ 249 00d2 E900     		.short	238
+ 250 00d4 EA00     		.short	239
+ 251 00d6 EB00     		.short	240
+ 252 00d8 EC00     		.short	241
+ 253 00da ED00     		.short	242
+ 254 00dc EE00     		.short	243
+ 255 00de EF00     		.short	244
+ 256 00e0 F000     		.short	245
+ 257 00e2 F100     		.short	246
+ 258 00e4 F200     		.short	247
+ 259 00e6 F300     		.short	248
+ 260 00e8 F400     		.short	249
+ 261 00ea F500     		.short	250
+ 262 00ec F600     		.short	251
+ 263 00ee F700     		.short	252
+ 264 00f0 F800     		.short	253
+ 265 00f2 F900     		.short	254
+ 266 00f4 FA00     		.short	255
+ 267 00f6 FB00     		.section	.rodata.tbl_lower.1890,"a",%progbits
+ 268 00f8 FC00     		.align	1
+ 269 00fa FD00     		.set	.LANCHOR1,. + 0
+ 272              	tbl_lower.1890:
+ 273              		.short	97
+ 274              		.short	98
+ 275              		.short	99
+ 276              		.short	100
+ 277              		.short	101
+ 278 0000 6100     		.short	102
+ 279 0002 6200     		.short	103
+ 280 0004 6300     		.short	104
+ 281 0006 6400     		.short	105
+ 282 0008 6500     		.short	106
+ 283 000a 6600     		.short	107
+ 284 000c 6700     		.short	108
+ 285 000e 6800     		.short	109
+ 286 0010 6900     		.short	110
+ 287 0012 6A00     		.short	111
+ 288 0014 6B00     		.short	112
+ 289 0016 6C00     		.short	113
+ 290 0018 6D00     		.short	114
+ 291 001a 6E00     		.short	115
+ 292 001c 6F00     		.short	116
+ 293 001e 7000     		.short	117
+ 294 0020 7100     		.short	118
+ 295 0022 7200     		.short	119
+ 296 0024 7300     		.short	120
+ 297 0026 7400     		.short	121
+ 298 0028 7500     		.short	122
+ 299 002a 7600     		.short	161
+ 300 002c 7700     		.short	162
+ 301 002e 7800     		.short	163
+ 302 0030 7900     		.short	165
+ 303 0032 7A00     		.short	172
+ 304 0034 A100     		.short	175
+ 305 0036 A200     		.short	224
+ 306 0038 A300     		.short	225
+ 307 003a A500     		.short	226
+ 308 003c AC00     		.short	227
+ 309 003e AF00     		.short	228
+ 310 0040 E000     		.short	229
+ 311 0042 E100     		.short	230
+ 312 0044 E200     		.short	231
+ 313 0046 E300     		.short	232
+ 314 0048 E400     		.short	233
+ 315 004a E500     		.short	234
+ 316 004c E600     		.short	235
+ 317 004e E700     		.short	236
+ 318 0050 E800     		.short	237
+ 319 0052 E900     		.short	238
+ 320 0054 EA00     		.short	239
+ 321 0056 EB00     		.short	240
+ 322 0058 EC00     		.short	241
+ 323 005a ED00     		.short	242
+ 324 005c EE00     		.short	243
+ 325 005e EF00     		.short	244
+ 326 0060 F000     		.short	245
+ 327 0062 F100     		.short	246
+ 328 0064 F200     		.short	248
+ 329 0066 F300     		.short	249
+ 330 0068 F400     		.short	250
+ 331 006a F500     		.short	251
+ 332 006c F600     		.short	252
+ 333 006e F800     		.short	253
+ 334 0070 F900     		.short	254
+ 335 0072 FA00     		.short	255
+ 336 0074 FB00     		.short	257
+ 337 0076 FC00     		.short	259
+ 338 0078 FD00     		.short	261
+ 339 007a FE00     		.short	263
+ 340 007c FF00     		.short	265
+ 341 007e 0101     		.short	267
+ 342 0080 0301     		.short	269
+ 343 0082 0501     		.short	271
+ 344 0084 0701     		.short	273
+ 345 0086 0901     		.short	275
+ 346 0088 0B01     		.short	277
+ 347 008a 0D01     		.short	279
+ 348 008c 0F01     		.short	281
+ 349 008e 1101     		.short	283
+ 350 0090 1301     		.short	285
+ 351 0092 1501     		.short	287
+ 352 0094 1701     		.short	289
+ 353 0096 1901     		.short	291
+ 354 0098 1B01     		.short	293
+ 355 009a 1D01     		.short	295
+ 356 009c 1F01     		.short	297
+ 357 009e 2101     		.short	299
+ 358 00a0 2301     		.short	301
+ 359 00a2 2501     		.short	303
+ 360 00a4 2701     		.short	305
+ 361 00a6 2901     		.short	307
+ 362 00a8 2B01     		.short	309
+ 363 00aa 2D01     		.short	311
+ 364 00ac 2F01     		.short	314
+ 365 00ae 3101     		.short	316
+ 366 00b0 3301     		.short	318
+ 367 00b2 3501     		.short	320
+ 368 00b4 3701     		.short	322
+ 369 00b6 3A01     		.short	324
+ 370 00b8 3C01     		.short	326
+ 371 00ba 3E01     		.short	328
+ 372 00bc 4001     		.short	331
+ 373 00be 4201     		.short	333
+ 374 00c0 4401     		.short	335
+ 375 00c2 4601     		.short	337
+ 376 00c4 4801     		.short	339
+ 377 00c6 4B01     		.short	341
+ 378 00c8 4D01     		.short	343
+ 379 00ca 4F01     		.short	345
+ 380 00cc 5101     		.short	347
+ 381 00ce 5301     		.short	349
+ 382 00d0 5501     		.short	351
+ 383 00d2 5701     		.short	353
+ 384 00d4 5901     		.short	355
+ 385 00d6 5B01     		.short	357
+ 386 00d8 5D01     		.short	359
+ 387 00da 5F01     		.short	361
+ 388 00dc 6101     		.short	363
+ 389 00de 6301     		.short	365
+ 390 00e0 6501     		.short	367
+ 391 00e2 6701     		.short	369
+ 392 00e4 6901     		.short	371
+ 393 00e6 6B01     		.short	373
+ 394 00e8 6D01     		.short	375
+ 395 00ea 6F01     		.short	378
+ 396 00ec 7101     		.short	380
+ 397 00ee 7301     		.short	382
+ 398 00f0 7501     		.short	402
+ 399 00f2 7701     		.short	945
+ 400 00f4 7A01     		.short	946
+ 401 00f6 7C01     		.short	947
+ 402 00f8 7E01     		.short	948
+ 403 00fa 9201     		.short	949
+ 404 00fc B103     		.short	950
+ 405 00fe B203     		.short	951
+ 406 0100 B303     		.short	952
+ 407 0102 B403     		.short	953
+ 408 0104 B503     		.short	954
+ 409 0106 B603     		.short	955
+ 410 0108 B703     		.short	956
+ 411 010a B803     		.short	957
+ 412 010c B903     		.short	958
+ 413 010e BA03     		.short	959
+ 414 0110 BB03     		.short	960
+ 415 0112 BC03     		.short	961
+ 416 0114 BD03     		.short	963
+ 417 0116 BE03     		.short	964
+ 418 0118 BF03     		.short	965
+ 419 011a C003     		.short	966
+ 420 011c C103     		.short	967
+ 421 011e C303     		.short	968
+ 422 0120 C403     		.short	969
+ 423 0122 C503     		.short	970
+ 424 0124 C603     		.short	1072
+ 425 0126 C703     		.short	1073
+ 426 0128 C803     		.short	1074
+ 427 012a C903     		.short	1075
+ 428 012c CA03     		.short	1076
+ 429 012e 3004     		.short	1077
+ 430 0130 3104     		.short	1078
+ 431 0132 3204     		.short	1079
+ 432 0134 3304     		.short	1080
+ 433 0136 3404     		.short	1081
+ 434 0138 3504     		.short	1082
+ 435 013a 3604     		.short	1083
+ 436 013c 3704     		.short	1084
+ 437 013e 3804     		.short	1085
+ 438 0140 3904     		.short	1086
+ 439 0142 3A04     		.short	1087
+ 440 0144 3B04     		.short	1088
+ 441 0146 3C04     		.short	1089
+ 442 0148 3D04     		.short	1090
+ 443 014a 3E04     		.short	1091
+ 444 014c 3F04     		.short	1092
+ 445 014e 4004     		.short	1093
+ 446 0150 4104     		.short	1094
+ 447 0152 4204     		.short	1095
+ 448 0154 4304     		.short	1096
+ 449 0156 4404     		.short	1097
+ 450 0158 4504     		.short	1098
+ 451 015a 4604     		.short	1099
+ 452 015c 4704     		.short	1100
+ 453 015e 4804     		.short	1101
+ 454 0160 4904     		.short	1102
+ 455 0162 4A04     		.short	1103
+ 456 0164 4B04     		.short	1105
+ 457 0166 4C04     		.short	1106
+ 458 0168 4D04     		.short	1107
+ 459 016a 4E04     		.short	1108
+ 460 016c 4F04     		.short	1109
+ 461 016e 5104     		.short	1110
+ 462 0170 5204     		.short	1111
+ 463 0172 5304     		.short	1112
+ 464 0174 5404     		.short	1113
+ 465 0176 5504     		.short	1114
+ 466 0178 5604     		.short	1115
+ 467 017a 5704     		.short	1116
+ 468 017c 5804     		.short	1118
+ 469 017e 5904     		.short	1119
+ 470 0180 5A04     		.short	8560
+ 471 0182 5B04     		.short	8561
+ 472 0184 5C04     		.short	8562
+ 473 0186 5E04     		.short	8563
+ 474 0188 5F04     		.short	8564
+ 475 018a 7021     		.short	8565
+ 476 018c 7121     		.short	8566
+ 477 018e 7221     		.short	8567
+ 478 0190 7321     		.short	8568
+ 479 0192 7421     		.short	8569
+ 480 0194 7521     		.short	8570
+ 481 0196 7621     		.short	8571
+ 482 0198 7721     		.short	8572
+ 483 019a 7821     		.short	8573
+ 484 019c 7921     		.short	8574
+ 485 019e 7A21     		.short	8575
+ 486 01a0 7B21     		.short	-191
+ 487 01a2 7C21     		.short	-190
+ 488 01a4 7D21     		.short	-189
+ 489 01a6 7E21     		.short	-188
+ 490 01a8 7F21     		.short	-187
+ 491 01aa 41FF     		.short	-186
+ 492 01ac 42FF     		.short	-185
+ 493 01ae 43FF     		.short	-184
+ 494 01b0 44FF     		.short	-183
+ 495 01b2 45FF     		.short	-182
+ 496 01b4 46FF     		.short	-181
+ 497 01b6 47FF     		.short	-180
+ 498 01b8 48FF     		.short	-179
+ 499 01ba 49FF     		.short	-178
+ 500 01bc 4AFF     		.short	-177
+ 501 01be 4BFF     		.short	-176
+ 502 01c0 4CFF     		.short	-175
+ 503 01c2 4DFF     		.short	-174
+ 504 01c4 4EFF     		.short	-173
+ 505 01c6 4FFF     		.short	-172
+ 506 01c8 50FF     		.short	-171
+ 507 01ca 51FF     		.short	-170
+ 508 01cc 52FF     		.short	-169
+ 509 01ce 53FF     		.short	-168
+ 510 01d0 54FF     		.short	-167
+ 511 01d2 55FF     		.short	-166
+ 512 01d4 56FF     		.short	0
+ 513 01d6 57FF     		.section	.rodata.tbl_upper.1891,"a",%progbits
+ 514 01d8 58FF     		.align	1
+ 515 01da 59FF     		.set	.LANCHOR2,. + 0
+ 518              	tbl_upper.1891:
+ 519              		.short	65
+ 520              		.short	66
+ 521              		.short	67
+ 522              		.short	68
+ 523              		.short	69
+ 524 0000 4100     		.short	70
+ 525 0002 4200     		.short	71
+ 526 0004 4300     		.short	72
+ 527 0006 4400     		.short	73
+ 528 0008 4500     		.short	74
+ 529 000a 4600     		.short	75
+ 530 000c 4700     		.short	76
+ 531 000e 4800     		.short	77
+ 532 0010 4900     		.short	78
+ 533 0012 4A00     		.short	79
+ 534 0014 4B00     		.short	80
+ 535 0016 4C00     		.short	81
+ 536 0018 4D00     		.short	82
+ 537 001a 4E00     		.short	83
+ 538 001c 4F00     		.short	84
+ 539 001e 5000     		.short	85
+ 540 0020 5100     		.short	86
+ 541 0022 5200     		.short	87
+ 542 0024 5300     		.short	88
+ 543 0026 5400     		.short	89
+ 544 0028 5500     		.short	90
+ 545 002a 5600     		.short	33
+ 546 002c 5700     		.short	-32
+ 547 002e 5800     		.short	-31
+ 548 0030 5900     		.short	-27
+ 549 0032 5A00     		.short	-30
+ 550 0034 2100     		.short	-29
+ 551 0036 E0FF     		.short	192
+ 552 0038 E1FF     		.short	193
+ 553 003a E5FF     		.short	194
+ 554 003c E2FF     		.short	195
+ 555 003e E3FF     		.short	196
+ 556 0040 C000     		.short	197
+ 557 0042 C100     		.short	198
+ 558 0044 C200     		.short	199
+ 559 0046 C300     		.short	200
+ 560 0048 C400     		.short	201
+ 561 004a C500     		.short	202
+ 562 004c C600     		.short	203
+ 563 004e C700     		.short	204
+ 564 0050 C800     		.short	205
+ 565 0052 C900     		.short	206
+ 566 0054 CA00     		.short	207
+ 567 0056 CB00     		.short	208
+ 568 0058 CC00     		.short	209
+ 569 005a CD00     		.short	210
+ 570 005c CE00     		.short	211
+ 571 005e CF00     		.short	212
+ 572 0060 D000     		.short	213
+ 573 0062 D100     		.short	214
+ 574 0064 D200     		.short	216
+ 575 0066 D300     		.short	217
+ 576 0068 D400     		.short	218
+ 577 006a D500     		.short	219
+ 578 006c D600     		.short	220
+ 579 006e D800     		.short	221
+ 580 0070 D900     		.short	222
+ 581 0072 DA00     		.short	376
+ 582 0074 DB00     		.short	256
+ 583 0076 DC00     		.short	258
+ 584 0078 DD00     		.short	260
+ 585 007a DE00     		.short	262
+ 586 007c 7801     		.short	264
+ 587 007e 0001     		.short	266
+ 588 0080 0201     		.short	268
+ 589 0082 0401     		.short	270
+ 590 0084 0601     		.short	272
+ 591 0086 0801     		.short	274
+ 592 0088 0A01     		.short	276
+ 593 008a 0C01     		.short	278
+ 594 008c 0E01     		.short	280
+ 595 008e 1001     		.short	282
+ 596 0090 1201     		.short	284
+ 597 0092 1401     		.short	286
+ 598 0094 1601     		.short	288
+ 599 0096 1801     		.short	290
+ 600 0098 1A01     		.short	292
+ 601 009a 1C01     		.short	294
+ 602 009c 1E01     		.short	296
+ 603 009e 2001     		.short	298
+ 604 00a0 2201     		.short	300
+ 605 00a2 2401     		.short	302
+ 606 00a4 2601     		.short	304
+ 607 00a6 2801     		.short	306
+ 608 00a8 2A01     		.short	308
+ 609 00aa 2C01     		.short	310
+ 610 00ac 2E01     		.short	313
+ 611 00ae 3001     		.short	315
+ 612 00b0 3201     		.short	317
+ 613 00b2 3401     		.short	319
+ 614 00b4 3601     		.short	321
+ 615 00b6 3901     		.short	323
+ 616 00b8 3B01     		.short	325
+ 617 00ba 3D01     		.short	327
+ 618 00bc 3F01     		.short	330
+ 619 00be 4101     		.short	332
+ 620 00c0 4301     		.short	334
+ 621 00c2 4501     		.short	336
+ 622 00c4 4701     		.short	338
+ 623 00c6 4A01     		.short	340
+ 624 00c8 4C01     		.short	342
+ 625 00ca 4E01     		.short	344
+ 626 00cc 5001     		.short	346
+ 627 00ce 5201     		.short	348
+ 628 00d0 5401     		.short	350
+ 629 00d2 5601     		.short	352
+ 630 00d4 5801     		.short	354
+ 631 00d6 5A01     		.short	356
+ 632 00d8 5C01     		.short	358
+ 633 00da 5E01     		.short	360
+ 634 00dc 6001     		.short	362
+ 635 00de 6201     		.short	364
+ 636 00e0 6401     		.short	366
+ 637 00e2 6601     		.short	368
+ 638 00e4 6801     		.short	370
+ 639 00e6 6A01     		.short	372
+ 640 00e8 6C01     		.short	374
+ 641 00ea 6E01     		.short	377
+ 642 00ec 7001     		.short	379
+ 643 00ee 7201     		.short	381
+ 644 00f0 7401     		.short	401
+ 645 00f2 7601     		.short	913
+ 646 00f4 7901     		.short	914
+ 647 00f6 7B01     		.short	915
+ 648 00f8 7D01     		.short	916
+ 649 00fa 9101     		.short	917
+ 650 00fc 9103     		.short	918
+ 651 00fe 9203     		.short	919
+ 652 0100 9303     		.short	920
+ 653 0102 9403     		.short	921
+ 654 0104 9503     		.short	922
+ 655 0106 9603     		.short	923
+ 656 0108 9703     		.short	924
+ 657 010a 9803     		.short	925
+ 658 010c 9903     		.short	926
+ 659 010e 9A03     		.short	927
+ 660 0110 9B03     		.short	928
+ 661 0112 9C03     		.short	929
+ 662 0114 9D03     		.short	931
+ 663 0116 9E03     		.short	932
+ 664 0118 9F03     		.short	933
+ 665 011a A003     		.short	934
+ 666 011c A103     		.short	935
+ 667 011e A303     		.short	936
+ 668 0120 A403     		.short	937
+ 669 0122 A503     		.short	938
+ 670 0124 A603     		.short	1040
+ 671 0126 A703     		.short	1041
+ 672 0128 A803     		.short	1042
+ 673 012a A903     		.short	1043
+ 674 012c AA03     		.short	1044
+ 675 012e 1004     		.short	1045
+ 676 0130 1104     		.short	1046
+ 677 0132 1204     		.short	1047
+ 678 0134 1304     		.short	1048
+ 679 0136 1404     		.short	1049
+ 680 0138 1504     		.short	1050
+ 681 013a 1604     		.short	1051
+ 682 013c 1704     		.short	1052
+ 683 013e 1804     		.short	1053
+ 684 0140 1904     		.short	1054
+ 685 0142 1A04     		.short	1055
+ 686 0144 1B04     		.short	1056
+ 687 0146 1C04     		.short	1057
+ 688 0148 1D04     		.short	1058
+ 689 014a 1E04     		.short	1059
+ 690 014c 1F04     		.short	1060
+ 691 014e 2004     		.short	1061
+ 692 0150 2104     		.short	1062
+ 693 0152 2204     		.short	1063
+ 694 0154 2304     		.short	1064
+ 695 0156 2404     		.short	1065
+ 696 0158 2504     		.short	1066
+ 697 015a 2604     		.short	1067
+ 698 015c 2704     		.short	1068
+ 699 015e 2804     		.short	1069
+ 700 0160 2904     		.short	1070
+ 701 0162 2A04     		.short	1071
+ 702 0164 2B04     		.short	1025
+ 703 0166 2C04     		.short	1026
+ 704 0168 2D04     		.short	1027
+ 705 016a 2E04     		.short	1028
+ 706 016c 2F04     		.short	1029
+ 707 016e 0104     		.short	1030
+ 708 0170 0204     		.short	1031
+ 709 0172 0304     		.short	1032
+ 710 0174 0404     		.short	1033
+ 711 0176 0504     		.short	1034
+ 712 0178 0604     		.short	1035
+ 713 017a 0704     		.short	1036
+ 714 017c 0804     		.short	1038
+ 715 017e 0904     		.short	1039
+ 716 0180 0A04     		.short	8544
+ 717 0182 0B04     		.short	8545
+ 718 0184 0C04     		.short	8546
+ 719 0186 0E04     		.short	8547
+ 720 0188 0F04     		.short	8548
+ 721 018a 6021     		.short	8549
+ 722 018c 6121     		.short	8550
+ 723 018e 6221     		.short	8551
+ 724 0190 6321     		.short	8552
+ 725 0192 6421     		.short	8553
+ 726 0194 6521     		.short	8554
+ 727 0196 6621     		.short	8555
+ 728 0198 6721     		.short	8556
+ 729 019a 6821     		.short	8557
+ 730 019c 6921     		.short	8558
+ 731 019e 6A21     		.short	8559
+ 732 01a0 6B21     		.short	-223
+ 733 01a2 6C21     		.short	-222
+ 734 01a4 6D21     		.short	-221
+ 735 01a6 6E21     		.short	-220
+ 736 01a8 6F21     		.short	-219
+ 737 01aa 21FF     		.short	-218
+ 738 01ac 22FF     		.short	-217
+ 739 01ae 23FF     		.short	-216
+ 740 01b0 24FF     		.short	-215
+ 741 01b2 25FF     		.short	-214
+ 742 01b4 26FF     		.short	-213
+ 743 01b6 27FF     		.short	-212
+ 744 01b8 28FF     		.short	-211
+ 745 01ba 29FF     		.short	-210
+ 746 01bc 2AFF     		.short	-209
+ 747 01be 2BFF     		.short	-208
+ 748 01c0 2CFF     		.short	-207
+ 749 01c2 2DFF     		.short	-206
+ 750 01c4 2EFF     		.short	-205
+ 751 01c6 2FFF     		.short	-204
+ 752 01c8 30FF     		.short	-203
+ 753 01ca 31FF     		.short	-202
+ 754 01cc 32FF     		.short	-201
+ 755 01ce 33FF     		.short	-200
+ 756 01d0 34FF     		.short	-199
+ 757 01d2 35FF     		.short	-198
+ 758 01d4 36FF     		.short	0
+ 759 01d6 37FF     		.section	.debug_frame,"",%progbits
+ 760 01d8 38FF     	.Lframe0:
+ 761 01da 39FF     		.4byte	.LECIE0-.LSCIE0
+ 762 01dc 3AFF     	.LSCIE0:
+ 763 01de 0000     		.4byte	0xffffffff
+ 796              		.4byte	.LVL1
+DEFINED SYMBOLS
+                            *ABS*:00000000 ccsbcs.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:28     .text.ff_convert:00000000 ff_convert
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:25     .text.ff_convert:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:88     .text.ff_convert:0000003c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:97     .text.ff_wtoupper:00000000 ff_wtoupper
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:94     .text.ff_wtoupper:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:134    .text.ff_wtoupper:00000020 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:143    .rodata.Tbl:00000000 Tbl
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:144    .rodata.Tbl:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:277    .rodata.tbl_lower.1890:00000000 tbl_lower.1890
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:278    .rodata.tbl_lower.1890:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:523    .rodata.tbl_upper.1891:00000000 tbl_upper.1891
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:524    .rodata.tbl_upper.1891:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccS2caaa.s:800    .debug_loc:00000000 $d
+
+NO UNDEFINED SYMBOLS

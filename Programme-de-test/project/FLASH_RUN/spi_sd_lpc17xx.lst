@@ -1,0 +1,2817 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"spi_sd_lpc17xx.c"
+  21              	.Ltext0:
+  22              		.section	.text.spi_rw,"ax",%progbits
+  23              		.align	2
+  24              		.thumb
+  25              		.thumb_func
+  27              	spi_rw:
+  28              	.LFB42:
+  29              		.file 1 "Libraries/fat_sd/spi_sd_lpc17xx.c"
+   1:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+   2:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* MMC/SDSC/SDHC (in SPI mode) control module for LPC17xx Version 0.8.0  */
+   3:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+   4:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+   5:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*
+   6:Libraries/fat_sd/spi_sd_lpc17xx.c ****   Basic MMC/SD-access code: ChaN
+   7:Libraries/fat_sd/spi_sd_lpc17xx.c ****   LPC2xxx SSP-Fifo-Suppot: Mike Anton
+   8:Libraries/fat_sd/spi_sd_lpc17xx.c ****   LPC17xx driver: Martin Thomas
+   9:Libraries/fat_sd/spi_sd_lpc17xx.c **** */
+  10:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  11:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Copyright (c) 2007, 2010, ChaN, Martin Thomas, Mike Anton
+  12:Libraries/fat_sd/spi_sd_lpc17xx.c ****    All rights reserved.
+  13:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  14:Libraries/fat_sd/spi_sd_lpc17xx.c ****    Redistribution and use in source and binary forms, with or without
+  15:Libraries/fat_sd/spi_sd_lpc17xx.c ****    modification, are permitted provided that the following conditions are met:
+  16:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  17:Libraries/fat_sd/spi_sd_lpc17xx.c ****    * Redistributions of source code must retain the above copyright
+  18:Libraries/fat_sd/spi_sd_lpc17xx.c ****      notice, this list of conditions and the following disclaimer.
+  19:Libraries/fat_sd/spi_sd_lpc17xx.c ****    * Redistributions in binary form must reproduce the above copyright
+  20:Libraries/fat_sd/spi_sd_lpc17xx.c ****      notice, this list of conditions and the following disclaimer in
+  21:Libraries/fat_sd/spi_sd_lpc17xx.c ****      the documentation and/or other materials provided with the
+  22:Libraries/fat_sd/spi_sd_lpc17xx.c ****      distribution.
+  23:Libraries/fat_sd/spi_sd_lpc17xx.c ****    * Neither the name of the copyright holders nor the names of
+  24:Libraries/fat_sd/spi_sd_lpc17xx.c ****      contributors may be used to endorse or promote products derived
+  25:Libraries/fat_sd/spi_sd_lpc17xx.c ****      from this software without specific prior written permission.
+  26:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  27:Libraries/fat_sd/spi_sd_lpc17xx.c ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  28:Libraries/fat_sd/spi_sd_lpc17xx.c ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  29:Libraries/fat_sd/spi_sd_lpc17xx.c ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  30:Libraries/fat_sd/spi_sd_lpc17xx.c ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  31:Libraries/fat_sd/spi_sd_lpc17xx.c ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  32:Libraries/fat_sd/spi_sd_lpc17xx.c ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  33:Libraries/fat_sd/spi_sd_lpc17xx.c ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  34:Libraries/fat_sd/spi_sd_lpc17xx.c ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  35:Libraries/fat_sd/spi_sd_lpc17xx.c ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  36:Libraries/fat_sd/spi_sd_lpc17xx.c ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  37:Libraries/fat_sd/spi_sd_lpc17xx.c ****   POSSIBILITY OF SUCH DAMAGE.
+  38:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  39:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  40:Libraries/fat_sd/spi_sd_lpc17xx.c ****   Yes, this license also means you. Even if you are a developer of
+  41:Libraries/fat_sd/spi_sd_lpc17xx.c ****   NXP application-notes and source-code. Just removing some comments,
+  42:Libraries/fat_sd/spi_sd_lpc17xx.c ****   renaming functions and and moving some lines around is not enough to
+  43:Libraries/fat_sd/spi_sd_lpc17xx.c ****   get rid of this license.
+  44:Libraries/fat_sd/spi_sd_lpc17xx.c **** */
+  45:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  46:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  47:Libraries/fat_sd/spi_sd_lpc17xx.c **** #include "lpc_types.h"
+  48:Libraries/fat_sd/spi_sd_lpc17xx.c **** #include "lpc17xx_pinsel.h"
+  49:Libraries/fat_sd/spi_sd_lpc17xx.c **** #include "lpc17xx_gpio.h"
+  50:Libraries/fat_sd/spi_sd_lpc17xx.c **** #include "lpc17xx_ssp.h"
+  51:Libraries/fat_sd/spi_sd_lpc17xx.c **** #include "lpc17xx_clkpwr.h"
+  52:Libraries/fat_sd/spi_sd_lpc17xx.c **** #include "lpc17xx_gpdma.h"
+  53:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  54:Libraries/fat_sd/spi_sd_lpc17xx.c **** #include "integer.h"
+  55:Libraries/fat_sd/spi_sd_lpc17xx.c **** #include "spi_sd_lpc17xx.h"
+  56:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  57:Libraries/fat_sd/spi_sd_lpc17xx.c **** /// #include "monitor.h"
+  58:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  59:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* available modes: */
+  60:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define SPI_SD_USE_POLLING  0
+  61:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define SPI_SD_USE_FIFO     1
+  62:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define SPI_SD_USE_DMA      2
+  63:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  64:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* used mode : */
+  65:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define SPI_SD_ACCESS_MODE  SPI_SD_USE_FIFO
+  66:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  67:Libraries/fat_sd/spi_sd_lpc17xx.c **** // For Olimex LPC1766-STK
+  68:Libraries/fat_sd/spi_sd_lpc17xx.c **** // MMC_PWR (P-Channel FET): P0.21
+  69:Libraries/fat_sd/spi_sd_lpc17xx.c **** // SSEL1: P0.6, SCK1: P0.7, MISO1: P0.8, MOSI1: P0.9
+  70:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define SOCKET_POWER_PORT        0
+  71:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define SOCKET_POWER_PIN        21
+  72:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define SOCKET_POWER_MASK       (1 << SOCKET_POWER_PIN)
+  73:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define SOCKET_POWER_OPENDRAIN  PINSEL_PINMODE_OPENDRAIN /* 33k pull-up mounted */
+  74:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  75:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* used SSP-port: */
+  76:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CARD_SSP                 1
+  77:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  78:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*--------------------------------------------------------------------------
+  79:Libraries/fat_sd/spi_sd_lpc17xx.c ****    Module Private Functions and Variables
+  80:Libraries/fat_sd/spi_sd_lpc17xx.c **** ---------------------------------------------------------------------------*/
+  81:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+  82:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Definitions for MMC/SDC command */
+  83:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD0	(0x40+0)	/* GO_IDLE_STATE */
+  84:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD1	(0x40+1)	/* SEND_OP_COND (MMC) */
+  85:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define ACMD41	(0xC0+41)	/* SEND_OP_COND (SDC) */
+  86:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD8	(0x40+8)	/* SEND_IF_COND */
+  87:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD9	(0x40+9)	/* SEND_CSD */
+  88:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD10	(0x40+10)	/* SEND_CID */
+  89:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD12	(0x40+12)	/* STOP_TRANSMISSION */
+  90:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define ACMD13	(0xC0+13)	/* SD_STATUS (SDC) */
+  91:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD16	(0x40+16)	/* SET_BLOCKLEN */
+  92:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD17	(0x40+17)	/* READ_SINGLE_BLOCK */
+  93:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD18	(0x40+18)	/* READ_MULTIPLE_BLOCK */
+  94:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD23	(0x40+23)	/* SET_BLOCK_COUNT (MMC) */
+  95:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define ACMD23	(0xC0+23)	/* SET_WR_BLK_ERASE_COUNT (SDC) */
+  96:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD24	(0x40+24)	/* WRITE_BLOCK */
+  97:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD25	(0x40+25)	/* WRITE_MULTIPLE_BLOCK */
+  98:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD55	(0x40+55)	/* APP_CMD */
+  99:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define CMD58	(0x40+58)	/* READ_OCR */
+ 100:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 101:Libraries/fat_sd/spi_sd_lpc17xx.c **** #if ( SPI_SD_ACCESS_MODE == SPI_SD_USE_DMA )
+ 102:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 103:Libraries/fat_sd/spi_sd_lpc17xx.c **** enum dma_direction_ { MEM_TO_CARD, CARD_TO_MEM };
+ 104:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 105:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define DMA_CHANNEL_TX          0
+ 106:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define DMA_CHANNEL_TX_HANDLE   LPC_GPDMACH0
+ 107:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define DMA_CHANNEL_RX          1
+ 108:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define DMA_CHANNEL_RX_HANDLE   LPC_GPDMACH1
+ 109:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 110:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define DMA_DUMMY_SIZE 512
+ 111:Libraries/fat_sd/spi_sd_lpc17xx.c **** #if USE_DMA_DUMMY_RAM
+ 112:Libraries/fat_sd/spi_sd_lpc17xx.c **** static
+ 113:Libraries/fat_sd/spi_sd_lpc17xx.c **** #else
+ 114:Libraries/fat_sd/spi_sd_lpc17xx.c **** static const
+ 115:Libraries/fat_sd/spi_sd_lpc17xx.c **** #endif /* USE_DMA_DUMMY_RAM */
+ 116:Libraries/fat_sd/spi_sd_lpc17xx.c **** BYTE dma_dummy[DMA_DUMMY_SIZE] = {
+ 117:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 118:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 119:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 120:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 121:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 122:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 123:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 124:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 125:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 126:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 127:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 128:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 129:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 130:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 131:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 132:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 133:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 134:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 135:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 136:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 137:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 138:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 139:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 140:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 141:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 142:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 143:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 144:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 145:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 146:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 147:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 148:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 149:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 150:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 151:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 152:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+ 153:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF };
+ 154:Libraries/fat_sd/spi_sd_lpc17xx.c **** #endif /* USE_DMA */
+ 155:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 156:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 157:Libraries/fat_sd/spi_sd_lpc17xx.c **** static const DWORD socket_state_mask_cp = (1 << 0);
+ 158:Libraries/fat_sd/spi_sd_lpc17xx.c **** static const DWORD socket_state_mask_wp = (1 << 1);
+ 159:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 160:Libraries/fat_sd/spi_sd_lpc17xx.c **** static volatile DSTATUS Stat = STA_NOINIT;  /* Disk status */
+ 161:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 162:Libraries/fat_sd/spi_sd_lpc17xx.c **** static volatile DWORD Timer1, Timer2;       /* 100Hz decrement timers */
+ 163:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 164:Libraries/fat_sd/spi_sd_lpc17xx.c **** static BYTE CardType;                       /* Card type flags */
+ 165:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 166:Libraries/fat_sd/spi_sd_lpc17xx.c **** static BYTE socket_powered;
+ 167:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 168:Libraries/fat_sd/spi_sd_lpc17xx.c **** enum speed_setting { INTERFACE_SLOW, INTERFACE_FAST };
+ 169:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 170:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 171:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* socket control low-level functions                                    */
+ 172:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 173:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 174:Libraries/fat_sd/spi_sd_lpc17xx.c **** static inline uint32_t socket_is_empty(void)
+ 175:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 176:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return 0; // not connected on LPC1766-STK -> fake inserted
+ 177:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 178:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 179:Libraries/fat_sd/spi_sd_lpc17xx.c **** static inline uint32_t socket_is_write_protected(void)
+ 180:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 181:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return 0; // not connected on LPC1766-STK -> fake not protected
+ 182:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 183:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 184:Libraries/fat_sd/spi_sd_lpc17xx.c **** static void socket_power_on()
+ 185:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 186:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPIO_ClearValue(SOCKET_POWER_PORT, SOCKET_POWER_MASK);
+ 187:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	socket_powered = 1;
+ 188:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 189:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 190:Libraries/fat_sd/spi_sd_lpc17xx.c **** static void socket_power_off()
+ 191:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 192:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPIO_SetValue(SOCKET_POWER_PORT, SOCKET_POWER_MASK);
+ 193:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	socket_powered = 0;
+ 194:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 195:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 196:Libraries/fat_sd/spi_sd_lpc17xx.c **** static BYTE socket_is_powered()
+ 197:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 198:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return socket_powered;
+ 199:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 200:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 201:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 202:Libraries/fat_sd/spi_sd_lpc17xx.c **** static void socket_init()
+ 203:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 204:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_CFG_Type PinCfg;
+ 205:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 206:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// Power P-Channel FET
+ 207:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Funcnum   = 0;
+ 208:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.OpenDrain = SOCKET_POWER_OPENDRAIN;
+ 209:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinmode   = 0;
+ 210:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinnum    = SOCKET_POWER_PIN;
+ 211:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Portnum   = SOCKET_POWER_PORT;
+ 212:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_ConfigPin(&PinCfg);
+ 213:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	socket_power_off();
+ 214:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	socket_powered = 0;
+ 215:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPIO_SetDir(SOCKET_POWER_PORT, SOCKET_POWER_MASK, 1);
+ 216:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 217:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// card-present switch
+ 218:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// n/a
+ 219:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 220:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// write-protect switch
+ 221:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// n/a
+ 222:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 223:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 224:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 225:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 226:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* SPI low-level functions                                               */
+ 227:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 228:Libraries/fat_sd/spi_sd_lpc17xx.c **** #if ( CARD_SSP == 1 )
+ 229:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 230:Libraries/fat_sd/spi_sd_lpc17xx.c **** static inline void select_card()
+ 231:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 232:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// SSEL1 P0.6 low
+ 233:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPIO_ClearValue(0, (1 << 6)); // LPC_GPIO0->FIOCLR = (1<<6);
+ 234:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 235:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 236:Libraries/fat_sd/spi_sd_lpc17xx.c **** static inline void de_select_card()
+ 237:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 238:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// SSEL1 high
+ 239:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPIO_SetValue(0, (1 << 6)); // LPC_GPIO0->FIOSET = (1<<6);
+ 240:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 241:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 242:Libraries/fat_sd/spi_sd_lpc17xx.c **** static void spi_set_speed( enum speed_setting speed )
+ 243:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 244:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if ( speed == INTERFACE_SLOW ) {
+ 245:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		SSP_SetClock(LPC_SSP1, 400000);
+ 246:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	} else {
+ 247:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		SSP_SetClock(LPC_SSP1, 25000000);
+ 248:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 249:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 250:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 251:Libraries/fat_sd/spi_sd_lpc17xx.c **** static void spi_init(void)
+ 252:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 253:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_CFG_Type PinCfg;
+ 254:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	SSP_CFG_Type SSP_ConfigStruct;
+ 255:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 256:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// SSEL1 P0.6 as GPIO, pull-up mounted but driven push/pull here
+ 257:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Funcnum   = PINSEL_FUNC_0;
+ 258:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.OpenDrain = PINSEL_PINMODE_NORMAL;
+ 259:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinmode   = PINSEL_PINMODE_PULLUP;
+ 260:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinnum    = 6;
+ 261:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Portnum   = 0;
+ 262:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	de_select_card();
+ 263:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPIO_SetDir(0, (1 << 6), 1);
+ 264:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_ConfigPin(&PinCfg);
+ 265:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// SCK P0.7 alternate function 0b10
+ 266:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Funcnum   = PINSEL_FUNC_2;
+ 267:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinnum    = 7;
+ 268:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_ConfigPin(&PinCfg);
+ 269:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// MISO P0.8
+ 270:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinnum    = 8;
+ 271:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_ConfigPin(&PinCfg);
+ 272:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	// MOSI P0.9
+ 273:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinnum    = 9;
+ 274:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_ConfigPin(&PinCfg);
+ 275:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 276:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	SSP_ConfigStructInit(&SSP_ConfigStruct);
+ 277:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	SSP_Init(LPC_SSP1, &SSP_ConfigStruct);
+ 278:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 279:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	CLKPWR_SetPCLKDiv(CLKPWR_PCLKSEL_SSP1, CLKPWR_PCLKSEL_CCLK_DIV_2);
+ 280:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 281:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	SSP_Cmd(LPC_SSP1, ENABLE);
+ 282:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 283:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	/* wait for busy gone */
+ 284:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	while( LPC_SSP1->SR & SSP_SR_BSY ) { ; }
+ 285:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 286:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	/* drain SPI RX FIFO */
+ 287:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	while( LPC_SSP1->SR & SSP_SR_RNE ) {
+ 288:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		volatile uint32_t dummy = LPC_SSP0->DR;
+ 289:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		(void)dummy;
+ 290:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 291:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 292:Libraries/fat_sd/spi_sd_lpc17xx.c **** #if ( SPI_SD_ACCESS_MODE == SPI_SD_USE_DMA )
+ 293:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPDMA_Init();
+ 294:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	LPC_GPDMA->DMACConfig = 0x01;
+ 295:Libraries/fat_sd/spi_sd_lpc17xx.c **** #endif
+ 296:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 297:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 298:Libraries/fat_sd/spi_sd_lpc17xx.c **** void spi_close(void)
+ 299:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 300:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_CFG_Type PinCfg;
+ 301:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 302:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	SSP_Cmd(LPC_SSP1, DISABLE);
+ 303:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	SSP_DeInit(LPC_SSP1);
+ 304:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 305:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Funcnum   = PINSEL_FUNC_0;
+ 306:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.OpenDrain = PINSEL_PINMODE_NORMAL;
+ 307:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinmode   = PINSEL_PINMODE_PULLDOWN;
+ 308:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinnum    = 6;
+ 309:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Portnum   = 0;
+ 310:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_ConfigPin(&PinCfg);
+ 311:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinnum    = 7;
+ 312:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_ConfigPin(&PinCfg);
+ 313:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinnum    = 8;
+ 314:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_ConfigPin(&PinCfg);
+ 315:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PinCfg.Pinnum    = 9;
+ 316:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	PINSEL_ConfigPin(&PinCfg);
+ 317:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 318:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 319:Libraries/fat_sd/spi_sd_lpc17xx.c **** static inline BYTE spi_rw( BYTE out )
+ 320:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+  30              	etend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33              	.LVL0:
+  34              		.loc 1 323 0
+ 321:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE in;
+ 322:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 323:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	LPC_SSP1->DR = out;
+  35              	r3, .L5
+  36 0000 044B     		.loc 1 320 0
+  37              		@ lr needed for prologue
+  38              		.loc 1 323 0
+  39              		str	r0, [r3, #8]
+  40 0002 9860     	.L2:
+  41              		.loc 1 324 0
+ 324:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	while (LPC_SSP1->SR & SSP_SR_BSY ) { ; }
+  42              	, .L5
+  43 0004 034A     		ldr	r3, [r2, #12]
+  44 0006 D368     		tst	r3, #16
+  45 0008 13F0100F 		bne	.L2
+  46 000c FAD1     		.loc 1 325 0
+ 325:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	in = LPC_SSP1->DR;
+  47              	r0, [r2, #8]
+  48 000e 9068     	.LVL1:
+  49              		.loc 1 330 0
+ 326:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 327:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	///xprintf("SPIRW O:0x%02x I:0x%02x\n", out, in);
+ 328:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 329:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return in;
+ 330:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+  50              	tb	r0, r0
+  51 0010 C0B2     		bx	lr
+  52 0012 7047     	.L6:
+  53              		.align	2
+  54              	.L5:
+  55              		.word	1073938432
+  56 0014 00000340 	.LFE42:
+  58              		.section	.text.rcvr_spi,"ax",%progbits
+  59              		.align	2
+  60              		.thumb
+  61              		.thumb_func
+  63              	rcvr_spi:
+  64              	.LFB43:
+  65              		.loc 1 335 0
+ 331:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 332:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define xmit_spi(dat)  spi_rw(dat)
+ 333:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 334:Libraries/fat_sd/spi_sd_lpc17xx.c **** static inline BYTE rcvr_spi(void)
+ 335:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+  66              	tend = 0, frame = 0
+  67              		@ frame_needed = 0, uses_anonymous_args = 0
+  68              		push	{r4, lr}
+  69 0000 10B5     	.LCFI0:
+  70              		.loc 1 336 0
+ 336:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return spi_rw(0xff);
+  71              		r0, #255
+  72 0002 FF20     		bl	spi_rw
+  73 0004 FFF7FEFF 		.loc 1 337 0
+ 337:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+  74              	p	{r4, pc}
+  75 0008 10BD     	.LFE43:
+  77              		.section	.text.wait_ready,"ax",%progbits
+  78 000a C046     		.align	2
+  79              		.thumb
+  80              		.thumb_func
+  82              	wait_ready:
+  83              	.LFB46:
+  84              		.loc 1 537 0
+ 338:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 339:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Alternative macro to receive data fast */
+ 340:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define rcvr_spi_m(dst)  *(dst)=spi_rw(0xff)
+ 341:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 342:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 343:Libraries/fat_sd/spi_sd_lpc17xx.c **** #if ( SPI_SD_ACCESS_MODE == SPI_SD_USE_DMA )
+ 344:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 345:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* reminders:
+ 346:Libraries/fat_sd/spi_sd_lpc17xx.c ****  * Peripheral Function SSP1_Tx Connection: 2
+ 347:Libraries/fat_sd/spi_sd_lpc17xx.c ****  * Peripheral Function SSP1_Rx Connection: 3
+ 348:Libraries/fat_sd/spi_sd_lpc17xx.c ****  */
+ 349:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 350:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 351:Libraries/fat_sd/spi_sd_lpc17xx.c **** volatile uint32_t dmacb_rx_tc;
+ 352:Libraries/fat_sd/spi_sd_lpc17xx.c **** volatile uint32_t dmacb_rx_error;
+ 353:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 354:Libraries/fat_sd/spi_sd_lpc17xx.c **** void DMA_IRQHandler(void)
+ 355:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 356:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPDMA_IntHandler(); // call the default handler
+ 357:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 358:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 359:Libraries/fat_sd/spi_sd_lpc17xx.c **** void GPDMA_callback_rx(uint32_t DMA_Status)
+ 360:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 361:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if( DMA_Status & GPDMA_STAT_INTTC ) {
+ 362:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		dmacb_rx_tc++; // RX DMA terminated
+ 363:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 364:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if ( DMA_Status & GPDMA_STAT_INTERR ) {
+ 365:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		dmacb_rx_error++;
+ 366:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 367:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 368:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 369:Libraries/fat_sd/spi_sd_lpc17xx.c **** static void dma_transfer(
+ 370:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE dir,          /* MEM_TO_CARD or CARD_TO_MEM                          */
+ 371:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	const BYTE *buff,  /* TO_CARD       : 512 byte data block to be transmitted
+ 372:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	                      FROM_CARD     : Data buffer to store received data    */
+ 373:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	UINT btr           /* TO_CARD       : Byte count (must be multiple of 2)
+ 374:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	                      FROM_CARD     : Byte count (must be 512)              */
+ 375:Libraries/fat_sd/spi_sd_lpc17xx.c **** )
+ 376:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 377:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPDMA_Channel_CFG_Type GPDMACfg;
+ 378:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	char dummy2[512]; // TODO: get rid of this once DI can be disabled
+ 379:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 380:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if ( dir == MEM_TO_CARD ) {
+ 381:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 382:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.ChannelNum = DMA_CHANNEL_TX;
+ 383:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.SrcMemAddr = (uint32_t)buff;
+ 384:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DstMemAddr = 0;
+ 385:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferSize = btr;
+ 386:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferWidth = 0;
+ 387:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferType = GPDMA_TRANSFERTYPE_M2P;
+ 388:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.SrcConn = 0;
+ 389:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DstConn = GPDMA_CONN_SSP1_Tx;
+ 390:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DMALLI = 0;
+ 391:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMA_Setup( &GPDMACfg, NULL );
+ 392:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 393:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.ChannelNum = DMA_CHANNEL_RX;
+ 394:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.SrcMemAddr = 0;
+ 395:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DstMemAddr = (uint32_t)dummy2; // TODO: get rid of this once DI can be disabled
+ 396:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferSize = btr;
+ 397:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferWidth = 0;
+ 398:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferType = GPDMA_TRANSFERTYPE_P2M;
+ 399:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.SrcConn = GPDMA_CONN_SSP1_Rx;
+ 400:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DstConn = 0;
+ 401:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DMALLI = 0;
+ 402:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMA_Setup( &GPDMACfg, GPDMA_callback_rx );
+ 403:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		// TODO: disable destination increment - does not work yet, terminate interrupt never fires when 
+ 404:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		// DMA_CHANNEL_RX_HANDLE->DMACCControl &= ~GPDMA_DMACCxControl_DI;
+ 405:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 406:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	} else {
+ 407:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 408:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.ChannelNum = DMA_CHANNEL_TX;
+ 409:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.SrcMemAddr = (uint32_t)dma_dummy; // TODO: get rid of this once SI can be disabled
+ 410:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DstMemAddr = 0;
+ 411:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferSize = btr;
+ 412:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferWidth = 0;
+ 413:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferType = GPDMA_TRANSFERTYPE_M2P;
+ 414:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.SrcConn = 0;
+ 415:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DstConn = GPDMA_CONN_SSP1_Tx;
+ 416:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DMALLI = 0;
+ 417:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMA_Setup( &GPDMACfg, NULL );
+ 418:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		// TODO: disable source increment - does not work yet, terminate interrupt never fires when set
+ 419:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		// DMA_CHANNEL_TX_HANDLE->DMACCControl &= ~GPDMA_DMACCxControl_SI;
+ 420:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 421:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.ChannelNum = DMA_CHANNEL_RX;
+ 422:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.SrcMemAddr = 0;
+ 423:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DstMemAddr = (uint32_t)buff;
+ 424:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferSize = btr;
+ 425:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferWidth = 0;
+ 426:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.TransferType = GPDMA_TRANSFERTYPE_P2M;
+ 427:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.SrcConn = GPDMA_CONN_SSP1_Rx;
+ 428:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DstConn = 0;
+ 429:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMACfg.DMALLI = 0;
+ 430:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		GPDMA_Setup( &GPDMACfg, GPDMA_callback_rx );
+ 431:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 432:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 433:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 434:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	dmacb_rx_tc = 0;
+ 435:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	dmacb_rx_error = 0;
+ 436:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 437:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPDMA_ChannelCmd( DMA_CHANNEL_TX, ENABLE );
+ 438:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPDMA_ChannelCmd( DMA_CHANNEL_RX, ENABLE );
+ 439:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 440:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	NVIC_EnableIRQ( DMA_IRQn );
+ 441:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 442:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	SSP_DMACmd( LPC_SSP1, SSP_DMA_RX, ENABLE);
+ 443:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	SSP_DMACmd( LPC_SSP1, SSP_DMA_TX, ENABLE);
+ 444:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 445:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	while ( dmacb_rx_tc == 0 ) { ; }
+ 446:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 447:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	SSP_DMACmd( LPC_SSP1, SSP_DMA_TX, DISABLE );
+ 448:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	SSP_DMACmd( LPC_SSP1, SSP_DMA_RX, DISABLE );
+ 449:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 450:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	NVIC_DisableIRQ( DMA_IRQn );
+ 451:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 452:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPDMA_ChannelCmd( DMA_CHANNEL_TX, DISABLE );
+ 453:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	GPDMA_ChannelCmd( DMA_CHANNEL_RX, DISABLE );
+ 454:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 455:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 456:Libraries/fat_sd/spi_sd_lpc17xx.c **** #elif ( SPI_SD_ACCESS_MODE == SPI_SD_USE_FIFO )
+ 457:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 458:Libraries/fat_sd/spi_sd_lpc17xx.c **** #define FIFO_ELEM 8 /* "8 frame FIFOs for both transmit and receive.*/
+ 459:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 460:Libraries/fat_sd/spi_sd_lpc17xx.c **** static inline void spi_rcvr_block (
+ 461:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE *buff,         /* Data buffer to store received data */
+ 462:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	UINT btr            /* Byte count (must be multiple of 4) */
+ 463:Libraries/fat_sd/spi_sd_lpc17xx.c **** )
+ 464:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 465:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	UINT hwtr, startcnt, i, rec;
+ 466:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 467:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	hwtr = btr/2;
+ 468:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if ( btr < FIFO_ELEM ) {
+ 469:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		startcnt = hwtr;
+ 470:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	} else {
+ 471:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		startcnt = FIFO_ELEM;
+ 472:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 473:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 474:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	LPC_SSP1->CR0 |= SSP_CR0_DSS(16); // DSS to 16 bit
+ 475:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 476:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	for ( i = startcnt; i; i-- ) {
+ 477:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		LPC_SSP1->DR = 0xffff;  // fill TX FIFO
+ 478:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 479:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 480:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	do {
+ 481:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		while ( !(LPC_SSP1->SR & SSP_SR_RNE ) ) {
+ 482:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			// wait for data in RX FIFO (RNE set)
+ 483:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		}
+ 484:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		rec = LPC_SSP1->DR;
+ 485:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if ( i < ( hwtr - startcnt ) ) {
+ 486:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			LPC_SSP1->DR = 0xffff;
+ 487:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		}
+ 488:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		*buff++ = (BYTE)(rec >> 8);
+ 489:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		*buff++ = (BYTE)(rec);
+ 490:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		i++;
+ 491:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	} while ( i < hwtr );
+ 492:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 493:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	LPC_SSP1->CR0 = ( LPC_SSP1->CR0 & ~SSP_CR0_DSS(16) ) | SSP_CR0_DSS(8); // DSS to 8 bit
+ 494:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 495:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 496:Libraries/fat_sd/spi_sd_lpc17xx.c **** static inline void spi_xmit_block (
+ 497:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	const BYTE *buff    /* 512 byte data block to be transmitted */
+ 498:Libraries/fat_sd/spi_sd_lpc17xx.c **** )
+ 499:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 500:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	UINT cnt;
+ 501:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	WORD data;
+ 502:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 503:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	LPC_SSP1->CR0 |= SSP_CR0_DSS(16); // DSS to 16 bit
+ 504:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 505:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	for ( cnt = 0; cnt < ( 512 / 2 ); cnt++ ) {
+ 506:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		while ( !( LPC_SSP1->SR & SSP_SR_TNF ) ) {
+ 507:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			; // wait for TX FIFO not full (TNF)
+ 508:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		}
+ 509:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		data  = (*buff++) << 8;
+ 510:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		data |= *buff++;
+ 511:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		LPC_SSP1->DR = data;
+ 512:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 513:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 514:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	while ( LPC_SSP1->SR & SSP_SR_BSY ) {
+ 515:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		// wait for BSY gone
+ 516:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 517:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	while ( LPC_SSP1->SR & SSP_SR_RNE ) {
+ 518:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		data = LPC_SSP1->DR; // drain receive FIFO
+ 519:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 520:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 521:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	LPC_SSP1->CR0 = ( LPC_SSP1->CR0 & ~SSP_CR0_DSS(16) ) | SSP_CR0_DSS(8); // DSS to 8 bit
+ 522:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 523:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 524:Libraries/fat_sd/spi_sd_lpc17xx.c **** #else
+ 525:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	/* nothing here, polling-mode already integrated in base-functions */
+ 526:Libraries/fat_sd/spi_sd_lpc17xx.c **** #endif /* SPI_SD_ACCESS_MODE */
+ 527:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 528:Libraries/fat_sd/spi_sd_lpc17xx.c **** #else
+ 529:Libraries/fat_sd/spi_sd_lpc17xx.c **** #error "port not supported"
+ 530:Libraries/fat_sd/spi_sd_lpc17xx.c **** #endif /* CARD_SSP */
+ 531:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 532:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 533:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 534:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Wait for card ready                                                   */
+ 535:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 536:Libraries/fat_sd/spi_sd_lpc17xx.c **** static BYTE wait_ready (void)
+ 537:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+  85              	, pretend = 0, frame = 0
+  86              		@ frame_needed = 0, uses_anonymous_args = 0
+  87              		.loc 1 540 0
+ 538:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE res;
+ 539:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 540:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	Timer2 = 50;	/* Wait for ready in timeout of 500ms */
+  88              	r	r3, .L14
+  89 0000 074B     		movs	r2, #50
+  90 0002 3222     		.loc 1 537 0
+  91              		push	{r4, lr}
+  92 0004 10B5     	.LCFI1:
+  93              		.loc 1 540 0
+  94              		str	r2, [r3, #0]
+  95 0006 1A60     		.loc 1 541 0
+ 541:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	rcvr_spi();
+  96              	_spi
+  97 0008 FFF7FEFF 	.L10:
+  98              		.loc 1 543 0
+ 542:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	do
+ 543:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		res = rcvr_spi();
+  99              		rcvr_spi
+ 100 000c FFF7FEFF 		.loc 1 544 0
+ 544:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	while ((res != 0xFF) && Timer2);
+ 101              	mp	r0, #255
+ 102 0010 FF28     		beq	.L11
+ 103 0012 03D0     		ldr	r3, .L14
+ 104 0014 024B     		ldr	r3, [r3, #0]
+ 105 0016 1B68     		cmp	r3, #0
+ 106 0018 002B     		bne	.L10
+ 107 001a F7D1     	.L11:
+ 108              		.loc 1 547 0
+ 545:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 546:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return res;
+ 547:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 109              	, pc}
+ 110 001c 10BD     	.L15:
+ 111              		.align	2
+ 112 001e C046     	.L14:
+ 113              		.word	.LANCHOR0
+ 114 0020 00000000 	.LFE46:
+ 116              		.section	.text.rcvr_datablock,"ax",%progbits
+ 117              		.align	2
+ 118              		.thumb
+ 119              		.thumb_func
+ 121              	rcvr_datablock:
+ 122              	.LFB50:
+ 123              		.loc 1 592 0
+ 548:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 549:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 550:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Deselect the card and release SPI bus                                 */
+ 551:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 552:Libraries/fat_sd/spi_sd_lpc17xx.c **** static void release_spi (void)
+ 553:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 554:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	de_select_card();
+ 555:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	rcvr_spi();
+ 556:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 557:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 558:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 559:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Power up/down                                                         */
+ 560:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 561:Libraries/fat_sd/spi_sd_lpc17xx.c **** static void power_on()
+ 562:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 563:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	socket_init();
+ 564:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	socket_power_on();
+ 565:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 566:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	for (Timer1 = 25; Timer1; );	/* Wait for 250ms */
+ 567:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 568:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	spi_init();
+ 569:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	spi_set_speed(INTERFACE_SLOW);
+ 570:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	de_select_card();
+ 571:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 572:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 573:Libraries/fat_sd/spi_sd_lpc17xx.c **** static void power_off()
+ 574:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 575:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (!(Stat & STA_NOINIT)) {
+ 576:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		select_card();
+ 577:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		wait_ready();
+ 578:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		release_spi();
+ 579:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 580:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	spi_close();
+ 581:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	socket_power_off();
+ 582:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	Stat |= STA_NOINIT;		/* Set STA_NOINIT */
+ 583:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 584:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 585:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 586:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Receive a data packet from MMC                                        */
+ 587:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 588:Libraries/fat_sd/spi_sd_lpc17xx.c **** static Bool rcvr_datablock (
+ 589:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE *buff,			/* Data buffer to store received data */
+ 590:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	UINT btr			/* Byte count (must be multiple of 4) */
+ 591:Libraries/fat_sd/spi_sd_lpc17xx.c **** )
+ 592:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 124              	etend = 0, frame = 0
+ 125              		@ frame_needed = 0, uses_anonymous_args = 0
+ 126              	.LVL2:
+ 127              		.loc 1 596 0
+ 593:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE token;
+ 594:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 595:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 596:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	Timer1 = 10;
+ 128              		r3, .L38
+ 129 0000 254B     		movs	r2, #10
+ 130 0002 0A22     		.loc 1 592 0
+ 131              		push	{r4, r5, r6, lr}
+ 132 0004 70B5     	.LCFI2:
+ 133              		.loc 1 596 0
+ 134              		str	r2, [r3, #0]
+ 135 0006 1A60     		.loc 1 592 0
+ 136              		mov	r5, r0
+ 137 0008 0546     		mov	r4, r1
+ 138 000a 0C46     	.LVL3:
+ 139              	.L17:
+ 140              		.loc 1 598 0
+ 597:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	do {							/* Wait for data packet in timeout of 100ms */
+ 598:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		token = rcvr_spi();
+ 141              	.LVL4:
+ 142 000c FFF7FEFF 		.loc 1 599 0
+ 143              		cmp	r0, #255
+ 599:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	} while ((token == 0xFF) && Timer1);
+ 144              	L5:
+ 145 0010 FF28     		bne	.L18
+ 146              		ldr	r3, .L38
+ 147 0012 04D1     		ldr	r3, [r3, #0]
+ 148 0014 204B     		cmp	r3, #0
+ 149 0016 1B68     		bne	.L17
+ 150 0018 002B     		b	.L20
+ 151 001a F7D1     	.L18:
+ 152 001c 39E0     		.loc 1 600 0
+ 153              		cmp	r0, #254
+ 600:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if(token != 0xFE) return FALSE;	/* If not valid data token, return with error */
+ 154              	.LBB4:
+ 155 001e FE28     	.LBB5:
+ 156 0020 37D1     		.loc 1 474 0
+ 157              		ldr	r2, .L38+4
+ 158              		.loc 1 467 0
+ 159              		lsr	lr, r4, #1
+ 160 0022 1E4A     	.LVL6:
+ 161              		.loc 1 474 0
+ 162 0024 4FEA540E 		ldr	r3, [r2, #0]
+ 163              		.loc 1 468 0
+ 164              		cmp	r4, #7
+ 165 0028 1368     		ite	ls
+ 166              		movls	ip, lr
+ 167 002a 072C     		movhi	ip, #8
+ 168 002c 94BF     	.LVL7:
+ 169 002e F446     		.loc 1 474 0
+ 170 0030 4FF0080C 		orr	r3, r3, #15
+ 171              		str	r3, [r2, #0]
+ 172              		mov	r0, ip
+ 173 0034 43F00F03 	.LVL8:
+ 174 0038 1360     		b	.L25
+ 175 003a 6046     	.LVL9:
+ 176              	.L26:
+ 177 003c 04E0     		.loc 1 477 0
+ 178              		ldr	r3, .L38+4
+ 179              		movw	r2, #65535
+ 180              		str	r2, [r3, #8]
+ 181 003e 174B     		.loc 1 476 0
+ 182 0040 4FF6FF72 		subs	r0, r0, #1
+ 183 0044 9A60     	.LVL10:
+ 184              	.L25:
+ 185 0046 0138     		cmp	r0, #0
+ 186              		bne	.L26
+ 187              	.LVL11:
+ 188 0048 0028     	.L37:
+ 189 004a F8D1     		.loc 1 481 0
+ 190              		ldr	r4, .L38+4
+ 191              	.LVL12:
+ 192              		ldr	r3, [r4, #12]
+ 193 004c 134C     		tst	r3, #4
+ 194              		beq	.L37
+ 195 004e E368     		.loc 1 485 0
+ 196 0050 13F0040F 		rsb	r3, ip, lr
+ 197 0054 FAD0     		cmp	r0, r3
+ 198              		.loc 1 484 0
+ 199 0056 CCEB0E03 		ldr	r1, [r4, #8]
+ 200 005a 9842     		.loc 1 486 0
+ 201              		itt	cc
+ 202 005c A168     		movwcc	r3, #65535
+ 203              		strcc	r3, [r4, #8]
+ 204 005e 3CBF     		.loc 1 490 0
+ 205 0060 4FF6FF73 		adds	r0, r0, #1
+ 206 0064 A360     		.loc 1 488 0
+ 207              		lsrs	r3, r1, #8
+ 208 0066 0130     		mov	r2, r5
+ 209              		.loc 1 491 0
+ 210 0068 0B0A     		cmp	r0, lr
+ 211 006a 2A46     		.loc 1 488 0
+ 212              		strb	r3, [r2], #1
+ 213 006c 7045     		.loc 1 489 0
+ 214              		strb	r1, [r5, #1]
+ 215 006e 02F8013B 		.loc 1 491 0
+ 216              		bcs	.L31
+ 217 0072 6970     	.LVL13:
+ 218              		.loc 1 489 0
+ 219 0074 01D2     		adds	r5, r2, #1
+ 220              		b	.L37
+ 221              	.L31:
+ 222 0076 551C     		.loc 1 493 0
+ 223 0078 E8E7     		ldr	r3, [r4, #0]
+ 224              		bic	r3, r3, #15
+ 225              		orr	r3, r3, #7
+ 226 007a 2368     		str	r3, [r4, #0]
+ 227 007c 23F00F03 	.LBE5:
+ 228 0080 43F00703 	.LBE4:
+ 229 0084 2360     		.loc 1 615 0
+ 230              		bl	rcvr_spi
+ 231              	.LVL14:
+ 601:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 602:Libraries/fat_sd/spi_sd_lpc17xx.c **** #if ( SPI_SD_ACCESS_MODE == SPI_SD_USE_DMA )
+ 603:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	dma_transfer( CARD_TO_MEM, buff, btr );
+ 604:Libraries/fat_sd/spi_sd_lpc17xx.c **** #elif ( SPI_SD_ACCESS_MODE == SPI_SD_USE_FIFO )
+ 605:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	spi_rcvr_block( buff, btr );
+ 606:Libraries/fat_sd/spi_sd_lpc17xx.c **** #else
+ 607:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	do {							/* Receive the data block into buffer */
+ 608:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		rcvr_spi_m(buff++);
+ 609:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		rcvr_spi_m(buff++);
+ 610:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		rcvr_spi_m(buff++);
+ 611:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		rcvr_spi_m(buff++);
+ 612:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	} while (btr -= 4);
+ 613:Libraries/fat_sd/spi_sd_lpc17xx.c **** #endif /* SPI_SD_ACCESS_MODE */
+ 614:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 615:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	rcvr_spi();						/* Discard CRC */
+ 232              	ovs	r0, #0
+ 233 0086 FFF7FEFF 	.LVL16:
+ 234              	.L33:
+ 616:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	rcvr_spi();
+ 235              	oc 1 619 0
+ 236 008a FFF7FEFF 		pop	{r4, r5, r6, pc}
+ 237 008e 0120     	.L39:
+ 617:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 618:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return TRUE;					/* Return with success */
+ 238              	lign	2
+ 239 0090 00E0     	.L38:
+ 240              		.word	.LANCHOR1
+ 241              		.word	1073938432
+ 242 0092 0020     	.LFE50:
+ 244              		.section	.text.xmit_datablock,"ax",%progbits
+ 619:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 245              		2
+ 246 0094 70BD     		.thumb
+ 247              		.thumb_func
+ 249              	xmit_datablock:
+ 250 0098 00000000 	.LFB51:
+ 251 009c 00000340 		.loc 1 631 0
+ 252              		@ args = 0, pretend = 0, frame = 0
+ 253              		@ frame_needed = 0, uses_anonymous_args = 0
+ 254              	.LVL17:
+ 255              		push	{r4, r5, r6, lr}
+ 256              	.LCFI3:
+ 257              		.loc 1 631 0
+ 258              		mov	r5, r0
+ 259              		mov	r4, r1
+ 260              		.loc 1 637 0
+ 620:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 621:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 622:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 623:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 624:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Send a data packet to MMC                                             */
+ 625:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 626:Libraries/fat_sd/spi_sd_lpc17xx.c **** #if _FS_READONLY == 0
+ 627:Libraries/fat_sd/spi_sd_lpc17xx.c **** static Bool xmit_datablock (
+ 628:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	const BYTE *buff,	/* 512 byte data block to be transmitted */
+ 629:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE token			/* Data/Stop token */
+ 630:Libraries/fat_sd/spi_sd_lpc17xx.c **** )
+ 631:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 261              	LVL18:
+ 262              		cmp	r0, #255
+ 263              		beq	.L41
+ 264              		movs	r0, #0
+ 265 0000 70B5     		b	.L43
+ 266              	.L41:
+ 267              		.loc 1 639 0
+ 268 0002 0546     		mov	r0, r4
+ 269 0004 0C46     		bl	spi_rw
+ 632:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE resp;
+ 633:Libraries/fat_sd/spi_sd_lpc17xx.c **** #if ( SPI_SD_ACCESS_MODE == SPI_SD_USE_POLLING )
+ 634:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE wc;
+ 635:Libraries/fat_sd/spi_sd_lpc17xx.c **** #endif
+ 636:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 637:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (wait_ready() != 0xFF) return FALSE;
+ 270              	40 0
+ 271 0006 FFF7FEFF 		cmp	r4, #253
+ 272              		bne	.L44
+ 273 000a FF28     		movs	r0, #1
+ 274 000c 01D0     		b	.L43
+ 275 000e 0020     	.L44:
+ 276 0010 3DE0     	.LBB8:
+ 277              	.LBB9:
+ 638:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 639:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	xmit_spi(token);					/* transmit data token */
+ 278              	503 0
+ 279 0012 2046     		ldr	r2, .L57
+ 280 0014 FFF7FEFF 		movs	r0, #0
+ 640:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (token != 0xFD) {	/* Is data token */
+ 281              	L19:
+ 282 0018 FD2C     		ldr	r3, [r2, #0]
+ 283 001a 01D1     		orr	r3, r3, #15
+ 284 001c 0120     		str	r3, [r2, #0]
+ 285 001e 36E0     	.LVL20:
+ 286              	.L56:
+ 287              		.loc 1 506 0
+ 288              		ldr	r4, .L57
+ 289              	.LVL21:
+ 290 0020 1B4A     		ldr	r3, [r4, #12]
+ 291 0022 0020     		tst	r3, #2
+ 292              		beq	.L56
+ 293 0024 1368     		.loc 1 509 0
+ 294 0026 43F00F03 		mov	r1, r5
+ 295 002a 1360     		ldrb	r2, [r1], #1	@ zero_extendqisi2
+ 296              		.loc 1 511 0
+ 297              		ldrb	r3, [r5, #1]	@ zero_extendqisi2
+ 298              		.loc 1 505 0
+ 299 002c 184C     		adds	r0, r0, #1
+ 300              		.loc 1 511 0
+ 301 002e E368     		orr	r3, r3, r2, lsl #8
+ 302 0030 13F0020F 		.loc 1 505 0
+ 303 0034 FAD0     		cmp	r0, #255
+ 304              		.loc 1 511 0
+ 305 0036 2946     		str	r3, [r4, #8]
+ 306 0038 11F8012B 		.loc 1 505 0
+ 307              		bhi	.L48
+ 308 003c 6B78     		.loc 1 510 0
+ 309              		adds	r5, r1, #1
+ 310 003e 0130     		b	.L56
+ 311              	.L48:
+ 312 0040 43EA0223 		.loc 1 514 0
+ 313              		ldr	r3, .L57
+ 314 0044 FF28     		ldr	r3, [r3, #12]
+ 315              		tst	r3, #16
+ 316 0046 A360     		bne	.L48
+ 317              		b	.L50
+ 318 0048 01D8     	.L51:
+ 319              		.loc 1 518 0
+ 320 004a 4D1C     		ldr	r3, [r2, #8]
+ 321 004c EEE7     	.L50:
+ 322              		.loc 1 517 0
+ 323              		ldr	r2, .L57
+ 324 004e 104B     		ldr	r3, [r2, #12]
+ 325 0050 DB68     		tst	r3, #4
+ 326 0052 13F0100F 		bne	.L51
+ 327 0056 FAD1     		.loc 1 521 0
+ 328 0058 00E0     		ldr	r3, [r2, #0]
+ 329              	.LBE9:
+ 330              	.LBE8:
+ 331 005a 9368     		.loc 1 654 0
+ 332              		movs	r0, #255
+ 333              	.LVL22:
+ 334 005c 0C4A     	.LBB11:
+ 335 005e D368     	.LBB10:
+ 336 0060 13F0040F 		.loc 1 521 0
+ 337 0064 F9D1     		bic	r3, r3, #15
+ 338              		orr	r3, r3, #7
+ 339 0066 1368     		str	r3, [r2, #0]
+ 340              	.LBE10:
+ 341              	.LBE11:
+ 641:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 642:Libraries/fat_sd/spi_sd_lpc17xx.c **** #if ( SPI_SD_ACCESS_MODE == SPI_SD_USE_DMA )
+ 643:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		dma_transfer( MEM_TO_CARD, buff, 512 );
+ 644:Libraries/fat_sd/spi_sd_lpc17xx.c **** #elif ( SPI_SD_ACCESS_MODE == SPI_SD_USE_FIFO )
+ 645:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		spi_xmit_block( buff );
+ 646:Libraries/fat_sd/spi_sd_lpc17xx.c **** #else
+ 647:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		wc = 0;
+ 648:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		do {							/* transmit the 512 byte data block to MMC */
+ 649:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			xmit_spi(*buff++);
+ 650:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			xmit_spi(*buff++);
+ 651:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		} while (--wc);
+ 652:Libraries/fat_sd/spi_sd_lpc17xx.c **** #endif /* SPI_SD_ACCESS_MODE */
+ 653:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 654:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		xmit_spi(0xFF);					/* CRC (Dummy) */
+ 342              	
+ 343 0068 FF20     		bl	spi_rw
+ 344              		.loc 1 656 0
+ 345              		bl	rcvr_spi
+ 346              		and	r0, r0, #31
+ 347              		cmp	r0, #5
+ 348 006a 23F00F03 		ite	ne
+ 349 006e 43F00703 		movne	r0, #0
+ 350 0072 1360     		moveq	r0, #1
+ 351              	.LVL24:
+ 352              	.L43:
+ 353              		.loc 1 662 0
+ 354 0074 FFF7FEFF 		pop	{r4, r5, r6, pc}
+ 355              	.L58:
+ 655:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		xmit_spi(0xFF);
+ 356              	7:
+ 357 0078 FF20     		.word	1073938432
+ 358 007a FFF7FEFF 	.LFE51:
+ 656:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		resp = rcvr_spi();				/* Receive data response */
+ 359              	ize	xmit_datablock, .-xmit_datablock
+ 360 007e FFF7FEFF 		.section	.text.MMC_disk_status,"ax",%progbits
+ 361 0082 00F01F00 		.align	2
+ 362 0086 0528     		.global	MMC_disk_status
+ 363 0088 14BF     		.thumb
+ 364 008a 0020     		.thumb_func
+ 366              	MMC_disk_status:
+ 367              	.LFB54:
+ 657:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if ((resp & 0x1F) != 0x05)		/* If not accepted, return with error */
+ 658:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			return FALSE;
+ 659:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 660:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 661:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return TRUE;
+ 662:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 368              	66 0
+ 369 008e 70BD     		@ args = 0, pretend = 0, frame = 0
+ 370              		@ frame_needed = 0, uses_anonymous_args = 0
+ 371              		@ link register save eliminated.
+ 372              		.loc 1 767 0
+ 373 0090 00000340 		ldr	r3, .L61
+ 374              		.loc 1 766 0
+ 375              		@ lr needed for prologue
+ 376              		.loc 1 767 0
+ 377              		ldr	r0, [r3, #0]
+ 378              		.loc 1 768 0
+ 379              		bx	lr
+ 380              	.L62:
+ 381              		.align	2
+ 382              	.L61:
+ 383              		.word	.LANCHOR2
+ 663:Libraries/fat_sd/spi_sd_lpc17xx.c **** #endif /* _READONLY */
+ 664:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 665:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 666:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Send a command packet to MMC                                          */
+ 667:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 668:Libraries/fat_sd/spi_sd_lpc17xx.c **** static BYTE send_cmd (
+ 669:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE cmd,		/* Command byte */
+ 670:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	DWORD arg		/* Argument */
+ 671:Libraries/fat_sd/spi_sd_lpc17xx.c **** )
+ 672:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 673:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE n, res;
+ 674:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 675:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 676:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (cmd & 0x80) {	/* ACMD<n> is the command sequence of CMD55-CMD<n> */
+ 677:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		cmd &= 0x7F;
+ 678:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		res = send_cmd(CMD55, 0);
+ 679:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if (res > 1) return res;
+ 680:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 681:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 682:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	/* Select the card and wait for ready */
+ 683:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	de_select_card();
+ 684:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	select_card();
+ 685:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (wait_ready() != 0xFF) {
+ 686:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		return 0xFF;
+ 687:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 688:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 689:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	/* Send command packet */
+ 690:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	xmit_spi(cmd);						/* Start + Command index */
+ 691:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	xmit_spi((BYTE)(arg >> 24));		/* Argument[31..24] */
+ 692:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	xmit_spi((BYTE)(arg >> 16));		/* Argument[23..16] */
+ 693:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	xmit_spi((BYTE)(arg >> 8));			/* Argument[15..8] */
+ 694:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	xmit_spi((BYTE)arg);				/* Argument[7..0] */
+ 695:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	n = 0x01;							/* Dummy CRC + Stop */
+ 696:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (cmd == CMD0) n = 0x95;			/* Valid CRC for CMD0(0) */
+ 697:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (cmd == CMD8) n = 0x87;			/* Valid CRC for CMD8(0x1AA) */
+ 698:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	xmit_spi(n);
+ 699:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 700:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	/* Receive command response */
+ 701:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (cmd == CMD12) rcvr_spi();		/* Skip a stuff byte when stop reading */
+ 702:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 703:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	n = 10;								/* Wait for a valid response in timeout of 10 attempts */
+ 704:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	do
+ 705:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		res = rcvr_spi();
+ 706:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	while ((res & 0x80) && --n);
+ 707:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 708:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return res;			/* Return with the response value */
+ 709:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 710:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 711:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 712:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Initialize Disk Drive                                                 */
+ 713:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 714:Libraries/fat_sd/spi_sd_lpc17xx.c **** DSTATUS MMC_disk_initialize(void)
+ 715:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 716:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE n, cmd, ty, ocr[4];
+ 717:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 718:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (Stat & STA_NODISK) return Stat;	/* No card in the socket */
+ 719:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 720:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	power_on();							/* Force socket power on and initialize interface */
+ 721:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	spi_set_speed(INTERFACE_SLOW);
+ 722:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	for (n = 10; n; n--) rcvr_spi();	/* 80 dummy clocks with card de-selected */
+ 723:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 724:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	ty = 0;
+ 725:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (send_cmd(CMD0, 0) == 1) {			/* Enter Idle state */
+ 726:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		Timer1 = 100;						/* Initialization timeout of 1000 milliseconds */
+ 727:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if (send_cmd(CMD8, 0x1AA) == 1) {	/* SDHC */
+ 728:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			for (n = 0; n < 4; n++) ocr[n] = rcvr_spi();		/* Get trailing return value of R7 response */
+ 729:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (ocr[2] == 0x01 && ocr[3] == 0xAA) {				/* The card can work at VDD range of 2.7-3.6V */
+ 730:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				while (Timer1 && send_cmd(ACMD41, 1UL << 30));	/* Wait for leaving idle state (ACMD41 with HCS 
+ 731:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				if (Timer1 && send_cmd(CMD58, 0) == 0) {		/* Check CCS bit in the OCR */
+ 732:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					for (n = 0; n < 4; n++) ocr[n] = rcvr_spi();
+ 733:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					ty = (ocr[0] & 0x40) ? CT_SD2 | CT_BLOCK : CT_SD2;
+ 734:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				}
+ 735:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			}
+ 736:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		} else {							/* SDSC or MMC */
+ 737:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (send_cmd(ACMD41, 0) <= 1) 	{
+ 738:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				ty = CT_SD1; cmd = ACMD41;	/* SDSC */
+ 739:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			} else {
+ 740:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				ty = CT_MMC; cmd = CMD1;	/* MMC */
+ 741:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			}
+ 742:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			while (Timer1 && send_cmd(cmd, 0));			/* Wait for leaving idle state */
+ 743:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (!Timer1 || send_cmd(CMD16, 512) != 0)	/* Set R/W block length to 512 */
+ 744:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				ty = 0;
+ 745:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		}
+ 746:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	} else {
+ 747:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		// xprintf("cmd 0 failed\n");
+ 748:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 749:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	CardType = ty;
+ 750:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	release_spi();
+ 751:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 752:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (ty) {			/* Initialization succeeded */
+ 753:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		Stat &= ~STA_NOINIT;		/* Clear STA_NOINIT */
+ 754:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		spi_set_speed(INTERFACE_FAST);
+ 755:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	} else {			/* Initialization failed */
+ 756:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		power_off();
+ 757:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 758:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 759:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return Stat;
+ 760:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 761:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 762:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 763:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Get Disk Status                                                       */
+ 764:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 765:Libraries/fat_sd/spi_sd_lpc17xx.c **** DSTATUS MMC_disk_status(void)
+ 766:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 384              	MC_disk_status, .-MMC_disk_status
+ 385              		.section	.text.MMC_disk_timerproc,"ax",%progbits
+ 386              		.align	2
+ 387              		.global	MMC_disk_timerproc
+ 767:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return Stat;
+ 388              	umb
+ 389 0000 014B     		.thumb_func
+ 391              	MMC_disk_timerproc:
+ 392              	.LFB58:
+ 393 0002 1868     		.loc 1 974 0
+ 768:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 394              	s = 0, pretend = 0, frame = 0
+ 395 0004 7047     		@ frame_needed = 0, uses_anonymous_args = 0
+ 396              		@ link register save eliminated.
+ 397 0006 C046     		.loc 1 979 0
+ 398              		ldr	r2, .L71
+ 399 0008 00000000 		.loc 1 974 0
+ 400              		@ lr needed for prologue
+ 401              		.loc 1 979 0
+ 402              		ldr	r3, [r2, #0]
+ 403              		uxtb	r3, r3
+ 404              	.LVL25:
+ 405              		.loc 1 980 0
+ 406              		cbz	r3, .L64
+ 407              		subs	r3, r3, #1
+ 408              	.LVL26:
+ 409              		uxtb	r3, r3
+ 769:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 770:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 771:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Read Sector(s)                                                        */
+ 772:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 773:Libraries/fat_sd/spi_sd_lpc17xx.c **** DRESULT MMC_disk_read(
+ 774:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE *buff,			/* Pointer to the data buffer to store read data */
+ 775:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	DWORD sector,		/* Start sector number (LBA) */
+ 776:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE count			/* Sector count (1..255) */
+ 777:Libraries/fat_sd/spi_sd_lpc17xx.c **** )
+ 778:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 779:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (!count) return RES_PARERR;
+ 780:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (Stat & STA_NOINIT) return RES_NOTRDY;
+ 781:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 782:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (!(CardType & CT_BLOCK)) sector *= 512;	/* Convert to byte address if needed */
+ 783:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 784:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (count == 1) {	/* Single block read */
+ 785:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if (send_cmd(CMD17, sector) == 0)	{ /* READ_SINGLE_BLOCK */
+ 786:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (rcvr_datablock(buff, 512)) {
+ 787:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				count = 0;
+ 788:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			}
+ 789:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		}
+ 790:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 791:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	else {				/* Multiple block read */
+ 792:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if (send_cmd(CMD18, sector) == 0) {	/* READ_MULTIPLE_BLOCK */
+ 793:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			do {
+ 794:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				if (!rcvr_datablock(buff, 512)) {
+ 795:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					break;
+ 796:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				}
+ 797:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				buff += 512;
+ 798:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			} while (--count);
+ 799:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			send_cmd(CMD12, 0);				/* STOP_TRANSMISSION */
+ 800:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		}
+ 801:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 802:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	release_spi();
+ 803:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 804:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return count ? RES_ERROR : RES_OK;
+ 805:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 806:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 807:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 808:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Write Sector(s)                                                       */
+ 809:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 810:Libraries/fat_sd/spi_sd_lpc17xx.c **** #if _FS_READONLY == 0
+ 811:Libraries/fat_sd/spi_sd_lpc17xx.c **** DRESULT MMC_disk_write(
+ 812:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	const BYTE *buff,	/* Pointer to the data to be written */
+ 813:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	DWORD sector,		/* Start sector number (LBA) */
+ 814:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE count			/* Sector count (1..255) */
+ 815:Libraries/fat_sd/spi_sd_lpc17xx.c **** )
+ 816:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 817:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (!count) return RES_PARERR;
+ 818:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (Stat & STA_NOINIT) return RES_NOTRDY;
+ 819:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (Stat & STA_PROTECT) return RES_WRPRT;
+ 820:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 821:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (!(CardType & CT_BLOCK)) sector *= 512;	/* Convert to byte address if needed */
+ 822:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 823:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (count == 1) {	/* Single block write */
+ 824:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if ((send_cmd(CMD24, sector) == 0)	/* WRITE_BLOCK */
+ 825:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			&& xmit_datablock(buff, 0xFE))
+ 826:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			count = 0;
+ 827:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 828:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	else {				/* Multiple block write */
+ 829:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if (CardType & CT_SDC) send_cmd(ACMD23, count);
+ 830:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if (send_cmd(CMD25, sector) == 0) {	/* WRITE_MULTIPLE_BLOCK */
+ 831:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			do {
+ 832:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				if (!xmit_datablock(buff, 0xFC)) break;
+ 833:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				buff += 512;
+ 834:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			} while (--count);
+ 835:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (!xmit_datablock(0, 0xFD))	/* STOP_TRAN token */
+ 836:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				count = 1;
+ 837:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		}
+ 838:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 839:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	release_spi();
+ 840:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 841:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return count ? RES_ERROR : RES_OK;
+ 842:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 843:Libraries/fat_sd/spi_sd_lpc17xx.c **** #endif /* _READONLY == 0 */
+ 844:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 845:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 846:Libraries/fat_sd/spi_sd_lpc17xx.c **** DSTATUS MMC_disk_ioctl(
+ 847:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE ctrl,		/* Control code */
+ 848:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	void *buff		/* Buffer to send/receive control data */
+ 849:Libraries/fat_sd/spi_sd_lpc17xx.c **** )
+ 850:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 851:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	DRESULT res;
+ 852:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE n, csd[16], *ptr = buff;
+ 853:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	WORD csize;
+ 854:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 855:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	res = RES_ERROR;
+ 856:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 857:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (ctrl == CTRL_POWER) {
+ 858:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		switch (*ptr) {
+ 859:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case 0:		/* Sub control code == 0 (POWER_OFF) */
+ 860:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (socket_is_powered())
+ 861:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				power_off();		/* Power off */
+ 862:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			res = RES_OK;
+ 863:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 864:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case 1:		/* Sub control code == 1 (POWER_ON) */
+ 865:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			power_on();				/* Power on */
+ 866:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			res = RES_OK;
+ 867:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 868:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case 2:		/* Sub control code == 2 (POWER_GET) */
+ 869:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			*(ptr+1) = (BYTE)socket_is_powered();
+ 870:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			res = RES_OK;
+ 871:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 872:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		default :
+ 873:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			res = RES_PARERR;
+ 874:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		}
+ 875:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 876:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	else {
+ 877:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if (Stat & STA_NOINIT) return RES_NOTRDY;
+ 878:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 879:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		switch (ctrl) {
+ 880:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case CTRL_SYNC :		/* Make sure that no pending write process */
+ 881:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			select_card();
+ 882:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (wait_ready() == 0xFF)
+ 883:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				res = RES_OK;
+ 884:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 885:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 886:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case GET_SECTOR_COUNT :	/* Get number of sectors on the disk (DWORD) */
+ 887:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if ((send_cmd(CMD9, 0) == 0) && rcvr_datablock(csd, 16)) {
+ 888:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				if ((csd[0] >> 6) == 1) {	/* SDC version 2.00 */
+ 889:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					csize = csd[9] + ((WORD)csd[8] << 8) + 1;
+ 890:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					*(DWORD*)buff = (DWORD)csize << 10;
+ 891:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				} else {					/* SDC version 1.XX or MMC*/
+ 892:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					n = (csd[5] & 15) + ((csd[10] & 128) >> 7) + ((csd[9] & 3) << 1) + 2;
+ 893:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					csize = (csd[8] >> 6) + ((WORD)csd[7] << 2) + ((WORD)(csd[6] & 3) << 10) + 1;
+ 894:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					*(DWORD*)buff = (DWORD)csize << (n - 9);
+ 895:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				}
+ 896:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				res = RES_OK;
+ 897:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			}
+ 898:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 899:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 900:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case GET_SECTOR_SIZE :	/* Get R/W sector size (WORD) */
+ 901:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			*(WORD*)buff = 512;
+ 902:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			res = RES_OK;
+ 903:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 904:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 905:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case GET_BLOCK_SIZE :	/* Get erase block size in unit of sector (DWORD) */
+ 906:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (CardType & CT_SD2) {	/* SDC version 2.00 */
+ 907:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				if (send_cmd(ACMD13, 0) == 0) {	/* Read SD status */
+ 908:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					rcvr_spi();
+ 909:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					if (rcvr_datablock(csd, 16)) {				/* Read partial block */
+ 910:Libraries/fat_sd/spi_sd_lpc17xx.c **** 						for (n = 64 - 16; n; n--) rcvr_spi();	/* Purge trailing data */
+ 911:Libraries/fat_sd/spi_sd_lpc17xx.c **** 						*(DWORD*)buff = 16UL << (csd[10] >> 4);
+ 912:Libraries/fat_sd/spi_sd_lpc17xx.c **** 						res = RES_OK;
+ 913:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					}
+ 914:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				}
+ 915:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			} else {					/* SDC version 1.XX or MMC */
+ 916:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				if ((send_cmd(CMD9, 0) == 0) && rcvr_datablock(csd, 16)) {	/* Read CSD */
+ 917:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					if (CardType & CT_SD1) {	/* SDC version 1.XX */
+ 918:Libraries/fat_sd/spi_sd_lpc17xx.c **** 						*(DWORD*)buff = (((csd[10] & 63) << 1) + ((WORD)(csd[11] & 128) >> 7) + 1) << ((csd[13] >> 6)
+ 919:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					} else {					/* MMC */
+ 920:Libraries/fat_sd/spi_sd_lpc17xx.c **** 						*(DWORD*)buff = ((WORD)((csd[10] & 124) >> 2) + 1) * (((csd[11] & 3) << 3) + ((csd[11] & 224)
+ 921:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					}
+ 922:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					res = RES_OK;
+ 923:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				}
+ 924:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			}
+ 925:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 926:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 927:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case MMC_GET_TYPE :		/* Get card type flags (1 byte) */
+ 928:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			*ptr = CardType;
+ 929:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			res = RES_OK;
+ 930:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 931:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 932:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case MMC_GET_CSD :		/* Receive CSD as a data block (16 bytes) */
+ 933:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (send_cmd(CMD9, 0) == 0		/* READ_CSD */
+ 934:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				&& rcvr_datablock(ptr, 16))
+ 935:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				res = RES_OK;
+ 936:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 937:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 938:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case MMC_GET_CID :		/* Receive CID as a data block (16 bytes) */
+ 939:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (send_cmd(CMD10, 0) == 0		/* READ_CID */
+ 940:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				&& rcvr_datablock(ptr, 16))
+ 941:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				res = RES_OK;
+ 942:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 943:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 944:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case MMC_GET_OCR :		/* Receive OCR as an R3 resp (4 bytes) */
+ 945:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (send_cmd(CMD58, 0) == 0) {	/* READ_OCR */
+ 946:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				for (n = 4; n; n--) *ptr++ = rcvr_spi();
+ 947:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				res = RES_OK;
+ 948:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			}
+ 949:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 950:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 951:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		case MMC_GET_SDSTAT :	/* Receive SD status as a data block (64 bytes) */
+ 952:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			if (send_cmd(ACMD13, 0) == 0) {	/* SD_STATUS */
+ 953:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				rcvr_spi();
+ 954:Libraries/fat_sd/spi_sd_lpc17xx.c **** 				if (rcvr_datablock(ptr, 64))
+ 955:Libraries/fat_sd/spi_sd_lpc17xx.c **** 					res = RES_OK;
+ 956:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			}
+ 957:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			break;
+ 958:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 959:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		default:
+ 960:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			res = RES_PARERR;
+ 961:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		}
+ 962:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 963:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		release_spi();
+ 964:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+ 965:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 966:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	return res;
+ 967:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 968:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 969:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 970:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* Device Timer Interrupt Procedure  (Platform dependent)                */
+ 971:Libraries/fat_sd/spi_sd_lpc17xx.c **** /*-----------------------------------------------------------------------*/
+ 972:Libraries/fat_sd/spi_sd_lpc17xx.c **** /* This function must be called in period of 10ms                        */
+ 973:Libraries/fat_sd/spi_sd_lpc17xx.c **** void MMC_disk_timerproc(void)
+ 974:Libraries/fat_sd/spi_sd_lpc17xx.c **** {
+ 410              	]
+ 411              	.LVL27:
+ 412              	.L64:
+ 413              		.loc 1 981 0
+ 975:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	static DWORD pv;
+ 976:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	DWORD ns;
+ 977:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	BYTE n, s;
+ 978:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 979:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	n = Timer1;                /* 100Hz decrement timers */
+ 414              		r2, .L71+4
+ 415 0000 0C4A     		ldr	r3, [r2, #0]
+ 416              	.LVL28:
+ 417              		uxtb	r3, r3
+ 418              	.LVL29:
+ 419 0002 1368     		.loc 1 982 0
+ 420 0004 DBB2     		cbz	r3, .L66
+ 421              		subs	r3, r3, #1
+ 980:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (n) Timer1 = --n;
+ 422              		uxtb	r3, r3
+ 423 0006 13B1     		str	r3, [r2, #0]
+ 424 0008 013B     	.LVL31:
+ 425              	.L66:
+ 426 000a DBB2     		.loc 1 984 0
+ 427 000c 1360     		ldr	r3, .L71+8
+ 428              	.LVL32:
+ 429              		.loc 1 985 0
+ 981:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	n = Timer2;
+ 430              	, #0
+ 431 000e 0A4A     		.loc 1 984 0
+ 432 0010 1368     		ldr	r1, [r3, #0]
+ 433              	.LVL33:
+ 434 0012 DBB2     		.loc 1 985 0
+ 435              		str	r2, [r3, #0]
+ 982:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (n) Timer2 = --n;
+ 436              	1 987 0
+ 437 0014 13B1     		cbnz	r1, .L70
+ 438 0016 013B     		.loc 1 988 0
+ 439              		ldr	r2, .L71+12
+ 440 0018 DBB2     		ldr	r3, [r2, #0]
+ 441 001a 1360     		.loc 1 1000 0
+ 442              		and	r3, r3, #249
+ 443              		str	r3, [r2, #0]
+ 983:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 984:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	ns = pv;
+ 444              	loc 1 1002 0
+ 445 001c 074B     		bx	lr
+ 446              	.L72:
+ 985:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	pv = socket_is_empty() | socket_is_write_protected();	/* Sample socket switch */
+ 447              	lign	2
+ 448 001e 0022     	.L71:
+ 449              		.word	.LANCHOR1
+ 450 0020 1968     		.word	.LANCHOR0
+ 451              		.word	.LANCHOR3
+ 452              		.word	.LANCHOR2
+ 453 0022 1A60     	.LFE58:
+ 986:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 987:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	if (ns == pv) {                         /* Have contacts stabled? */
+ 454              	MMC_disk_timerproc, .-MMC_disk_timerproc
+ 455 0024 21B9     		.section	.text.de_select_card,"ax",%progbits
+ 988:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		s = Stat;
+ 456              	align	2
+ 457 0026 064A     		.thumb
+ 458 0028 1368     		.thumb_func
+ 989:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 990:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if (pv & socket_state_mask_wp)      /* WP is H (write protected) */
+ 991:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			s |= STA_PROTECT;
+ 992:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		else                                /* WP is L (write enabled) */
+ 993:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			s &= ~STA_PROTECT;
+ 994:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+ 995:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		if (pv & socket_state_mask_cp)      /* INS = H (Socket empty) */
+ 996:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			s |= (STA_NODISK | STA_NOINIT);
+ 997:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		else                                /* INS = L (Card inserted) */
+ 998:Libraries/fat_sd/spi_sd_lpc17xx.c **** 			s &= ~STA_NODISK;
+ 999:Libraries/fat_sd/spi_sd_lpc17xx.c **** 
+1000:Libraries/fat_sd/spi_sd_lpc17xx.c **** 		Stat = s;
+ 459              	ype	de_select_card, %function
+ 460 002a 03F0F903 	de_select_card:
+ 461 002e 1360     	.LFB38:
+ 462              		.loc 1 237 0
+1001:Libraries/fat_sd/spi_sd_lpc17xx.c **** 	}
+1002:Libraries/fat_sd/spi_sd_lpc17xx.c **** }
+ 463              	rgs = 0, pretend = 0, frame = 0
+ 464 0030 7047     		@ frame_needed = 0, uses_anonymous_args = 0
+ 465              		push	{r4, lr}
+ 466 0032 C046     	.LCFI4:
+ 467              		.loc 1 239 0
+ 468 0034 00000000 		movs	r0, #0
+ 469 0038 00000000 		movs	r1, #64
+ 470 003c 00000000 		bl	GPIO_SetValue
+ 471 0040 00000000 		.loc 1 240 0
+ 472              		pop	{r4, pc}
+ 473              	.LFE38:
+ 475              		.section	.text.release_spi,"ax",%progbits
+ 476              		.align	2
+ 477              		.thumb
+ 478              		.thumb_func
+ 480              	release_spi:
+ 481              	.LFB47:
+ 482              		.loc 1 553 0
+ 483              		@ args = 0, pretend = 0, frame = 0
+ 484 0000 10B5     		@ frame_needed = 0, uses_anonymous_args = 0
+ 485              		push	{r4, lr}
+ 486              	.LCFI5:
+ 487 0002 0020     		.loc 1 554 0
+ 488 0004 4021     		bl	de_select_card
+ 489 0006 FFF7FEFF 		.loc 1 555 0
+ 490              		bl	rcvr_spi
+ 491 000a 10BD     		.loc 1 556 0
+ 492              		pop	{r4, pc}
+ 493              	.LFE47:
+ 495              		.section	.text.socket_power_off,"ax",%progbits
+ 496              		.align	2
+ 497              		.thumb
+ 498              		.thumb_func
+ 500              	socket_power_off:
+ 501              	.LFB34:
+ 502              		.loc 1 191 0
+ 503              		@ args = 0, pretend = 0, frame = 0
+ 504 0000 10B5     		@ frame_needed = 0, uses_anonymous_args = 0
+ 505              		push	{r4, lr}
+ 506              	.LCFI6:
+ 507 0002 FFF7FEFF 		.loc 1 192 0
+ 508              		movs	r0, #0
+ 509 0006 FFF7FEFF 		mov	r1, #2097152
+ 510              		bl	GPIO_SetValue
+ 511 000a 10BD     		.loc 1 193 0
+ 512              		ldr	r3, .L79
+ 513              		movs	r2, #0
+ 514              		strb	r2, [r3, #0]
+ 515              		.loc 1 194 0
+ 516              		pop	{r4, pc}
+ 517              	.L80:
+ 518              		.align	2
+ 519              	.L79:
+ 520              		.word	.LANCHOR4
+ 521              	.LFE34:
+ 523              		.section	.text.select_card,"ax",%progbits
+ 524 0000 10B5     		.align	2
+ 525              		.thumb
+ 526              		.thumb_func
+ 528 0004 4FF40011 	select_card:
+ 529 0008 FFF7FEFF 	.LFB37:
+ 530              		.loc 1 231 0
+ 531 000c 014B     		@ args = 0, pretend = 0, frame = 0
+ 532 000e 0022     		@ frame_needed = 0, uses_anonymous_args = 0
+ 533 0010 1A70     		push	{r4, lr}
+ 534              	.LCFI7:
+ 535 0012 10BD     		.loc 1 233 0
+ 536              		movs	r0, #0
+ 537              		movs	r1, #64
+ 538              		bl	GPIO_ClearValue
+ 539 0014 00000000 		.loc 1 234 0
+ 540              		pop	{r4, pc}
+ 541              	.LFE37:
+ 543              		.section	.text.send_cmd,"ax",%progbits
+ 544              		.align	2
+ 545              		.thumb
+ 546              		.thumb_func
+ 548              	send_cmd:
+ 549              	.LFB52:
+ 550              		.loc 1 672 0
+ 551              		@ args = 0, pretend = 0, frame = 0
+ 552 0000 10B5     		@ frame_needed = 0, uses_anonymous_args = 0
+ 553              	.LVL34:
+ 554              		.loc 1 676 0
+ 555 0002 0020     		tst	r0, #128
+ 556 0004 4021     		.loc 1 672 0
+ 557 0006 FFF7FEFF 		push	{r4, r5, r6, lr}
+ 558              	.LCFI8:
+ 559 000a 10BD     		.loc 1 672 0
+ 560              		mov	r4, r0
+ 561              		mov	r5, r1
+ 562              		.loc 1 676 0
+ 563              		beq	.L84
+ 564              	.LVL35:
+ 565              		.loc 1 678 0
+ 566              		movs	r0, #119
+ 567              		movs	r1, #0
+ 568              		bl	send_cmd
+ 569              		.loc 1 679 0
+ 570              		cmp	r0, #1
+ 571              	.LVL36:
+ 572              		bhi	.L88
+ 573              		.loc 1 677 0
+ 574 0000 10F0800F 		and	r4, r4, #127
+ 575              	.LVL37:
+ 576 0004 70B5     	.L84:
+ 577              		.loc 1 683 0
+ 578              		bl	de_select_card
+ 579 0006 0446     	.LVL38:
+ 580 0008 0D46     		.loc 1 684 0
+ 581              		bl	select_card
+ 582 000a 07D0     		.loc 1 685 0
+ 583              		bl	wait_ready
+ 584              		cmp	r0, #255
+ 585 000c 7720     		beq	.L89
+ 586 000e 0021     		movs	r0, #255
+ 587 0010 FFF7F6FF 		b	.L88
+ 588              	.L89:
+ 589 0014 0128     		.loc 1 690 0
+ 590              		mov	r0, r4
+ 591 0016 34D8     		bl	spi_rw
+ 592              		.loc 1 691 0
+ 593 0018 04F07F04 		lsrs	r0, r5, #24
+ 594              		bl	spi_rw
+ 595              		.loc 1 692 0
+ 596              		ubfx	r0, r5, #16, #8
+ 597 001c FFF7FEFF 		bl	spi_rw
+ 598              		.loc 1 693 0
+ 599              		ubfx	r0, r5, #8, #8
+ 600 0020 FFF7FEFF 		bl	spi_rw
+ 601              		.loc 1 694 0
+ 602 0024 FFF7FEFF 		uxtb	r0, r5
+ 603 0028 FF28     	.LVL39:
+ 604 002a 01D0     		bl	spi_rw
+ 605 002c FF20     	.LVL40:
+ 606 002e 28E0     		.loc 1 696 0
+ 607              		cmp	r4, #64
+ 608              		bne	.L91
+ 609 0030 2046     		movs	r0, #149
+ 610 0032 FFF7FEFF 	.LVL41:
+ 611              		b	.L93
+ 612 0036 280E     	.LVL42:
+ 613 0038 FFF7FEFF 	.L91:
+ 614              		.loc 1 697 0
+ 615 003c C5F30740 		cmp	r4, #72
+ 616 0040 FFF7FEFF 		ite	ne
+ 617              		movne	r0, #1
+ 618 0044 C5F30720 		moveq	r0, #135
+ 619 0048 FFF7FEFF 	.LVL43:
+ 620              	.L93:
+ 621 004c E8B2     		.loc 1 698 0
+ 622              		bl	spi_rw
+ 623 004e FFF7FEFF 	.LVL44:
+ 624              		.loc 1 701 0
+ 625              		cmp	r4, #76
+ 626 0052 402C     		bne	.L96
+ 627 0054 01D1     		bl	rcvr_spi
+ 628 0056 9520     	.L96:
+ 629              		movs	r4, #10
+ 630 0058 03E0     	.LVL45:
+ 631              	.L98:
+ 632              		.loc 1 705 0
+ 633              		bl	rcvr_spi
+ 634 005a 482C     	.LVL46:
+ 635 005c 14BF     		.loc 1 706 0
+ 636 005e 0120     		tst	r0, #128
+ 637 0060 8720     	.LVL47:
+ 638              		beq	.L88
+ 639              		subs	r3, r4, #1
+ 640              		uxtb	r4, r3
+ 641 0062 FFF7FEFF 		cmp	r4, #0
+ 642              		bne	.L98
+ 643              	.LVL48:
+ 644 0066 4C2C     	.L88:
+ 645 0068 01D1     	.LVL49:
+ 646 006a FFF7FEFF 		.loc 1 709 0
+ 647              		pop	{r4, r5, r6, pc}
+ 648 006e 0A24     	.LFE52:
+ 650              		.section	.text.MMC_disk_write,"ax",%progbits
+ 651              		.align	2
+ 652 0070 FFF7FEFF 		.global	MMC_disk_write
+ 653              		.thumb
+ 654              		.thumb_func
+ 656              	MMC_disk_write:
+ 657 0078 03D0     	.LFB56:
+ 658 007a 631E     		.loc 1 816 0
+ 659 007c DCB2     		@ args = 0, pretend = 0, frame = 0
+ 660 007e 002C     		@ frame_needed = 0, uses_anonymous_args = 0
+ 661 0080 F6D1     	.LVL50:
+ 662              		push	{r4, r5, r6, lr}
+ 663              	.LCFI9:
+ 664              		.loc 1 816 0
+ 665              		mov	r6, r0
+ 666 0082 70BD     		mov	r5, r1
+ 667              		.loc 1 817 0
+ 668              		mov	r4, r2
+ 669              		cbnz	r2, .L103
+ 670              	.LVL51:
+ 671              		movs	r0, #4
+ 672              		b	.L105
+ 673              	.LVL52:
+ 674              	.L103:
+ 675              		.loc 1 818 0
+ 676              		ldr	r2, .L125
+ 677              	.LVL53:
+ 678              		ldr	r3, [r2, #0]
+ 679              		tst	r3, #1
+ 680              		beq	.L106
+ 681 0000 70B5     		movs	r0, #3
+ 682              		b	.L105
+ 683              	.LVL54:
+ 684 0002 0646     	.L106:
+ 685 0004 0D46     		.loc 1 819 0
+ 686              		ldr	r3, [r2, #0]
+ 687 0006 1446     		tst	r3, #4
+ 688 0008 0AB9     		beq	.L108
+ 689              		movs	r0, #2
+ 690 000a 0420     		b	.L105
+ 691 000c 44E0     	.LVL55:
+ 692              	.L108:
+ 693              		.loc 1 821 0
+ 694              		ldr	r3, .L125+4
+ 695 000e 234A     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 696              		tst	r3, #8
+ 697 0010 1368     		it	eq
+ 698 0012 13F0010F 		lsleq	r5, r1, #9
+ 699 0016 01D0     		.loc 1 823 0
+ 700 0018 0320     		cmp	r4, #1
+ 701 001a 3DE0     		bne	.L112
+ 702              		.loc 1 824 0
+ 703              		mov	r1, r5
+ 704              		movs	r0, #88
+ 705 001c 1368     		bl	send_cmd
+ 706 001e 13F0040F 		mov	r5, r0
+ 707 0022 01D0     	.LVL56:
+ 708 0024 0220     		cbnz	r0, .L114
+ 709 0026 37E0     		mov	r0, r6
+ 710              		movs	r1, #254
+ 711              		bl	xmit_datablock
+ 712              		cbz	r0, .L114
+ 713 0028 1D4B     		mov	r4, r5
+ 714 002a 1B78     		b	.L114
+ 715 002c 13F0080F 	.LVL57:
+ 716 0030 08BF     	.L112:
+ 717 0032 4D02     		.loc 1 829 0
+ 718              		tst	r3, #6
+ 719 0034 012C     		beq	.L117
+ 720 0036 0CD1     		movs	r0, #215
+ 721              		mov	r1, r4
+ 722 0038 2946     		bl	send_cmd
+ 723 003a 5820     	.LVL58:
+ 724 003c FFF7FEFF 	.L117:
+ 725 0040 0546     		.loc 1 830 0
+ 726              		movs	r0, #89
+ 727 0042 20BB     		mov	r1, r5
+ 728 0044 3046     		bl	send_cmd
+ 729 0046 FE21     		cbnz	r0, .L114
+ 730 0048 FFF7FEFF 	.L119:
+ 731 004c F8B1     		.loc 1 832 0
+ 732 004e 2C46     		mov	r0, r6
+ 733 0050 1DE0     		movs	r1, #252
+ 734              		bl	xmit_datablock
+ 735              		cbz	r0, .L120
+ 736              		.loc 1 834 0
+ 737 0052 13F0060F 		subs	r3, r4, #1
+ 738 0056 03D0     		uxtb	r4, r3
+ 739 0058 D720     		cbz	r4, .L120
+ 740 005a 2146     		.loc 1 833 0
+ 741 005c FFF7FEFF 		add	r6, r6, #512
+ 742              		b	.L119
+ 743              	.L120:
+ 744              		.loc 1 835 0
+ 745 0060 5920     		movs	r0, #0
+ 746 0062 2946     		movs	r1, #253
+ 747 0064 FFF7FEFF 		bl	xmit_datablock
+ 748 0068 88B9     		cmp	r0, #0
+ 749              		it	eq
+ 750              		moveq	r4, #1
+ 751 006a 3046     	.L114:
+ 752 006c FC21     		.loc 1 839 0
+ 753 006e FFF7FEFF 		bl	release_spi
+ 754 0072 28B1     		.loc 1 841 0
+ 755              		subs	r0, r4, #0
+ 756 0074 631E     		it	ne
+ 757 0076 DCB2     		movne	r0, #1
+ 758 0078 14B1     	.LVL59:
+ 759              	.L105:
+ 760 007a 06F50076 		.loc 1 842 0
+ 761 007e F4E7     		pop	{r4, r5, r6, pc}
+ 762              	.L126:
+ 763              		.align	2
+ 764 0080 0020     	.L125:
+ 765 0082 FD21     		.word	.LANCHOR2
+ 766 0084 FFF7FEFF 		.word	.LANCHOR5
+ 767 0088 0028     	.LFE56:
+ 769 008c 0124     		.section	.text.MMC_disk_read,"ax",%progbits
+ 770              		.align	2
+ 771              		.global	MMC_disk_read
+ 772 008e FFF7FEFF 		.thumb
+ 773              		.thumb_func
+ 775 0094 18BF     	MMC_disk_read:
+ 776 0096 0120     	.LFB55:
+ 777              		.loc 1 778 0
+ 778              		@ args = 0, pretend = 0, frame = 0
+ 779              		@ frame_needed = 0, uses_anonymous_args = 0
+ 780 0098 70BD     	.LVL60:
+ 781              		push	{r4, r5, r6, lr}
+ 782 009a C046     	.LCFI10:
+ 783              		.loc 1 778 0
+ 784 009c 00000000 		mov	r5, r0
+ 785 00a0 00000000 		.loc 1 779 0
+ 786              		mov	r4, r2
+ 787              		cbnz	r2, .L128
+ 788              	.LVL61:
+ 789              		movs	r0, #4
+ 790              		b	.L130
+ 791              	.LVL62:
+ 792              	.L128:
+ 793              		.loc 1 780 0
+ 794              		ldr	r3, .L145
+ 795              		ldr	r3, [r3, #0]
+ 796              		tst	r3, #1
+ 797              		beq	.L131
+ 798              		movs	r0, #3
+ 799              		b	.L130
+ 800 0000 70B5     	.LVL63:
+ 801              	.L131:
+ 802              		.loc 1 782 0
+ 803 0002 0546     		ldr	r3, .L145+4
+ 804              		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 805 0004 1446     		tst	r3, #8
+ 806 0006 0AB9     		it	eq
+ 807              		lsleq	r1, r1, #9
+ 808 0008 0420     	.LVL64:
+ 809 000a 34E0     		.loc 1 784 0
+ 810              		cmp	r2, #1
+ 811              		bne	.L135
+ 812              		.loc 1 785 0
+ 813 000c 1A4B     		movs	r0, #81
+ 814 000e 1B68     		bl	send_cmd
+ 815 0010 13F0010F 	.LVL65:
+ 816 0014 01D0     		mov	r6, r0
+ 817 0016 0320     		cbnz	r0, .L137
+ 818 0018 2DE0     		.loc 1 786 0
+ 819              		mov	r0, r5
+ 820              		mov	r1, #512
+ 821              		bl	rcvr_datablock
+ 822 001a 184B     		cbz	r0, .L137
+ 823 001c 1B78     		mov	r4, r6
+ 824 001e 13F0080F 		b	.L137
+ 825 0022 08BF     	.LVL66:
+ 826 0024 4902     	.L135:
+ 827              		.loc 1 792 0
+ 828              		movs	r0, #82
+ 829 0026 012A     		bl	send_cmd
+ 830 0028 0CD1     	.LVL67:
+ 831              		cbnz	r0, .L137
+ 832 002a 5120     	.L140:
+ 833 002c FFF7FEFF 		.loc 1 794 0
+ 834              		mov	r0, r5
+ 835 0030 0646     		mov	r1, #512
+ 836 0032 D8B9     		bl	rcvr_datablock
+ 837              		cbz	r0, .L141
+ 838 0034 2846     		.loc 1 798 0
+ 839 0036 4FF40071 		subs	r3, r4, #1
+ 840 003a FFF7FEFF 		uxtb	r4, r3
+ 841 003e A8B1     		cbz	r4, .L141
+ 842 0040 3446     		.loc 1 797 0
+ 843 0042 13E0     		add	r5, r5, #512
+ 844              		b	.L140
+ 845              	.L141:
+ 846              		.loc 1 799 0
+ 847 0044 5220     		movs	r0, #76
+ 848 0046 FFF7FEFF 		movs	r1, #0
+ 849              		bl	send_cmd
+ 850 004a 78B9     	.L137:
+ 851              		.loc 1 802 0
+ 852              		bl	release_spi
+ 853 004c 2846     		.loc 1 804 0
+ 854 004e 4FF40071 		subs	r0, r4, #0
+ 855 0052 FFF7FEFF 		it	ne
+ 856 0056 28B1     		movne	r0, #1
+ 857              	.LVL68:
+ 858 0058 631E     	.L130:
+ 859 005a DCB2     		.loc 1 805 0
+ 860 005c 14B1     		pop	{r4, r5, r6, pc}
+ 861              	.L146:
+ 862 005e 05F50075 		.align	2
+ 863 0062 F3E7     	.L145:
+ 864              		.word	.LANCHOR2
+ 865              		.word	.LANCHOR5
+ 866 0064 4C20     	.LFE55:
+ 868 0068 FFF7FEFF 		.section	.text.spi_set_speed,"ax",%progbits
+ 869              		.align	2
+ 870              		.thumb
+ 871 006c FFF7FEFF 		.thumb_func
+ 873 0070 201E     	spi_set_speed:
+ 874 0072 18BF     	.LFB39:
+ 875 0074 0120     		.loc 1 243 0
+ 876              		@ args = 0, pretend = 0, frame = 0
+ 877              		@ frame_needed = 0, uses_anonymous_args = 0
+ 878              	.LVL69:
+ 879 0076 70BD     		push	{r4, lr}
+ 880              	.LCFI11:
+ 881              		.loc 1 244 0
+ 882              		cbnz	r0, .L148
+ 883 0078 00000000 		.loc 1 245 0
+ 884 007c 00000000 		ldr	r0, .L153
+ 885              	.LVL70:
+ 886              		ldr	r1, .L153+4
+ 887              		b	.L152
+ 888              	.LVL71:
+ 889              	.L148:
+ 890              		.loc 1 247 0
+ 891              		ldr	r0, .L153
+ 892              	.LVL72:
+ 893              		ldr	r1, .L153+8
+ 894              	.L152:
+ 895              		bl	SSP_SetClock
+ 896              		.loc 1 249 0
+ 897              		pop	{r4, pc}
+ 898 0000 10B5     	.L154:
+ 899              		.align	2
+ 900              	.L153:
+ 901 0002 10B9     		.word	1073938432
+ 902              		.word	400000
+ 903 0004 0348     		.word	25000000
+ 904              	.LFE39:
+ 906 0008 01E0     		.section	.text.power_on,"ax",%progbits
+ 907              		.align	2
+ 908              		.thumb
+ 909              		.thumb_func
+ 911              	power_on:
+ 912 000c 0349     	.LFB48:
+ 913              		.loc 1 562 0
+ 914 000e FFF7FEFF 		@ args = 0, pretend = 0, frame = 40
+ 915              		@ frame_needed = 0, uses_anonymous_args = 0
+ 916 0012 10BD     		push	{r4, r5, r6, lr}
+ 917              	.LCFI12:
+ 918              		sub	sp, sp, #40
+ 919              	.LCFI13:
+ 920 0014 00000340 	.LBB23:
+ 921 0018 801A0600 	.LBB24:
+ 922 001c 40787D01 		.loc 1 207 0
+ 923              		movs	r4, #0
+ 924              		.loc 1 210 0
+ 925              		movs	r3, #21
+ 926              		.loc 1 208 0
+ 927              		movs	r5, #1
+ 928              		.loc 1 212 0
+ 929              		add	r0, sp, #31
+ 930              		.loc 1 214 0
+ 931              		ldr	r6, .L163
+ 932              		.loc 1 210 0
+ 933              		strb	r3, [sp, #32]
+ 934              		.loc 1 207 0
+ 935 0000 70B5     		strb	r4, [sp, #33]
+ 936              		.loc 1 208 0
+ 937 0002 8AB0     		strb	r5, [sp, #35]
+ 938              		.loc 1 209 0
+ 939              		strb	r4, [sp, #34]
+ 940              		.loc 1 211 0
+ 941              		strb	r4, [sp, #31]
+ 942 0004 0024     		.loc 1 212 0
+ 943              		bl	PINSEL_ConfigPin
+ 944 0006 1523     		.loc 1 213 0
+ 945              		bl	socket_power_off
+ 946 0008 0125     		.loc 1 215 0
+ 947              		mov	r2, r5
+ 948 000a 0DF11F00 		mov	r0, r4
+ 949              		mov	r1, #2097152
+ 950 000e 3A4E     		.loc 1 214 0
+ 951              		strb	r4, [r6, #0]
+ 952 0010 8DF82030 		.loc 1 215 0
+ 953              		bl	GPIO_SetDir
+ 954 0014 8DF82140 	.LBE24:
+ 955              	.LBE23:
+ 956 0018 8DF82350 	.LBB25:
+ 957              	.LBB26:
+ 958 001c 8DF82240 		.loc 1 186 0
+ 959              		mov	r0, r4
+ 960 0020 8DF81F40 		mov	r1, #2097152
+ 961              		bl	GPIO_ClearValue
+ 962 0024 FFF7FEFF 	.LBE26:
+ 963              	.LBE25:
+ 964 0028 FFF7FEFF 		.loc 1 566 0
+ 965              		ldr	r3, .L163+4
+ 966 002c 2A46     		movs	r2, #25
+ 967 002e 2046     	.LBB28:
+ 968 0030 4FF40011 	.LBB27:
+ 969              		.loc 1 187 0
+ 970 0034 3470     		strb	r5, [r6, #0]
+ 971              	.LBE27:
+ 972 0036 FFF7FEFF 	.LBE28:
+ 973              		.loc 1 566 0
+ 974              		str	r2, [r3, #0]
+ 975              	.L156:
+ 976              		ldr	r3, .L163+4
+ 977              		ldr	r4, [r3, #0]
+ 978 003a 2046     		cmp	r4, #0
+ 979 003c 4FF40011 		bne	.L156
+ 980 0040 FFF7FEFF 	.LBB29:
+ 981              	.LBB30:
+ 982              		.loc 1 260 0
+ 983              		movs	r3, #6
+ 984 0044 2D4B     		strb	r3, [sp, #32]
+ 985 0046 1922     		.loc 1 257 0
+ 986              		strb	r4, [sp, #33]
+ 987              		.loc 1 258 0
+ 988              		strb	r4, [sp, #35]
+ 989 0048 3570     		.loc 1 259 0
+ 990              		strb	r4, [sp, #34]
+ 991              		.loc 1 261 0
+ 992              		strb	r4, [sp, #31]
+ 993 004a 1A60     		.loc 1 262 0
+ 994              		bl	de_select_card
+ 995 004c 2B4B     		.loc 1 263 0
+ 996 004e 1C68     		movs	r2, #1
+ 997 0050 002C     		movs	r1, #64
+ 998 0052 FBD1     		mov	r0, r4
+ 999              		.loc 1 264 0
+ 1000              		add	r4, sp, #31
+ 1001              		.loc 1 263 0
+ 1002 0054 0623     		bl	GPIO_SetDir
+ 1003 0056 8DF82030 		.loc 1 264 0
+ 1004              		mov	r0, r4
+ 1005 005a 8DF82140 		bl	PINSEL_ConfigPin
+ 1006              		.loc 1 266 0
+ 1007 005e 8DF82340 		movs	r5, #2
+ 1008              		.loc 1 267 0
+ 1009 0062 8DF82240 		movs	r3, #7
+ 1010              		.loc 1 268 0
+ 1011 0066 8DF81F40 		mov	r0, r4
+ 1012              		.loc 1 267 0
+ 1013 006a FFF7FEFF 		strb	r3, [sp, #32]
+ 1014              		.loc 1 266 0
+ 1015 006e 0122     		strb	r5, [sp, #33]
+ 1016 0070 4021     		.loc 1 268 0
+ 1017 0072 2046     		bl	PINSEL_ConfigPin
+ 1018              		.loc 1 270 0
+ 1019 0074 0DF11F04 		movs	r3, #8
+ 1020              		.loc 1 271 0
+ 1021 0078 FFF7FEFF 		mov	r0, r4
+ 1022              		.loc 1 270 0
+ 1023 007c 2046     		strb	r3, [sp, #32]
+ 1024 007e FFF7FEFF 		.loc 1 271 0
+ 1025              		bl	PINSEL_ConfigPin
+ 1026 0082 0225     		.loc 1 273 0
+ 1027              		movs	r3, #9
+ 1028 0084 0723     		.loc 1 274 0
+ 1029              		mov	r0, r4
+ 1030 0086 2046     		.loc 1 276 0
+ 1031              		add	r4, sp, #4
+ 1032 0088 8DF82030 		.loc 1 273 0
+ 1033              		strb	r3, [sp, #32]
+ 1034 008c 8DF82150 		.loc 1 274 0
+ 1035              		bl	PINSEL_ConfigPin
+ 1036 0090 FFF7FEFF 		.loc 1 276 0
+ 1037              		mov	r0, r4
+ 1038 0094 0823     		bl	SSP_ConfigStructInit
+ 1039              		.loc 1 277 0
+ 1040 0096 2046     		ldr	r0, .L163+8
+ 1041              		mov	r1, r4
+ 1042 0098 8DF82030 		bl	SSP_Init
+ 1043              		.loc 1 279 0
+ 1044 009c FFF7FEFF 		movs	r0, #20
+ 1045              		mov	r1, r5
+ 1046 00a0 0923     		bl	CLKPWR_SetPCLKDiv
+ 1047              		.loc 1 281 0
+ 1048 00a2 2046     		ldr	r0, .L163+8
+ 1049              		movs	r1, #1
+ 1050 00a4 01AC     		bl	SSP_Cmd
+ 1051              	.L158:
+ 1052 00a6 8DF82030 		.loc 1 284 0
+ 1053              		ldr	r3, .L163+8
+ 1054 00aa FFF7FEFF 		ldr	r3, [r3, #12]
+ 1055              		tst	r3, #16
+ 1056 00ae 2046     		bne	.L158
+ 1057 00b0 FFF7FEFF 		b	.L159
+ 1058              	.LVL73:
+ 1059 00b4 1248     	.L160:
+ 1060 00b6 2146     	.LBB31:
+ 1061 00b8 FFF7FEFF 		.loc 1 288 0
+ 1062              		ldr	r3, .L163+12
+ 1063 00bc 1420     		ldr	r3, [r3, #8]
+ 1064 00be 2946     		str	r3, [sp, #36]
+ 1065 00c0 FFF7FEFF 	.LVL74:
+ 1066              		.loc 1 289 0
+ 1067 00c4 0E48     		ldr	r3, [sp, #36]
+ 1068 00c6 0121     	.L159:
+ 1069 00c8 FFF7FEFF 	.LBE31:
+ 1070              		.loc 1 287 0
+ 1071              		ldr	r3, .L163+8
+ 1072 00cc 0C4B     		ldr	r3, [r3, #12]
+ 1073 00ce DB68     		ands	r0, r3, #4
+ 1074 00d0 13F0100F 		bne	.L160
+ 1075 00d4 FAD1     	.LBE30:
+ 1076 00d6 03E0     	.LBE29:
+ 1077              		.loc 1 569 0
+ 1078              		bl	spi_set_speed
+ 1079              		.loc 1 570 0
+ 1080              		bl	de_select_card
+ 1081 00d8 0A4B     		.loc 1 571 0
+ 1082 00da 9B68     		add	sp, sp, #40
+ 1083 00dc 0993     		pop	{r4, r5, r6, pc}
+ 1084              	.L164:
+ 1085              		.align	2
+ 1086 00de 099B     	.L163:
+ 1087              		.word	.LANCHOR4
+ 1088              		.word	.LANCHOR1
+ 1089              		.word	1073938432
+ 1090 00e0 074B     		.word	1074298880
+ 1091 00e2 DB68     	.LFE48:
+ 1093 00e8 F6D1     		.section	.text.spi_close,"ax",%progbits
+ 1094              		.align	2
+ 1095              		.global	spi_close
+ 1096              		.thumb
+ 1097 00ea FFF7FEFF 		.thumb_func
+ 1099 00ee FFF7FEFF 	spi_close:
+ 1100              	.LFB41:
+ 1101 00f2 0AB0     		.loc 1 299 0
+ 1102 00f4 70BD     		@ args = 0, pretend = 0, frame = 8
+ 1103              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1104 00f6 C046     		push	{r0, r1, r4, lr}
+ 1105              	.LCFI14:
+ 1106 00f8 00000000 		.loc 1 302 0
+ 1107 00fc 00000000 		ldr	r4, .L167
+ 1108 0100 00000340 		movs	r1, #0
+ 1109 0104 00800840 		mov	r0, r4
+ 1110              		bl	SSP_Cmd
+ 1111              		.loc 1 303 0
+ 1112              		mov	r0, r4
+ 1113              		bl	SSP_DeInit
+ 1114              		.loc 1 310 0
+ 1115              		add	r4, sp, #3
+ 1116              		.loc 1 307 0
+ 1117              		movs	r3, #3
+ 1118              		.loc 1 305 0
+ 1119              		movs	r2, #0
+ 1120              		.loc 1 307 0
+ 1121              		strb	r3, [sp, #6]
+ 1122              		.loc 1 310 0
+ 1123 0000 13B5     		mov	r0, r4
+ 1124              		.loc 1 308 0
+ 1125              		adds	r3, r3, r3
+ 1126 0002 164C     		.loc 1 305 0
+ 1127 0004 0021     		strb	r2, [sp, #5]
+ 1128 0006 2046     		.loc 1 306 0
+ 1129 0008 FFF7FEFF 		strb	r2, [sp, #7]
+ 1130              		.loc 1 309 0
+ 1131 000c 2046     		strb	r2, [sp, #3]
+ 1132 000e FFF7FEFF 		.loc 1 308 0
+ 1133              		strb	r3, [sp, #4]
+ 1134 0012 0DF10304 		.loc 1 310 0
+ 1135              		bl	PINSEL_ConfigPin
+ 1136 0016 0323     		.loc 1 311 0
+ 1137              		movs	r3, #7
+ 1138 0018 0022     		.loc 1 312 0
+ 1139              		mov	r0, r4
+ 1140 001a 8DF80630 		.loc 1 311 0
+ 1141              		strb	r3, [sp, #4]
+ 1142 001e 2046     		.loc 1 312 0
+ 1143              		bl	PINSEL_ConfigPin
+ 1144 0020 DB18     		.loc 1 313 0
+ 1145              		movs	r3, #8
+ 1146 0022 8DF80520 		.loc 1 314 0
+ 1147              		mov	r0, r4
+ 1148 0026 8DF80720 		.loc 1 313 0
+ 1149              		strb	r3, [sp, #4]
+ 1150 002a 8DF80320 		.loc 1 314 0
+ 1151              		bl	PINSEL_ConfigPin
+ 1152 002e 8DF80430 		.loc 1 315 0
+ 1153              		movs	r3, #9
+ 1154 0032 FFF7FEFF 		.loc 1 316 0
+ 1155              		mov	r0, r4
+ 1156 0036 0723     		.loc 1 315 0
+ 1157              		strb	r3, [sp, #4]
+ 1158 0038 2046     		.loc 1 316 0
+ 1159              		bl	PINSEL_ConfigPin
+ 1160 003a 8DF80430 		.loc 1 317 0
+ 1161              		pop	{r2, r3, r4, pc}
+ 1162 003e FFF7FEFF 	.L168:
+ 1163              		.align	2
+ 1164 0042 0823     	.L167:
+ 1165              		.word	1073938432
+ 1166 0044 2046     	.LFE41:
+ 1168 0046 8DF80430 		.section	.text.power_off,"ax",%progbits
+ 1169              		.align	2
+ 1170 004a FFF7FEFF 		.thumb
+ 1171              		.thumb_func
+ 1173              	power_off:
+ 1174 0050 2046     	.LFB49:
+ 1175              		.loc 1 574 0
+ 1176 0052 8DF80430 		@ args = 0, pretend = 0, frame = 0
+ 1177              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1178 0056 FFF7FEFF 		push	{r4, lr}
+ 1179              	.LCFI15:
+ 1180 005a 1CBD     		.loc 1 575 0
+ 1181              		ldr	r4, .L173
+ 1182              		ldr	r3, [r4, #0]
+ 1183              		tst	r3, #1
+ 1184 005c 00000340 		bne	.L170
+ 1185              		.loc 1 576 0
+ 1186              		bl	select_card
+ 1187              		.loc 1 577 0
+ 1188              		bl	wait_ready
+ 1189              		.loc 1 578 0
+ 1190              		bl	release_spi
+ 1191              	.L170:
+ 1192              		.loc 1 580 0
+ 1193              		bl	spi_close
+ 1194              		.loc 1 581 0
+ 1195              		bl	socket_power_off
+ 1196              		.loc 1 582 0
+ 1197 0000 10B5     		ldr	r3, [r4, #0]
+ 1198              		orr	r3, r3, #1
+ 1199              		str	r3, [r4, #0]
+ 1200 0002 0A4C     		.loc 1 583 0
+ 1201 0004 2368     		pop	{r4, pc}
+ 1202 0006 13F0010F 	.L174:
+ 1203 000a 05D1     		.align	2
+ 1204              	.L173:
+ 1205 000c FFF7FEFF 		.word	.LANCHOR2
+ 1206              	.LFE49:
+ 1208              		.section	.text.MMC_disk_initialize,"ax",%progbits
+ 1209 0014 FFF7FEFF 		.align	2
+ 1210              		.global	MMC_disk_initialize
+ 1211              		.thumb
+ 1212 0018 FFF7FEFF 		.thumb_func
+ 1214 001c FFF7FEFF 	MMC_disk_initialize:
+ 1215              	.LFB53:
+ 1216 0020 2368     		.loc 1 715 0
+ 1217 0022 43F00103 		@ args = 0, pretend = 0, frame = 8
+ 1218 0026 2360     		@ frame_needed = 0, uses_anonymous_args = 0
+ 1219              		push	{r0, r1, r4, r5, r6, lr}
+ 1220 0028 10BD     	.LCFI16:
+ 1221              		.loc 1 718 0
+ 1222 002a C046     		ldr	r0, .L208
+ 1223              		ldr	r3, [r0, #0]
+ 1224 002c 00000000 		ands	r4, r3, #2
+ 1225              		beq	.L176
+ 1226              		ldr	r0, [r0, #0]
+ 1227              		b	.L178
+ 1228              	.L176:
+ 1229              		.loc 1 720 0
+ 1230              		bl	power_on
+ 1231              		.loc 1 721 0
+ 1232              		mov	r0, r4
+ 1233              		bl	spi_set_speed
+ 1234              		movs	r4, #10
+ 1235              	.LVL75:
+ 1236              	.L179:
+ 1237              		.loc 1 722 0
+ 1238 0000 73B5     		bl	rcvr_spi
+ 1239              		subs	r3, r4, #1
+ 1240              		uxtb	r4, r3
+ 1241 0002 4248     		cmp	r4, #0
+ 1242 0004 0368     		bne	.L179
+ 1243 0006 13F00204 		.loc 1 725 0
+ 1244 000a 01D0     		movs	r0, #64
+ 1245 000c 0068     		mov	r1, r4
+ 1246 000e 7BE0     		bl	send_cmd
+ 1247              		cmp	r0, #1
+ 1248              		bne	.L181
+ 1249 0010 FFF7FEFF 		.loc 1 726 0
+ 1250              		ldr	r3, .L208+4
+ 1251 0014 2046     		movs	r2, #100
+ 1252 0016 FFF7FEFF 		.loc 1 727 0
+ 1253 001a 0A24     		adds	r0, r0, #71
+ 1254              		.loc 1 726 0
+ 1255              		str	r2, [r3, #0]
+ 1256              		.loc 1 727 0
+ 1257 001c FFF7FEFF 		mov	r1, #426
+ 1258 0020 631E     		bl	send_cmd
+ 1259 0022 DCB2     		cmp	r0, #1
+ 1260 0024 002C     		bne	.L183
+ 1261 0026 F9D1     	.L185:
+ 1262              		.loc 1 728 0
+ 1263 0028 4020     		bl	rcvr_spi
+ 1264 002a 2146     		add	r3, sp, #4
+ 1265 002c FFF7FEFF 		strb	r0, [r4, r3]
+ 1266 0030 0128     	.LVL76:
+ 1267 0032 56D1     		adds	r4, r4, #1
+ 1268              		cmp	r4, #4
+ 1269 0034 364B     		bne	.L185
+ 1270 0036 6422     		.loc 1 729 0
+ 1271              		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 1272 0038 4730     		cmp	r3, #1
+ 1273              		bne	.L181
+ 1274 003a 1A60     		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 1275              		cmp	r3, #170
+ 1276 003c 4FF4D571 		bne	.L181
+ 1277 0040 FFF7FEFF 	.L188:
+ 1278 0044 0128     		.loc 1 730 0
+ 1279 0046 30D1     		ldr	r4, .L208+4
+ 1280              		ldr	r3, [r4, #0]
+ 1281              		cbz	r3, .L189
+ 1282 0048 FFF7FEFF 		movs	r0, #233
+ 1283 004c 01AB     		mov	r1, #1073741824
+ 1284 004e E054     		bl	send_cmd
+ 1285              		cmp	r0, #0
+ 1286 0050 0134     		bne	.L188
+ 1287 0052 042C     	.L189:
+ 1288 0054 F8D1     		.loc 1 731 0
+ 1289              		ldr	r3, [r4, #0]
+ 1290 0056 9DF80630 		cmp	r3, #0
+ 1291 005a 012B     		beq	.L181
+ 1292 005c 41D1     		movs	r0, #122
+ 1293 005e 9DF80730 		movs	r1, #0
+ 1294 0062 AA2B     		bl	send_cmd
+ 1295 0064 3DD1     		cbnz	r0, .L181
+ 1296              		mov	r4, r0
+ 1297              	.L193:
+ 1298 0066 2A4C     		.loc 1 732 0
+ 1299 0068 2368     		bl	rcvr_spi
+ 1300 006a 33B1     		add	r3, sp, #4
+ 1301 006c E920     		strb	r0, [r4, r3]
+ 1302 006e 4FF08041 		adds	r4, r4, #1
+ 1303 0072 FFF7FEFF 		cmp	r4, #4
+ 1304 0076 0028     		bne	.L193
+ 1305 0078 F5D1     		.loc 1 733 0
+ 1306              		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 1307              		tst	r3, #64
+ 1308 007a 2368     		ite	eq
+ 1309 007c 002B     		moveq	r4, #4
+ 1310 007e 30D0     		movne	r4, #12
+ 1311 0080 7A20     	.LVL77:
+ 1312 0082 0021     		b	.L197
+ 1313 0084 FFF7FEFF 	.LVL78:
+ 1314 0088 58BB     	.L183:
+ 1315 008a 0446     		.loc 1 737 0
+ 1316              		movs	r0, #233
+ 1317              		mov	r1, r4
+ 1318 008c FFF7FEFF 		bl	send_cmd
+ 1319 0090 01AB     		cmp	r0, #1
+ 1320 0092 E054     		ite	hi
+ 1321 0094 0134     		movhi	r5, #65
+ 1322 0096 042C     		movls	r5, #233
+ 1323 0098 F8D1     	.LVL79:
+ 1324              		ite	hi
+ 1325 009a 9DF80430 		movhi	r4, #1
+ 1326 009e 13F0400F 		movls	r4, #2
+ 1327 00a2 0CBF     	.LVL80:
+ 1328 00a4 0424     	.L200:
+ 1329 00a6 0C24     		.loc 1 742 0
+ 1330              		ldr	r6, .L208+4
+ 1331 00a8 1CE0     		ldr	r3, [r6, #0]
+ 1332              		cbz	r3, .L201
+ 1333              		mov	r0, r5
+ 1334              		movs	r1, #0
+ 1335 00aa E920     		bl	send_cmd
+ 1336 00ac 2146     		cmp	r0, #0
+ 1337 00ae FFF7FEFF 		bne	.L200
+ 1338 00b2 0128     	.L201:
+ 1339 00b4 8CBF     		.loc 1 743 0
+ 1340 00b6 4125     		ldr	r3, [r6, #0]
+ 1341 00b8 E925     		cbz	r3, .L181
+ 1342              		movs	r0, #80
+ 1343 00ba 8CBF     		mov	r1, #512
+ 1344 00bc 0124     		bl	send_cmd
+ 1345 00be 0224     		cbz	r0, .L197
+ 1346              	.LVL81:
+ 1347              	.L181:
+ 1348              		movs	r4, #0
+ 1349 00c0 134E     	.LVL82:
+ 1350 00c2 3368     	.L197:
+ 1351 00c4 2BB1     		.loc 1 749 0
+ 1352 00c6 2846     		ldr	r3, .L208+8
+ 1353 00c8 0021     		strb	r4, [r3, #0]
+ 1354 00ca FFF7FEFF 		.loc 1 750 0
+ 1355 00ce 0028     		bl	release_spi
+ 1356 00d0 F6D1     		.loc 1 752 0
+ 1357              		cbz	r4, .L204
+ 1358              		.loc 1 753 0
+ 1359 00d2 3368     		ldr	r2, .L208
+ 1360 00d4 2BB1     		.loc 1 754 0
+ 1361 00d6 5020     		movs	r0, #1
+ 1362 00d8 4FF40071 		.loc 1 753 0
+ 1363 00dc FFF7FEFF 		ldr	r3, [r2, #0]
+ 1364 00e0 00B1     		bic	r3, r3, #1
+ 1365              		str	r3, [r2, #0]
+ 1366              		.loc 1 754 0
+ 1367 00e2 0024     		bl	spi_set_speed
+ 1368              		b	.L206
+ 1369              	.L204:
+ 1370              		.loc 1 756 0
+ 1371 00e4 0B4B     		bl	power_off
+ 1372 00e6 1C70     	.L206:
+ 1373              		.loc 1 759 0
+ 1374 00e8 FFF7FEFF 		ldr	r3, .L208
+ 1375              		ldr	r0, [r3, #0]
+ 1376 00ec 44B1     	.L178:
+ 1377              		.loc 1 760 0
+ 1378 00ee 074A     		pop	{r2, r3, r4, r5, r6, pc}
+ 1379              	.L209:
+ 1380 00f0 0120     		.align	2
+ 1381              	.L208:
+ 1382 00f2 1368     		.word	.LANCHOR2
+ 1383 00f4 23F00103 		.word	.LANCHOR1
+ 1384 00f8 1360     		.word	.LANCHOR5
+ 1385              	.LFE53:
+ 1387 00fe 01E0     		.section	.text.MMC_disk_ioctl,"ax",%progbits
+ 1388              		.align	2
+ 1389              		.global	MMC_disk_ioctl
+ 1390 0100 FFF7FEFF 		.thumb
+ 1391              		.thumb_func
+ 1393 0104 014B     	MMC_disk_ioctl:
+ 1394 0106 1868     	.LFB57:
+ 1395              		.loc 1 850 0
+ 1396              		@ args = 0, pretend = 0, frame = 16
+ 1397 0108 7CBD     		@ frame_needed = 0, uses_anonymous_args = 0
+ 1398              	.LVL83:
+ 1399 010a C046     		.loc 1 857 0
+ 1400              		cmp	r0, #4
+ 1401 010c 00000000 		.loc 1 850 0
+ 1402 0110 00000000 		push	{r0, r1, r2, r3, r4, r5, r6, lr}
+ 1403 0114 00000000 	.LCFI17:
+ 1404              	.LVL84:
+ 1405              		.loc 1 850 0
+ 1406              		mov	r5, r1
+ 1407              	.LVL85:
+ 1408              		.loc 1 857 0
+ 1409              		bne	.L211
+ 1410              		.loc 1 858 0
+ 1411              		ldrb	r3, [r1, #0]	@ zero_extendqisi2
+ 1412              		cmp	r3, #1
+ 1413              		beq	.L215
+ 1414              	.LVL86:
+ 1415              		bcc	.L214
+ 1416              		cmp	r3, #2
+ 1417              		beq	.L216
+ 1418              		b	.L260
+ 1419 0000 0428     	.L214:
+ 1420              		.loc 1 860 0
+ 1421 0002 7FB5     		ldr	r3, .L264
+ 1422              		ldrb	r0, [r3, #0]	@ zero_extendqisi2
+ 1423              		cbnz	r0, .L218
+ 1424              	.L260:
+ 1425 0004 0D46     		mov	r4, r0
+ 1426              	.LVL87:
+ 1427              		b	.L217
+ 1428 0006 16D1     	.LVL88:
+ 1429              	.L218:
+ 1430 0008 0B78     		.loc 1 861 0
+ 1431 000a 012B     		bl	power_off
+ 1432 000c 0BD0     	.LVL89:
+ 1433              		b	.L259
+ 1434 000e 02D3     	.LVL90:
+ 1435 0010 022B     	.L215:
+ 1436 0012 0BD0     		.loc 1 865 0
+ 1437 0014 02E0     		bl	power_on
+ 1438              	.LVL91:
+ 1439              		b	.L259
+ 1440 0016 764B     	.LVL92:
+ 1441 0018 1878     	.L216:
+ 1442 001a 08B9     		.loc 1 869 0
+ 1443              		ldr	r3, .L264
+ 1444 001c 0446     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1445              		strb	r3, [r1, #1]
+ 1446 001e E3E0     	.LVL93:
+ 1447              	.L259:
+ 1448              		movs	r4, #0
+ 1449              	.LVL94:
+ 1450 0020 FFF7FEFF 		.loc 1 871 0
+ 1451              		b	.L217
+ 1452 0024 05E0     	.LVL95:
+ 1453              	.L211:
+ 1454              		.loc 1 877 0
+ 1455              		ldr	r3, .L264+4
+ 1456 0026 FFF7FEFF 		ldr	r3, [r3, #0]
+ 1457              		tst	r3, #1
+ 1458 002a 02E0     		beq	.L220
+ 1459              		movs	r0, #3
+ 1460              		b	.L222
+ 1461              	.L220:
+ 1462 002c 704B     		.loc 1 879 0
+ 1463 002e 1B78     		cmp	r0, #14
+ 1464 0030 4B70     		bhi	.L223
+ 1465              		tbb	[pc, r0]
+ 1466              	.LVL96:
+ 1467 0032 0024     	.L233:
+ 1468              		.byte	(.L224-.L233)/2
+ 1469              		.byte	(.L225-.L233)/2
+ 1470 0034 D8E0     		.byte	(.L226-.L233)/2
+ 1471              		.byte	(.L227-.L233)/2
+ 1472              		.byte	(.L223-.L233)/2
+ 1473              		.byte	(.L223-.L233)/2
+ 1474 0036 6F4B     		.byte	(.L223-.L233)/2
+ 1475 0038 1B68     		.byte	(.L223-.L233)/2
+ 1476 003a 13F0010F 		.byte	(.L223-.L233)/2
+ 1477 003e 01D0     		.byte	(.L223-.L233)/2
+ 1478 0040 0320     		.byte	(.L228-.L233)/2
+ 1479 0042 D2E0     		.byte	(.L229-.L233)/2
+ 1480              		.byte	(.L230-.L233)/2
+ 1481              		.byte	(.L231-.L233)/2
+ 1482 0044 0E28     		.byte	(.L232-.L233)/2
+ 1483 0046 09D8     		.align	1
+ 1484 0048 DFE800F0 	.L223:
+ 1485              		movs	r4, #4
+ 1486              	.LVL97:
+ 1487 004c 0A       		b	.L234
+ 1488 004d 12       	.LVL98:
+ 1489 004e 4D       	.L224:
+ 1490 004f 51       		.loc 1 881 0
+ 1491 0050 08       		bl	select_card
+ 1492 0051 08       	.LVL99:
+ 1493 0052 08       		.loc 1 882 0
+ 1494 0053 08       		bl	wait_ready
+ 1495 0054 08       		cmp	r0, #255
+ 1496 0055 08       		beq	.L235
+ 1497 0056 A2       		b	.L236
+ 1498 0057 A6       	.LVL100:
+ 1499 0058 A8       	.L225:
+ 1500 0059 B0       		.loc 1 887 0
+ 1501 005a BD       		movs	r0, #73
+ 1502 005b 00       	.LVL101:
+ 1503              		movs	r1, #0
+ 1504 005c 0424     	.LVL102:
+ 1505              		bl	send_cmd
+ 1506 005e C1E0     		mov	r4, r0
+ 1507              		cmp	r0, #0
+ 1508              		bne	.L236
+ 1509              		mov	r0, sp
+ 1510 0060 FFF7FEFF 		movs	r1, #16
+ 1511              		bl	rcvr_datablock
+ 1512              		cmp	r0, #0
+ 1513 0064 FFF7FEFF 		beq	.L236
+ 1514 0068 FF28     		.loc 1 888 0
+ 1515 006a 00F0B880 		ldrb	r3, [sp, #0]	@ zero_extendqisi2
+ 1516 006e B8E0     		ldrb	r1, [sp, #9]	@ zero_extendqisi2
+ 1517              		lsrs	r3, r3, #6
+ 1518              		cmp	r3, #1
+ 1519              		ldrb	r0, [sp, #8]	@ zero_extendqisi2
+ 1520 0070 4920     		bne	.L239
+ 1521              		.loc 1 890 0
+ 1522 0072 0021     		adds	r3, r1, #1
+ 1523              		add	r3, r3, r0, lsl #8
+ 1524 0074 FFF7FEFF 		uxth	r3, r3
+ 1525 0078 0446     		lsls	r3, r3, #10
+ 1526 007a 0028     		b	.L258
+ 1527 007c 40F0B180 	.L239:
+ 1528 0080 6846     		.loc 1 894 0
+ 1529 0082 1021     		ldrb	r2, [sp, #7]	@ zero_extendqisi2
+ 1530 0084 FFF7FEFF 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 1531 0088 0028     		lsls	r2, r2, #2
+ 1532 008a 00F0AA80 		add	r2, r2, r0, lsr #6
+ 1533              		and	r3, r3, #3
+ 1534 008e 9DF80030 		adds	r2, r2, #1
+ 1535 0092 9DF80910 		add	r2, r2, r3, lsl #10
+ 1536 0096 9B09     		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 1537 0098 012B     		and	r1, r1, #3
+ 1538 009a 9DF80800 		and	r3, r3, #15
+ 1539 009e 05D1     		adds	r3, r3, #2
+ 1540              		add	r3, r3, r1, lsl #1
+ 1541 00a0 4B1C     		ldrb	r1, [sp, #10]	@ zero_extendqisi2
+ 1542 00a2 03EB0023 		add	r3, r3, r1, lsr #7
+ 1543 00a6 9BB2     		subs	r3, r3, #9
+ 1544 00a8 9B02     		lsls	r2, r2, r3
+ 1545 00aa 3FE0     		str	r2, [r5, #0]
+ 1546              		b	.L234
+ 1547              	.LVL103:
+ 1548 00ac 9DF80720 	.L226:
+ 1549 00b0 9DF80630 		.loc 1 901 0
+ 1550 00b4 9200     		mov	r3, #512	@ movhi
+ 1551 00b6 02EB9012 		strh	r3, [r1, #0]	@ movhi
+ 1552 00ba 03F00303 		b	.L235
+ 1553 00be 0132     	.LVL104:
+ 1554 00c0 02EB8322 	.L227:
+ 1555 00c4 9DF80530 		.loc 1 906 0
+ 1556 00c8 01F00301 		ldr	r4, .L264+8
+ 1557 00cc 03F00F03 		ldrb	r3, [r4, #0]	@ zero_extendqisi2
+ 1558 00d0 0233     		ands	r1, r3, #4
+ 1559 00d2 03EB4103 	.LVL105:
+ 1560 00d6 9DF80A10 		beq	.L241
+ 1561 00da 03EBD113 		.loc 1 907 0
+ 1562 00de 093B     		movs	r0, #205
+ 1563 00e0 9A40     	.LVL106:
+ 1564 00e2 2A60     		movs	r1, #0
+ 1565 00e4 7EE0     		bl	send_cmd
+ 1566              		cmp	r0, #0
+ 1567              		bne	.L236
+ 1568              		.loc 1 908 0
+ 1569 00e6 4FF40073 		bl	rcvr_spi
+ 1570 00ea 0B80     		.loc 1 909 0
+ 1571 00ec 77E0     		mov	r0, sp
+ 1572              		movs	r1, #16
+ 1573              		bl	rcvr_datablock
+ 1574              		cmp	r0, #0
+ 1575 00ee 424C     		beq	.L236
+ 1576 00f0 2378     		movs	r4, #48
+ 1577 00f2 13F00401 	.LVL107:
+ 1578              	.L245:
+ 1579 00f6 1BD0     		.loc 1 910 0
+ 1580              		bl	rcvr_spi
+ 1581 00f8 CD20     		subs	r3, r4, #1
+ 1582              		uxtb	r4, r3
+ 1583 00fa 0021     		cmp	r4, #0
+ 1584 00fc FFF7FEFF 		bne	.L245
+ 1585 0100 0028     		.loc 1 911 0
+ 1586 0102 6ED1     		ldrb	r2, [sp, #10]	@ zero_extendqisi2
+ 1587              		movs	r3, #16
+ 1588 0104 FFF7FEFF 		lsrs	r2, r2, #4
+ 1589              		lsls	r3, r3, r2
+ 1590 0108 6846     	.L258:
+ 1591 010a 1021     		str	r3, [r5, #0]
+ 1592 010c FFF7FEFF 		b	.L234
+ 1593 0110 0028     	.LVL108:
+ 1594 0112 66D0     	.L241:
+ 1595 0114 3024     		.loc 1 916 0
+ 1596              		movs	r0, #73
+ 1597              	.LVL109:
+ 1598              		bl	send_cmd
+ 1599 0116 FFF7FEFF 		mov	r6, r0
+ 1600 011a 631E     		cmp	r0, #0
+ 1601 011c DCB2     		bne	.L236
+ 1602 011e 002C     		mov	r0, sp
+ 1603 0120 F9D1     		movs	r1, #16
+ 1604              		bl	rcvr_datablock
+ 1605 0122 9DF80A20 		cmp	r0, #0
+ 1606 0126 1023     		beq	.L236
+ 1607 0128 1209     		.loc 1 917 0
+ 1608 012a 9340     		ldrb	r3, [r4, #0]	@ zero_extendqisi2
+ 1609              		ldrb	r2, [sp, #11]	@ zero_extendqisi2
+ 1610 012c 2B60     		ands	r0, r3, #2
+ 1611 012e 59E0     		ldrb	r3, [sp, #10]	@ zero_extendqisi2
+ 1612              		beq	.L249
+ 1613              		.loc 1 918 0
+ 1614              		and	r3, r3, #63
+ 1615 0130 4920     		lsrs	r2, r2, #7
+ 1616              		add	r2, r2, r3, lsl #1
+ 1617 0132 FFF7FEFF 		ldrb	r3, [sp, #13]	@ zero_extendqisi2
+ 1618 0136 0646     		adds	r2, r2, #1
+ 1619 0138 0028     		lsrs	r3, r3, #6
+ 1620 013a 52D1     		subs	r3, r3, #1
+ 1621 013c 6846     		lsls	r2, r2, r3
+ 1622 013e 1021     		mov	r4, r6
+ 1623 0140 FFF7FEFF 	.LVL110:
+ 1624 0144 0028     		str	r2, [r5, #0]
+ 1625 0146 4CD0     		b	.L234
+ 1626              	.LVL111:
+ 1627 0148 2378     	.L249:
+ 1628 014a 9DF80B20 		.loc 1 920 0
+ 1629 014e 13F00200 		and	r1, r2, #3
+ 1630 0152 9DF80A30 		lsrs	r2, r2, #5
+ 1631 0156 0DD0     		ubfx	r3, r3, #2, #5
+ 1632              		add	r2, r2, r1, lsl #3
+ 1633 0158 03F03F03 		adds	r3, r3, #1
+ 1634 015c D209     		adds	r2, r2, #1
+ 1635 015e 02EB4302 		mul	r2, r2, r3
+ 1636 0162 9DF80D30 		mov	r4, r0
+ 1637 0166 0132     	.LVL112:
+ 1638 0168 9B09     		str	r2, [r5, #0]
+ 1639 016a 013B     		b	.L234
+ 1640 016c 9A40     	.LVL113:
+ 1641 016e 3446     	.L228:
+ 1642              		.loc 1 928 0
+ 1643 0170 2A60     		ldr	r3, .L264+8
+ 1644 0172 37E0     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1645              		strb	r3, [r1, #0]
+ 1646              		b	.L235
+ 1647              	.LVL114:
+ 1648 0174 02F00301 	.L229:
+ 1649 0178 5209     		.loc 1 933 0
+ 1650 017a C3F38403 		movs	r0, #73
+ 1651 017e 02EBC102 	.LVL115:
+ 1652 0182 0133     		b	.L263
+ 1653 0184 0132     	.LVL116:
+ 1654 0186 02FB03F2 	.L230:
+ 1655 018a 0446     		.loc 1 939 0
+ 1656              		movs	r0, #74
+ 1657 018c 2A60     	.LVL117:
+ 1658 018e 29E0     	.L263:
+ 1659              		movs	r1, #0
+ 1660              	.LVL118:
+ 1661              		bl	send_cmd
+ 1662 0190 194B     		cbnz	r0, .L236
+ 1663 0192 1B78     		mov	r0, r5
+ 1664 0194 0B70     		movs	r1, #16
+ 1665 0196 22E0     		b	.L257
+ 1666              	.LVL119:
+ 1667              	.L231:
+ 1668              		.loc 1 945 0
+ 1669 0198 4920     		movs	r0, #122
+ 1670              	.LVL120:
+ 1671 019a 00E0     		movs	r1, #0
+ 1672              	.LVL121:
+ 1673              		bl	send_cmd
+ 1674              		cbnz	r0, .L236
+ 1675 019c 4A20     		mov	r4, r0
+ 1676              	.L254:
+ 1677              		.loc 1 946 0
+ 1678 019e 0021     		bl	rcvr_spi
+ 1679              		strb	r0, [r4, r5]
+ 1680 01a0 FFF7FEFF 		adds	r4, r4, #1
+ 1681 01a4 E8B9     		cmp	r4, #4
+ 1682 01a6 2846     		bne	.L254
+ 1683 01a8 1021     		b	.L235
+ 1684 01aa 15E0     	.LVL122:
+ 1685              	.L232:
+ 1686              		.loc 1 952 0
+ 1687              		movs	r0, #205
+ 1688 01ac 7A20     	.LVL123:
+ 1689              		movs	r1, #0
+ 1690 01ae 0021     	.LVL124:
+ 1691              		bl	send_cmd
+ 1692 01b0 FFF7FEFF 		cbnz	r0, .L236
+ 1693 01b4 A8B9     		.loc 1 953 0
+ 1694 01b6 0446     		bl	rcvr_spi
+ 1695              		.loc 1 954 0
+ 1696              		mov	r0, r5
+ 1697 01b8 FFF7FEFF 		movs	r1, #64
+ 1698 01bc 6055     	.LVL125:
+ 1699 01be 0134     	.L257:
+ 1700 01c0 042C     		bl	rcvr_datablock
+ 1701 01c2 F9D1     	.LVL126:
+ 1702 01c4 0BE0     		cbz	r0, .L236
+ 1703              	.LVL127:
+ 1704              	.L235:
+ 1705              		movs	r4, #0
+ 1706 01c6 CD20     	.LVL128:
+ 1707              		b	.L234
+ 1708 01c8 0021     	.LVL129:
+ 1709              	.L236:
+ 1710 01ca FFF7FEFF 		movs	r4, #1
+ 1711 01ce 40B9     	.LVL130:
+ 1712              	.L234:
+ 1713 01d0 FFF7FEFF 		.loc 1 963 0
+ 1714              		bl	release_spi
+ 1715 01d4 2846     	.LVL131:
+ 1716 01d6 4021     	.L217:
+ 1717              		.loc 1 966 0
+ 1718              		mov	r0, r4
+ 1719 01d8 FFF7FEFF 	.L222:
+ 1720              		.loc 1 967 0
+ 1721 01dc 08B1     		add	sp, sp, #16
+ 1722              		pop	{r4, r5, r6, pc}
+ 1723              	.L265:
+ 1724 01de 0024     		.align	2
+ 1725              	.L264:
+ 1726 01e0 00E0     		.word	.LANCHOR4
+ 1727              		.word	.LANCHOR2
+ 1728              		.word	.LANCHOR5
+ 1729 01e2 0124     	.LFE57:
+ 1731              		.section	.bss.Timer1,"aw",%nobits
+ 1732              		.align	2
+ 1733 01e4 FFF7FEFF 		.set	.LANCHOR1,. + 0
+ 1736              	Timer1:
+ 1737 01e8 2046     		.space	4
+ 1738              		.section	.bss.Timer2,"aw",%nobits
+ 1739              		.align	2
+ 1740 01ea 04B0     		.set	.LANCHOR0,. + 0
+ 1743 01ee C046     	Timer2:
+ 1744              		.space	4
+ 1745 01f0 00000000 		.section	.bss.CardType,"aw",%nobits
+ 1746 01f4 00000000 		.set	.LANCHOR5,. + 0
+ 1749              	CardType:
+ 1750              		.space	1
+ 1751              		.section	.bss.socket_powered,"aw",%nobits
+ 1752              		.set	.LANCHOR4,. + 0
+ 1755              	socket_powered:
+ 1756 0000 00000000 		.space	1
+ 1757              		.section	.bss.pv.3566,"aw",%nobits
+ 1758              		.align	2
+ 1759              		.set	.LANCHOR3,. + 0
+ 1762              	pv.3566:
+ 1763 0000 00000000 		.space	4
+ 1764              		.section	.data.Stat,"aw",%progbits
+ 1765              		.align	2
+ 1766              		.set	.LANCHOR2,. + 0
+ 1769 0000 00       	Stat:
+ 1770              		.word	1
+ 1771              		.section	.debug_frame,"",%progbits
+ 1772              	.Lframe0:
+ 1773              		.4byte	.LECIE0-.LSCIE0
+ 1774              	.LSCIE0:
+ 1775 0000 00       		.4byte	0xffffffff
+ 1776              		.byte	0x1
+ 1777              		.ascii	"\000"
+ 1778              		.uleb128 0x1
+ 1779              		.sleb128 -4
+ 1780              		.byte	0xe
+ 1781              		.byte	0xc
+ 1782 0000 00000000 		.uleb128 0xd
+ 1783              		.uleb128 0x0
+ 1784              		.align	2
+ 1785              	.LECIE0:
+ 1786              	.LSFDE0:
+ 1787              		.4byte	.LEFDE0-.LASFDE0
+ 1788              	.LASFDE0:
+ 1789 0000 01000000 		.4byte	.Lframe0
+ 2154              		.sleb128 8
+DEFINED SYMBOLS
+                            *ABS*:00000000 spi_sd_lpc17xx.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:24     .text.spi_rw:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:27     .text.spi_rw:00000000 spi_rw
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:56     .text.spi_rw:00000014 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:61     .text.rcvr_spi:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:64     .text.rcvr_spi:00000000 rcvr_spi
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:80     .text.wait_ready:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:83     .text.wait_ready:00000000 wait_ready
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:114    .text.wait_ready:00000020 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:119    .text.rcvr_datablock:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:122    .text.rcvr_datablock:00000000 rcvr_datablock
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:250    .text.rcvr_datablock:00000098 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:256    .text.xmit_datablock:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:259    .text.xmit_datablock:00000000 xmit_datablock
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:373    .text.xmit_datablock:00000090 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:382    .text.MMC_disk_status:00000000 MMC_disk_status
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:379    .text.MMC_disk_status:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:399    .text.MMC_disk_status:00000008 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:408    .text.MMC_disk_timerproc:00000000 MMC_disk_timerproc
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:405    .text.MMC_disk_timerproc:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:468    .text.MMC_disk_timerproc:00000034 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:476    .text.de_select_card:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:479    .text.de_select_card:00000000 de_select_card
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:496    .text.release_spi:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:499    .text.release_spi:00000000 release_spi
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:516    .text.socket_power_off:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:519    .text.socket_power_off:00000000 socket_power_off
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:539    .text.socket_power_off:00000014 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:544    .text.select_card:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:547    .text.select_card:00000000 select_card
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:564    .text.send_cmd:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:567    .text.send_cmd:00000000 send_cmd
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:675    .text.MMC_disk_write:00000000 MMC_disk_write
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:672    .text.MMC_disk_write:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:784    .text.MMC_disk_write:0000009c $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:794    .text.MMC_disk_read:00000000 MMC_disk_read
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:791    .text.MMC_disk_read:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:883    .text.MMC_disk_read:00000078 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:889    .text.spi_set_speed:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:892    .text.spi_set_speed:00000000 spi_set_speed
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:920    .text.spi_set_speed:00000014 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:927    .text.power_on:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:930    .text.power_on:00000000 power_on
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1106   .text.power_on:000000f8 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1118   .text.spi_close:00000000 spi_close
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1115   .text.spi_close:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1184   .text.spi_close:0000005c $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1189   .text.power_off:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1192   .text.power_off:00000000 power_off
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1224   .text.power_off:0000002c $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1233   .text.MMC_disk_initialize:00000000 MMC_disk_initialize
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1230   .text.MMC_disk_initialize:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1401   .text.MMC_disk_initialize:0000010c $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1412   .text.MMC_disk_ioctl:00000000 MMC_disk_ioctl
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1409   .text.MMC_disk_ioctl:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1487   .text.MMC_disk_ioctl:0000004c $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1504   .text.MMC_disk_ioctl:0000005c $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1745   .text.MMC_disk_ioctl:000001f0 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1755   .bss.Timer1:00000000 Timer1
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1762   .bss.Timer2:00000000 Timer2
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1768   .bss.CardType:00000000 CardType
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1774   .bss.socket_powered:00000000 socket_powered
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1781   .bss.pv.3566:00000000 pv.3566
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1788   .data.Stat:00000000 Stat
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:1789   .data.Stat:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4Eaaaa.s:2158   .debug_loc:00000000 $d
+
+UNDEFINED SYMBOLS
+GPIO_SetValue
+GPIO_ClearValue
+SSP_SetClock
+PINSEL_ConfigPin
+GPIO_SetDir
+SSP_ConfigStructInit
+SSP_Init
+CLKPWR_SetPCLKDiv
+SSP_Cmd
+SSP_DeInit

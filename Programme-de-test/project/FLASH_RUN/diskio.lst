@@ -1,0 +1,706 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"diskio.c"
+  21              	.Ltext0:
+  22              		.section	.text.disk_ioctl,"ax",%progbits
+  23              		.align	2
+  24              		.global	disk_ioctl
+  25              		.thumb
+  26              		.thumb_func
+  28              	disk_ioctl:
+  29              	.LFB36:
+  30              		.file 1 "Libraries/fat_sd/diskio.c"
+   1:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+   2:Libraries/fat_sd/diskio.c **** /* Low level disk I/O module skeleton for FatFs                          */
+   3:Libraries/fat_sd/diskio.c **** /* (C)ChaN, 2007                                                         */
+   4:Libraries/fat_sd/diskio.c **** /* Copyright (c) 2010, Martin Thomas                                     */
+   5:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+   6:Libraries/fat_sd/diskio.c **** /* This is a stub disk I/O module that acts as front end of the existing */
+   7:Libraries/fat_sd/diskio.c **** /* disk I/O modules and attach it to FatFs module with common interface. */
+   8:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+   9:Libraries/fat_sd/diskio.c **** 
+  10:Libraries/fat_sd/diskio.c **** #include "diskio.h"
+  11:Libraries/fat_sd/diskio.c **** #include "spi_sd_lpc17xx.h"
+  12:Libraries/fat_sd/diskio.c **** 
+  13:Libraries/fat_sd/diskio.c **** // in makefile #define WITH_USB_MS   1
+  14:Libraries/fat_sd/diskio.c **** 
+  15:Libraries/fat_sd/diskio.c **** #if ( WITH_USB_MS == 1 )
+  16:Libraries/fat_sd/diskio.c **** #include "usbhost_ms.h"
+  17:Libraries/fat_sd/diskio.c **** 
+  18:Libraries/fat_sd/diskio.c **** USB_INT32U numBlks, blkSize;
+  19:Libraries/fat_sd/diskio.c **** USB_INT08U inquiryResult[INQUIRY_LENGTH];
+  20:Libraries/fat_sd/diskio.c **** DSTATUS usb_status = STA_NOINIT;
+  21:Libraries/fat_sd/diskio.c **** 
+  22:Libraries/fat_sd/diskio.c **** #endif
+  23:Libraries/fat_sd/diskio.c **** 
+  24:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+  25:Libraries/fat_sd/diskio.c **** /* Correspondence between physical drive number and physical drive.      */
+  26:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+  27:Libraries/fat_sd/diskio.c **** 
+  28:Libraries/fat_sd/diskio.c **** #define MMC		0
+  29:Libraries/fat_sd/diskio.c **** #define USB		1
+  30:Libraries/fat_sd/diskio.c **** #define ATA		2
+  31:Libraries/fat_sd/diskio.c **** 
+  32:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+  33:Libraries/fat_sd/diskio.c **** /* disk-timer - forwarded to low-level drivers                           */
+  34:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+  35:Libraries/fat_sd/diskio.c **** 
+  36:Libraries/fat_sd/diskio.c **** void disk_timerproc(void)
+  37:Libraries/fat_sd/diskio.c **** {
+  38:Libraries/fat_sd/diskio.c **** 	MMC_disk_timerproc();
+  39:Libraries/fat_sd/diskio.c **** }
+  40:Libraries/fat_sd/diskio.c **** 
+  41:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+  42:Libraries/fat_sd/diskio.c **** /* Initialize a Drive                                                    */
+  43:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+  44:Libraries/fat_sd/diskio.c **** 
+  45:Libraries/fat_sd/diskio.c **** DSTATUS disk_initialize(BYTE drv /* Physical drive nmuber (0..) */
+  46:Libraries/fat_sd/diskio.c **** )
+  47:Libraries/fat_sd/diskio.c **** {
+  48:Libraries/fat_sd/diskio.c **** 	DSTATUS stat;
+  49:Libraries/fat_sd/diskio.c **** 	int result;
+  50:Libraries/fat_sd/diskio.c **** 
+  51:Libraries/fat_sd/diskio.c **** 	(void) result;
+  52:Libraries/fat_sd/diskio.c **** 
+  53:Libraries/fat_sd/diskio.c **** 	switch (drv)
+  54:Libraries/fat_sd/diskio.c **** 	{
+  55:Libraries/fat_sd/diskio.c **** 	case ATA:
+  56:Libraries/fat_sd/diskio.c **** 		// result = ATA_disk_initialize();
+  57:Libraries/fat_sd/diskio.c **** 		stat = STA_NOINIT;
+  58:Libraries/fat_sd/diskio.c **** 		// translate the result code here
+  59:Libraries/fat_sd/diskio.c **** 		return stat;
+  60:Libraries/fat_sd/diskio.c **** 
+  61:Libraries/fat_sd/diskio.c **** 	case MMC:
+  62:Libraries/fat_sd/diskio.c **** 		stat = MMC_disk_initialize();
+  63:Libraries/fat_sd/diskio.c **** 		return stat;
+  64:Libraries/fat_sd/diskio.c **** 
+  65:Libraries/fat_sd/diskio.c **** 	case USB:
+  66:Libraries/fat_sd/diskio.c **** #if WITH_USB_MS
+  67:Libraries/fat_sd/diskio.c **** 		/* USB host init and enumeration */
+  68:Libraries/fat_sd/diskio.c **** 		if ( usb_status & STA_NOINIT ) {
+  69:Libraries/fat_sd/diskio.c **** 			Host_Init();
+  70:Libraries/fat_sd/diskio.c **** 			if ( Host_EnumDev() == OK ) {
+  71:Libraries/fat_sd/diskio.c **** 				/* mass-storage init */
+  72:Libraries/fat_sd/diskio.c **** 				if ( MS_Init(&blkSize, &numBlks, inquiryResult) == OK ) {
+  73:Libraries/fat_sd/diskio.c **** 					usb_status &= ~STA_NOINIT;
+  74:Libraries/fat_sd/diskio.c **** 				} else {
+  75:Libraries/fat_sd/diskio.c **** 					/* MS init fail */
+  76:Libraries/fat_sd/diskio.c **** 				}
+  77:Libraries/fat_sd/diskio.c **** 			} else {
+  78:Libraries/fat_sd/diskio.c **** 				/* host init and/or enum fail */
+  79:Libraries/fat_sd/diskio.c **** 			}
+  80:Libraries/fat_sd/diskio.c **** 		}
+  81:Libraries/fat_sd/diskio.c **** 		return usb_status;
+  82:Libraries/fat_sd/diskio.c **** #else
+  83:Libraries/fat_sd/diskio.c **** 		stat = STA_NOINIT;
+  84:Libraries/fat_sd/diskio.c **** 		return stat;
+  85:Libraries/fat_sd/diskio.c **** #endif
+  86:Libraries/fat_sd/diskio.c **** 	}
+  87:Libraries/fat_sd/diskio.c **** 	return STA_NOINIT;
+  88:Libraries/fat_sd/diskio.c **** }
+  89:Libraries/fat_sd/diskio.c **** 
+  90:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+  91:Libraries/fat_sd/diskio.c **** /* Return Disk Status                                                    */
+  92:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+  93:Libraries/fat_sd/diskio.c **** 
+  94:Libraries/fat_sd/diskio.c **** DSTATUS disk_status(BYTE drv /* Physical drive number (0..) */
+  95:Libraries/fat_sd/diskio.c **** )
+  96:Libraries/fat_sd/diskio.c **** {
+  97:Libraries/fat_sd/diskio.c **** 	DSTATUS stat;
+  98:Libraries/fat_sd/diskio.c **** 	int result;
+  99:Libraries/fat_sd/diskio.c **** 
+ 100:Libraries/fat_sd/diskio.c **** 	(void) result;
+ 101:Libraries/fat_sd/diskio.c **** 
+ 102:Libraries/fat_sd/diskio.c **** 	switch (drv)
+ 103:Libraries/fat_sd/diskio.c **** 	{
+ 104:Libraries/fat_sd/diskio.c **** 	case ATA:
+ 105:Libraries/fat_sd/diskio.c **** 		// result = ATA_disk_status();
+ 106:Libraries/fat_sd/diskio.c **** 		stat = STA_NOINIT;
+ 107:Libraries/fat_sd/diskio.c **** 		// translate the result code here
+ 108:Libraries/fat_sd/diskio.c **** 
+ 109:Libraries/fat_sd/diskio.c **** 		return stat;
+ 110:Libraries/fat_sd/diskio.c **** 
+ 111:Libraries/fat_sd/diskio.c **** 	case MMC:
+ 112:Libraries/fat_sd/diskio.c **** 		stat = MMC_disk_status();
+ 113:Libraries/fat_sd/diskio.c **** 		return stat;
+ 114:Libraries/fat_sd/diskio.c **** 
+ 115:Libraries/fat_sd/diskio.c **** 	case USB:
+ 116:Libraries/fat_sd/diskio.c **** #if ( WITH_USB_MS == 1 )
+ 117:Libraries/fat_sd/diskio.c **** 		stat = usb_status;
+ 118:Libraries/fat_sd/diskio.c **** #else
+ 119:Libraries/fat_sd/diskio.c **** 		stat = STA_NOINIT;
+ 120:Libraries/fat_sd/diskio.c **** #endif
+ 121:Libraries/fat_sd/diskio.c **** 		return stat;
+ 122:Libraries/fat_sd/diskio.c **** 	}
+ 123:Libraries/fat_sd/diskio.c **** 
+ 124:Libraries/fat_sd/diskio.c **** 	return STA_NOINIT;
+ 125:Libraries/fat_sd/diskio.c **** }
+ 126:Libraries/fat_sd/diskio.c **** 
+ 127:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+ 128:Libraries/fat_sd/diskio.c **** /* Read Sector(s)                                                        */
+ 129:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+ 130:Libraries/fat_sd/diskio.c **** 
+ 131:Libraries/fat_sd/diskio.c **** DRESULT disk_read(BYTE drv, /* Physical drive number (0..) */
+ 132:Libraries/fat_sd/diskio.c **** 		BYTE *buff, /* Data buffer to store read data */
+ 133:Libraries/fat_sd/diskio.c **** 		DWORD sector, /* Sector address (LBA) */
+ 134:Libraries/fat_sd/diskio.c **** 		BYTE count /* Number of sectors to read (1..255) */
+ 135:Libraries/fat_sd/diskio.c **** )
+ 136:Libraries/fat_sd/diskio.c **** {
+ 137:Libraries/fat_sd/diskio.c **** 	DRESULT res;
+ 138:Libraries/fat_sd/diskio.c **** 	int result;
+ 139:Libraries/fat_sd/diskio.c **** 
+ 140:Libraries/fat_sd/diskio.c **** 	(void) result;
+ 141:Libraries/fat_sd/diskio.c **** 
+ 142:Libraries/fat_sd/diskio.c **** 	switch (drv)
+ 143:Libraries/fat_sd/diskio.c **** 	{
+ 144:Libraries/fat_sd/diskio.c **** 	case ATA:
+ 145:Libraries/fat_sd/diskio.c **** 		// result = ATA_disk_read(buff, sector, count);
+ 146:Libraries/fat_sd/diskio.c **** 		res = RES_PARERR;
+ 147:Libraries/fat_sd/diskio.c **** 		// translate the result code here
+ 148:Libraries/fat_sd/diskio.c **** 		return res;
+ 149:Libraries/fat_sd/diskio.c **** 
+ 150:Libraries/fat_sd/diskio.c **** 	case MMC:
+ 151:Libraries/fat_sd/diskio.c **** 		res = MMC_disk_read(buff, sector, count);
+ 152:Libraries/fat_sd/diskio.c **** 		return res;
+ 153:Libraries/fat_sd/diskio.c **** 
+ 154:Libraries/fat_sd/diskio.c **** 	case USB:
+ 155:Libraries/fat_sd/diskio.c **** #if ( WITH_USB_MS == 1 )
+ 156:Libraries/fat_sd/diskio.c **** 		if (usb_status & STA_NOINIT) {
+ 157:Libraries/fat_sd/diskio.c **** 			res =RES_NOTRDY;
+ 158:Libraries/fat_sd/diskio.c **** 		} else {
+ 159:Libraries/fat_sd/diskio.c **** 			if ( MS_BulkRecv( sector, count, buff ) == OK ) {
+ 160:Libraries/fat_sd/diskio.c **** 				res = RES_OK;
+ 161:Libraries/fat_sd/diskio.c **** 			} else {
+ 162:Libraries/fat_sd/diskio.c **** 				res = RES_ERROR;
+ 163:Libraries/fat_sd/diskio.c **** 			}
+ 164:Libraries/fat_sd/diskio.c **** 		}
+ 165:Libraries/fat_sd/diskio.c **** #else
+ 166:Libraries/fat_sd/diskio.c **** 		res = RES_PARERR;
+ 167:Libraries/fat_sd/diskio.c **** #endif
+ 168:Libraries/fat_sd/diskio.c **** 		return res;
+ 169:Libraries/fat_sd/diskio.c **** 	}
+ 170:Libraries/fat_sd/diskio.c **** 
+ 171:Libraries/fat_sd/diskio.c **** 	return RES_PARERR;
+ 172:Libraries/fat_sd/diskio.c **** }
+ 173:Libraries/fat_sd/diskio.c **** 
+ 174:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+ 175:Libraries/fat_sd/diskio.c **** /* Write Sector(s)                                                       */
+ 176:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+ 177:Libraries/fat_sd/diskio.c **** /* The FatFs module will issue multiple sector transfer request
+ 178:Libraries/fat_sd/diskio.c ****  /  (count > 1) to the disk I/O layer. The disk function should process
+ 179:Libraries/fat_sd/diskio.c ****  /  the multiple sector transfer properly Do. not translate it into
+ 180:Libraries/fat_sd/diskio.c ****  /  multiple single sector transfers to the media, or the data read/write
+ 181:Libraries/fat_sd/diskio.c ****  /  performance may be drastically decreased. */
+ 182:Libraries/fat_sd/diskio.c **** 
+ 183:Libraries/fat_sd/diskio.c **** #if _READONLY == 0
+ 184:Libraries/fat_sd/diskio.c **** DRESULT disk_write(BYTE drv, /* Physical drive number (0..) */
+ 185:Libraries/fat_sd/diskio.c **** 	const BYTE *buff, /* Data to be written */
+ 186:Libraries/fat_sd/diskio.c **** 	DWORD sector, /* Sector address (LBA) */
+ 187:Libraries/fat_sd/diskio.c **** 	BYTE count /* Number of sectors to write (1..255) */
+ 188:Libraries/fat_sd/diskio.c **** )
+ 189:Libraries/fat_sd/diskio.c **** {
+ 190:Libraries/fat_sd/diskio.c **** 	DRESULT res;
+ 191:Libraries/fat_sd/diskio.c **** 	int result;
+ 192:Libraries/fat_sd/diskio.c **** 
+ 193:Libraries/fat_sd/diskio.c **** 	(void) result;
+ 194:Libraries/fat_sd/diskio.c **** 
+ 195:Libraries/fat_sd/diskio.c **** 	switch (drv)
+ 196:Libraries/fat_sd/diskio.c **** 	{
+ 197:Libraries/fat_sd/diskio.c **** 	case ATA:
+ 198:Libraries/fat_sd/diskio.c **** 		// result = ATA_disk_write(buff, sector, count);
+ 199:Libraries/fat_sd/diskio.c **** 		res = RES_PARERR;
+ 200:Libraries/fat_sd/diskio.c **** 		// translate the result code here
+ 201:Libraries/fat_sd/diskio.c **** 		return res;
+ 202:Libraries/fat_sd/diskio.c **** 
+ 203:Libraries/fat_sd/diskio.c **** 	case MMC:
+ 204:Libraries/fat_sd/diskio.c **** 		res = MMC_disk_write(buff, sector, count);
+ 205:Libraries/fat_sd/diskio.c **** 		return res;
+ 206:Libraries/fat_sd/diskio.c **** 
+ 207:Libraries/fat_sd/diskio.c **** 	case USB:
+ 208:Libraries/fat_sd/diskio.c **** #if ( WITH_USB_MS == 1 )
+ 209:Libraries/fat_sd/diskio.c **** 		if (usb_status & STA_NOINIT) return RES_NOTRDY;
+ 210:Libraries/fat_sd/diskio.c **** 		if ( MS_BulkSend( sector, count, (volatile USB_INT08U*) buff ) == OK ) {
+ 211:Libraries/fat_sd/diskio.c **** 			res = RES_OK;
+ 212:Libraries/fat_sd/diskio.c **** 		} else {
+ 213:Libraries/fat_sd/diskio.c **** 			res = RES_ERROR;
+ 214:Libraries/fat_sd/diskio.c **** 		}
+ 215:Libraries/fat_sd/diskio.c **** #else
+ 216:Libraries/fat_sd/diskio.c **** 		res = RES_PARERR;
+ 217:Libraries/fat_sd/diskio.c **** #endif
+ 218:Libraries/fat_sd/diskio.c **** 		return res;
+ 219:Libraries/fat_sd/diskio.c **** 	}
+ 220:Libraries/fat_sd/diskio.c **** 
+ 221:Libraries/fat_sd/diskio.c **** 	return RES_PARERR;
+ 222:Libraries/fat_sd/diskio.c **** }
+ 223:Libraries/fat_sd/diskio.c **** #endif /* _READONLY */
+ 224:Libraries/fat_sd/diskio.c **** 
+ 225:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+ 226:Libraries/fat_sd/diskio.c **** /* Miscellaneous Functions                                               */
+ 227:Libraries/fat_sd/diskio.c **** /*-----------------------------------------------------------------------*/
+ 228:Libraries/fat_sd/diskio.c **** 
+ 229:Libraries/fat_sd/diskio.c **** DRESULT disk_ioctl(BYTE drv, /* Physical drive number (0..) */
+ 230:Libraries/fat_sd/diskio.c **** BYTE ctrl, /* Control code */
+ 231:Libraries/fat_sd/diskio.c **** void *buff /* Buffer to send/receive control data */
+ 232:Libraries/fat_sd/diskio.c **** )
+ 233:Libraries/fat_sd/diskio.c **** {
+  31              	tend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              	.LVL0:
+  34              		push	{r4, lr}
+  35 0000 10B5     	.LCFI0:
+  36              		.loc 1 239 0
+ 234:Libraries/fat_sd/diskio.c **** 	DRESULT res;
+ 235:Libraries/fat_sd/diskio.c **** 	int result;
+ 236:Libraries/fat_sd/diskio.c **** 
+ 237:Libraries/fat_sd/diskio.c **** 	(void) result;
+ 238:Libraries/fat_sd/diskio.c **** 
+ 239:Libraries/fat_sd/diskio.c **** 	switch (drv)
+  37              	0, .L3
+  38 0002 10B1     		cmp	r0, #1
+  39 0004 0128     		beq	.L4
+  40 0006 06D0     		b	.L8
+  41 0008 12E0     	.L3:
+  42              		.loc 1 249 0
+ 240:Libraries/fat_sd/diskio.c **** 	{
+ 241:Libraries/fat_sd/diskio.c **** 	case ATA:
+ 242:Libraries/fat_sd/diskio.c **** 		// pre-process here
+ 243:Libraries/fat_sd/diskio.c **** 		// result = ATA_disk_ioctl(ctrl, buff);
+ 244:Libraries/fat_sd/diskio.c **** 		res = RES_PARERR;
+ 245:Libraries/fat_sd/diskio.c **** 		// post-process here
+ 246:Libraries/fat_sd/diskio.c **** 		return res;
+ 247:Libraries/fat_sd/diskio.c **** 
+ 248:Libraries/fat_sd/diskio.c **** 	case MMC:
+ 249:Libraries/fat_sd/diskio.c **** 		res = MMC_disk_ioctl(ctrl, buff);
+  43              	0, r1
+  44 000a 0846     	.LVL1:
+  45              		mov	r1, r2
+  46 000c 1146     	.LVL2:
+  47              		bl	MMC_disk_ioctl
+  48 000e FFF7FEFF 	.LVL3:
+  49              		.loc 1 250 0
+ 250:Libraries/fat_sd/diskio.c **** 		return res;
+  50              	0, r0
+  51 0012 C0B2     		b	.L5
+  52 0014 18E0     	.LVL4:
+  53              	.L4:
+  54              		.loc 1 261 0
+ 251:Libraries/fat_sd/diskio.c **** 
+ 252:Libraries/fat_sd/diskio.c **** 	case USB:
+ 253:Libraries/fat_sd/diskio.c **** #if ( WITH_USB_MS == 1 )
+ 254:Libraries/fat_sd/diskio.c **** 		//The FatFs module uses only device independent commands described below. Any device dependent fu
+ 255:Libraries/fat_sd/diskio.c **** 		//Command Description
+ 256:Libraries/fat_sd/diskio.c **** 		//CTRL_SYNC Make sure that the disk drive has finished pending write process. When the disk I/O m
+ 257:Libraries/fat_sd/diskio.c **** 		//GET_SECTOR_SIZE Returns sector size of the drive into the WORD variable pointed by Buffer. This
+ 258:Libraries/fat_sd/diskio.c **** 		//GET_SECTOR_COUNT Returns total sectors on the drive into the DWORD variable pointed by Buffer. 
+ 259:Libraries/fat_sd/diskio.c **** 		//GET_BLOCK_SIZE Returns erase block size of the flash memory in unit of sector into the DWORD va
+ 260:Libraries/fat_sd/diskio.c **** 
+ 261:Libraries/fat_sd/diskio.c **** 		if (usb_status & STA_NOINIT) return RES_NOTRDY;
+  55              	r3, .L18
+  56 0016 0D4B     		ldr	r3, [r3, #0]
+  57 0018 1B68     		tst	r3, #1
+  58 001a 13F0010F 		beq	.L6
+  59 001e 01D0     		movs	r0, #3
+  60 0020 0320     	.LVL5:
+  61              		b	.L5
+  62 0022 11E0     	.LVL6:
+  63              	.L6:
+  64              		.loc 1 263 0
+ 262:Libraries/fat_sd/diskio.c **** 		res = RES_OK;
+ 263:Libraries/fat_sd/diskio.c **** 		switch(ctrl) {
+  65              	3
+  66 0024 0329     		bhi	.L8
+  67 0026 03D8     		tbb	[pc, r1]
+  68 0028 DFE801F0 	.L13:
+  69              		.byte	(.L17-.L13)/2
+  70 002c 0D       		.byte	(.L10-.L13)/2
+  71 002d 08       		.byte	(.L11-.L13)/2
+  72 002e 04       		.byte	(.L12-.L13)/2
+  73 002f 0B       		.align	1
+  74              	.L8:
+  75              		movs	r0, #4
+  76 0030 0420     	.LVL7:
+  77              		b	.L5
+  78 0032 09E0     	.LVL8:
+  79              	.L11:
+  80              		.loc 1 268 0
+ 264:Libraries/fat_sd/diskio.c **** 			case CTRL_SYNC:
+ 265:Libraries/fat_sd/diskio.c **** 				// TODO
+ 266:Libraries/fat_sd/diskio.c **** 				break;
+ 267:Libraries/fat_sd/diskio.c **** 			case GET_SECTOR_SIZE:
+ 268:Libraries/fat_sd/diskio.c **** 				*(WORD*)buff = blkSize;
+  81              		ldrh	r3, [r3, #0]
+  82 0034 064B     		strh	r3, [r2, #0]	@ movhi
+  83 0036 1B88     		b	.L17
+  84 0038 1380     	.L10:
+  85 003a 04E0     		.loc 1 271 0
+  86              		ldr	r3, .L18+8
+ 269:Libraries/fat_sd/diskio.c **** 				break;
+ 270:Libraries/fat_sd/diskio.c **** 			case GET_SECTOR_COUNT:
+ 271:Libraries/fat_sd/diskio.c **** 				*(DWORD*)buff = numBlks;
+  87              	3, [r3, #0]
+  88 003c 054B     		b	.L16
+  89 003e 1B68     	.L12:
+  90 0040 00E0     		.loc 1 274 0
+  91              		movs	r3, #1
+ 272:Libraries/fat_sd/diskio.c **** 				break;
+ 273:Libraries/fat_sd/diskio.c **** 			case GET_BLOCK_SIZE:
+ 274:Libraries/fat_sd/diskio.c **** 				*(DWORD*)buff = 1;
+  92              	
+  93 0042 0123     		str	r3, [r2, #0]
+  94              	.L17:
+  95 0044 1360     		movs	r0, #0
+  96              	.LVL9:
+  97 0046 0020     	.L5:
+  98              	.LVL10:
+  99              		.loc 1 287 0
+ 100              		pop	{r4, pc}
+ 275:Libraries/fat_sd/diskio.c **** 				break;
+ 276:Libraries/fat_sd/diskio.c **** 			default:
+ 277:Libraries/fat_sd/diskio.c **** 				res = RES_PARERR;
+ 278:Libraries/fat_sd/diskio.c **** 				break;
+ 279:Libraries/fat_sd/diskio.c **** 		}
+ 280:Libraries/fat_sd/diskio.c **** #else
+ 281:Libraries/fat_sd/diskio.c **** 		res = RES_PARERR;
+ 282:Libraries/fat_sd/diskio.c **** #endif
+ 283:Libraries/fat_sd/diskio.c **** 		return res;
+ 284:Libraries/fat_sd/diskio.c **** 	}
+ 285:Libraries/fat_sd/diskio.c **** 
+ 286:Libraries/fat_sd/diskio.c **** 	return RES_PARERR;
+ 287:Libraries/fat_sd/diskio.c **** }
+ 101              	align	2
+ 102 0048 10BD     	.L18:
+ 103              		.word	.LANCHOR0
+ 104 004a C046     		.word	blkSize
+ 105              		.word	numBlks
+ 106 004c 00000000 	.LFE36:
+ 108 0054 00000000 		.section	.text.disk_write,"ax",%progbits
+ 109              		.align	2
+ 110              		.global	disk_write
+ 111              		.thumb
+ 112              		.thumb_func
+ 114              	disk_write:
+ 115              	.LFB35:
+ 116              		.loc 1 189 0
+ 117              		@ args = 0, pretend = 0, frame = 0
+ 118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119              	.LVL11:
+ 120              		push	{r4, lr}
+ 121              	.LCFI1:
+ 122              		.loc 1 189 0
+ 123 0000 10B5     		mov	lr, r1
+ 124              		mov	r1, r2
+ 125              	.LVL12:
+ 126 0002 8E46     		mov	r2, r3
+ 127 0004 1146     	.LVL13:
+ 128              		.loc 1 195 0
+ 129 0006 1A46     		cbz	r0, .L22
+ 130              	.LVL14:
+ 131              		cmp	r0, #1
+ 132 0008 18B1     		beq	.L23
+ 133              		movs	r0, #4
+ 134 000a 0128     	.LVL15:
+ 135 000c 05D0     		b	.L24
+ 136 000e 0420     	.LVL16:
+ 137              	.L22:
+ 138 0010 12E0     		.loc 1 204 0
+ 139              		mov	r0, lr
+ 140              	.LVL17:
+ 141              		bl	MMC_disk_write
+ 142 0012 7046     	.LVL18:
+ 143              		.loc 1 205 0
+ 144 0014 FFF7FEFF 		b	.L24
+ 145              	.LVL19:
+ 146              	.L23:
+ 147 0018 0EE0     		.loc 1 209 0
+ 148              		ldr	r3, .L28
+ 149              		ldr	r3, [r3, #0]
+ 150              		tst	r3, #1
+ 151 001a 084B     		beq	.L25
+ 152 001c 1B68     		movs	r0, #3
+ 153 001e 13F0010F 	.LVL20:
+ 154 0022 01D0     		b	.L24
+ 155 0024 0320     	.LVL21:
+ 156              	.L25:
+ 157 0026 07E0     		.loc 1 210 0
+ 158              		mov	r0, r1
+ 159              	.LVL22:
+ 160              		mov	r1, r2
+ 161 0028 0846     	.LVL23:
+ 162              		mov	r2, lr
+ 163 002a 1146     	.LVL24:
+ 164              		bl	MS_BulkSend
+ 165 002c 7246     	.LVL25:
+ 166              		.loc 1 218 0
+ 167 002e FFF7FEFF 		subs	r0, r0, #0
+ 168              		it	ne
+ 169              		movne	r0, #1
+ 170 0032 0038     	.LVL26:
+ 171 0034 18BF     	.L24:
+ 172 0036 0120     		.loc 1 222 0
+ 173              		pop	{r4, pc}
+ 174              	.L29:
+ 175              		.align	2
+ 176 0038 10BD     	.L28:
+ 177              		.word	.LANCHOR0
+ 178 003a C046     	.LFE35:
+ 180 003c 00000000 		.section	.text.disk_read,"ax",%progbits
+ 181              		.align	2
+ 182              		.global	disk_read
+ 183              		.thumb
+ 184              		.thumb_func
+ 186              	disk_read:
+ 187              	.LFB34:
+ 188              		.loc 1 136 0
+ 189              		@ args = 0, pretend = 0, frame = 0
+ 190              		@ frame_needed = 0, uses_anonymous_args = 0
+ 191              	.LVL27:
+ 192              		push	{r4, lr}
+ 193              	.LCFI2:
+ 194              		.loc 1 136 0
+ 195 0000 10B5     		mov	lr, r1
+ 196              		mov	r1, r2
+ 197              	.LVL28:
+ 198 0002 8E46     		mov	r2, r3
+ 199 0004 1146     	.LVL29:
+ 200              		.loc 1 142 0
+ 201 0006 1A46     		cbz	r0, .L32
+ 202              	.LVL30:
+ 203              		cmp	r0, #1
+ 204 0008 18B1     		beq	.L33
+ 205              		movs	r0, #4
+ 206 000a 0128     	.LVL31:
+ 207 000c 05D0     		b	.L34
+ 208 000e 0420     	.LVL32:
+ 209              	.L32:
+ 210 0010 12E0     		.loc 1 151 0
+ 211              		mov	r0, lr
+ 212              	.LVL33:
+ 213              		bl	MMC_disk_read
+ 214 0012 7046     	.LVL34:
+ 215              		.loc 1 152 0
+ 216 0014 FFF7FEFF 		b	.L34
+ 217              	.LVL35:
+ 218              	.L33:
+ 219 0018 0EE0     		.loc 1 156 0
+ 220              		ldr	r3, .L39
+ 221              		ldr	r3, [r3, #0]
+ 222              		tst	r3, #1
+ 223 001a 084B     		beq	.L35
+ 224 001c 1B68     		movs	r0, #3
+ 225 001e 13F0010F 	.LVL36:
+ 226 0022 01D0     		b	.L34
+ 227 0024 0320     	.LVL37:
+ 228              	.L35:
+ 229 0026 07E0     		.loc 1 159 0
+ 230              		mov	r0, r1
+ 231              	.LVL38:
+ 232              		mov	r1, r2
+ 233 0028 0846     	.LVL39:
+ 234              		mov	r2, lr
+ 235 002a 1146     	.LVL40:
+ 236              		bl	MS_BulkRecv
+ 237 002c 7246     	.LVL41:
+ 238              		subs	r0, r0, #0
+ 239 002e FFF7FEFF 		it	ne
+ 240              		movne	r0, #1
+ 241 0032 0038     	.LVL42:
+ 242 0034 18BF     	.L34:
+ 243 0036 0120     	.LVL43:
+ 244              		.loc 1 172 0
+ 245              		pop	{r4, pc}
+ 246              	.L40:
+ 247              		.align	2
+ 248 0038 10BD     	.L39:
+ 249              		.word	.LANCHOR0
+ 250 003a C046     	.LFE34:
+ 252 003c 00000000 		.section	.text.disk_status,"ax",%progbits
+ 253              		.align	2
+ 254              		.global	disk_status
+ 255              		.thumb
+ 256              		.thumb_func
+ 258              	disk_status:
+ 259              	.LFB33:
+ 260              		.loc 1 96 0
+ 261              		@ args = 0, pretend = 0, frame = 0
+ 262              		@ frame_needed = 0, uses_anonymous_args = 0
+ 263              	.LVL44:
+ 264              		push	{r4, lr}
+ 265              	.LCFI3:
+ 266              		.loc 1 102 0
+ 267 0000 10B5     		cbz	r0, .L43
+ 268              		cmp	r0, #1
+ 269              		beq	.L44
+ 270 0002 18B1     		movs	r0, #1
+ 271 0004 0128     	.LVL45:
+ 272 0006 04D0     		b	.L45
+ 273 0008 0120     	.LVL46:
+ 274              	.L43:
+ 275 000a 04E0     		.loc 1 112 0
+ 276              		bl	MMC_disk_status
+ 277              	.LVL47:
+ 278              		.loc 1 113 0
+ 279 000c FFF7FEFF 		b	.L45
+ 280              	.LVL48:
+ 281              	.L44:
+ 282 0010 01E0     		.loc 1 117 0
+ 283              		ldr	r3, .L47
+ 284              		ldr	r0, [r3, #0]
+ 285              	.LVL49:
+ 286 0012 014B     	.L45:
+ 287 0014 1868     	.LVL50:
+ 288              		.loc 1 125 0
+ 289              		pop	{r4, pc}
+ 290              	.L48:
+ 291              		.align	2
+ 292 0016 10BD     	.L47:
+ 293              		.word	.LANCHOR0
+ 294              	.LFE33:
+ 296 0018 00000000 		.section	.text.disk_initialize,"ax",%progbits
+ 297              		.align	2
+ 298              		.global	disk_initialize
+ 299              		.thumb
+ 300              		.thumb_func
+ 302              	disk_initialize:
+ 303              	.LFB32:
+ 304              		.loc 1 47 0
+ 305              		@ args = 0, pretend = 0, frame = 0
+ 306              		@ frame_needed = 0, uses_anonymous_args = 0
+ 307              	.LVL51:
+ 308              		push	{r4, lr}
+ 309              	.LCFI4:
+ 310              		.loc 1 53 0
+ 311 0000 10B5     		cbz	r0, .L51
+ 312              		cmp	r0, #1
+ 313              		beq	.L52
+ 314 0002 18B1     		movs	r0, #1
+ 315 0004 0128     	.LVL52:
+ 316 0006 04D0     		b	.L53
+ 317 0008 0120     	.LVL53:
+ 318              	.L51:
+ 319 000a 18E0     		.loc 1 62 0
+ 320              		bl	MMC_disk_initialize
+ 321              	.LVL54:
+ 322              		.loc 1 63 0
+ 323 000c FFF7FEFF 		b	.L53
+ 324              	.LVL55:
+ 325              	.L52:
+ 326 0010 15E0     		.loc 1 68 0
+ 327              		ldr	r4, .L59
+ 328              		ldr	r3, [r4, #0]
+ 329              		tst	r3, #1
+ 330 0012 0B4C     		beq	.L54
+ 331 0014 2368     		.loc 1 69 0
+ 332 0016 13F0010F 		bl	Host_Init
+ 333 001a 0ED0     	.LVL56:
+ 334              		.loc 1 70 0
+ 335 001c FFF7FEFF 		bl	Host_EnumDev
+ 336              		cbnz	r0, .L54
+ 337              		.loc 1 72 0
+ 338 0020 FFF7FEFF 		ldr	r0, .L59+4
+ 339 0024 48B9     		ldr	r1, .L59+8
+ 340              		ldr	r2, .L59+12
+ 341 0026 0748     		bl	MS_Init
+ 342 0028 0749     		cbnz	r0, .L54
+ 343 002a 084A     		.loc 1 73 0
+ 344 002c FFF7FEFF 		ldr	r3, [r4, #0]
+ 345 0030 18B9     		bic	r3, r3, #1
+ 346              		str	r3, [r4, #0]
+ 347 0032 2368     	.LVL57:
+ 348 0034 23F00103 	.L54:
+ 349 0038 2360     		.loc 1 81 0
+ 350              		ldr	r3, .L59
+ 351              		ldr	r0, [r3, #0]
+ 352              	.LVL58:
+ 353 003a 014B     	.L53:
+ 354 003c 1868     	.LVL59:
+ 355              		.loc 1 88 0
+ 356              		pop	{r4, pc}
+ 357              	.L60:
+ 358              		.align	2
+ 359 003e 10BD     	.L59:
+ 360              		.word	.LANCHOR0
+ 361              		.word	blkSize
+ 362              		.word	numBlks
+ 363 0040 00000000 		.word	inquiryResult
+ 364 0044 00000000 	.LFE32:
+ 366 004c 00000000 		.section	.text.disk_timerproc,"ax",%progbits
+ 367              		.align	2
+ 368              		.global	disk_timerproc
+ 369              		.thumb
+ 370              		.thumb_func
+ 372              	disk_timerproc:
+ 373              	.LFB31:
+ 374              		.loc 1 37 0
+ 375              		@ args = 0, pretend = 0, frame = 0
+ 376              		@ frame_needed = 0, uses_anonymous_args = 0
+ 377              		push	{r4, lr}
+ 378              	.LCFI5:
+ 379              		.loc 1 38 0
+ 380 0000 10B5     		bl	MMC_disk_timerproc
+ 381              		.loc 1 39 0
+ 382              		pop	{r4, pc}
+ 383 0002 FFF7FEFF 	.LFE31:
+ 385 0006 10BD     		.global	usb_status
+ 386              		.comm	numBlks,4,4
+ 387              		.comm	blkSize,4,4
+ 388              		.comm	inquiryResult,36,1
+ 389              		.section	.data.usb_status,"aw",%progbits
+ 390              		.align	2
+ 391              		.set	.LANCHOR0,. + 0
+ 394              	usb_status:
+ 395              		.word	1
+ 396              		.section	.debug_frame,"",%progbits
+ 397              	.Lframe0:
+ 398 0000 01000000 		.4byte	.LECIE0-.LSCIE0
+ 511              	.LLST0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 diskio.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:28     .text.disk_ioctl:00000000 disk_ioctl
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:25     .text.disk_ioctl:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:70     .text.disk_ioctl:0000002c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:76     .text.disk_ioctl:00000030 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:106    .text.disk_ioctl:0000004c $d
+                            *COM*:00000004 blkSize
+                            *COM*:00000004 numBlks
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:117    .text.disk_write:00000000 disk_write
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:114    .text.disk_write:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:180    .text.disk_write:0000003c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:189    .text.disk_read:00000000 disk_read
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:186    .text.disk_read:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:252    .text.disk_read:0000003c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:261    .text.disk_status:00000000 disk_status
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:258    .text.disk_status:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:296    .text.disk_status:00000018 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:305    .text.disk_initialize:00000000 disk_initialize
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:302    .text.disk_initialize:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:363    .text.disk_initialize:00000040 $d
+                            *COM*:00000024 inquiryResult
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:375    .text.disk_timerproc:00000000 disk_timerproc
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:372    .text.disk_timerproc:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:397    .data.usb_status:00000000 usb_status
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:398    .data.usb_status:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccQxcaaa.s:515    .debug_loc:00000000 $d
+
+UNDEFINED SYMBOLS
+MMC_disk_ioctl
+MMC_disk_write
+MS_BulkSend
+MMC_disk_read
+MS_BulkRecv
+MMC_disk_status
+MMC_disk_initialize
+Host_Init
+Host_EnumDev
+MS_Init
+MMC_disk_timerproc

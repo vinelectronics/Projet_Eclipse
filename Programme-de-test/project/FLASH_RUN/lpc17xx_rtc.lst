@@ -1,0 +1,1946 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"lpc17xx_rtc.c"
+  21              	.Ltext0:
+  22              		.section	.text.RTC_ResetClockTickCounter,"ax",%progbits
+  23              		.align	2
+  24              		.global	RTC_ResetClockTickCounter
+  25              		.thumb
+  26              		.thumb_func
+  28              	RTC_ResetClockTickCounter:
+  29              	.LFB33:
+  30              		.file 1 "Libraries/NXP/Drivers/source/lpc17xx_rtc.c"
+   1:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /**
+   2:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @file	: lpc17xx_rtc.c
+   3:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief	: Contains all functions support for RTC firmware library on LPC17xx
+   4:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @version	: 1.0
+   5:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @date	: 23. Apr. 2009
+   6:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @author	: HieuNguyen
+   7:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **************************************************************************
+   8:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * Software that is described herein is for illustrative purposes only
+   9:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * which provides customers with programming information regarding the
+  10:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * products. This software is supplied "AS IS" without any warranties.
+  11:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * NXP Semiconductors assumes no responsibility or liability for the
+  12:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * use of the software, conveys no license or title under any patent,
+  13:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * copyright, or mask work right to the product. NXP Semiconductors
+  14:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * reserves the right to make changes in the software without
+  15:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * notification. NXP Semiconductors also make no representation or
+  16:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * warranty that such application will be suitable for the specified
+  17:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * use without further testing or modification.
+  18:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+  19:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  20:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  21:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /* Peripheral group ----------------------------------------------------------- */
+  22:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /** @addtogroup RTC
+  23:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @{
+  24:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  */
+  25:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  26:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /* Includes ------------------------------------------------------------------- */
+  27:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** #include "lpc17xx_rtc.h"
+  28:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** #include "lpc17xx_clkpwr.h"
+  29:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  30:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  31:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /* If this source file built with example, the LPC17xx FW library configuration
+  32:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * file in each example directory ("lpc17xx_libcfg.h") must be included,
+  33:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * otherwise the default FW library configuration file must be included instead
+  34:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  */
+  35:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** #ifdef __BUILD_WITH_EXAMPLE__
+  36:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** #include "lpc17xx_libcfg.h"
+  37:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** #else
+  38:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** #include "lpc17xx_libcfg_default.h"
+  39:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** #endif /* __BUILD_WITH_EXAMPLE__ */
+  40:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  41:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  42:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** #ifdef _RTC
+  43:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  44:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /* Public Functions ----------------------------------------------------------- */
+  45:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /** @addtogroup RTC_Public_Functions
+  46:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @{
+  47:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  */
+  48:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  49:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /********************************************************************//**
+  50:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief		Initializes the RTC peripheral.
+  51:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+  52:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+  53:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  *********************************************************************/
+  54:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_Init (LPC_RTC_TypeDef *RTCx)
+  55:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+  56:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+  57:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  58:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	/* Set up clock and power for RTC module */
+  59:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CLKPWR_ConfigPPWR (CLKPWR_PCONP_PCRTC, ENABLE);
+  60:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  61:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	// Clear all register to be default
+  62:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->ILR = 0x00;
+  63:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->CCR = 0x00;
+  64:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->CIIR = 0x00;
+  65:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->AMR = 0xFF;
+  66:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->CALIBRATION = 0x00;
+  67:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+  68:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  69:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  70:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+  71:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief		De-initializes the RTC peripheral registers to their
+  72:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** *                  default reset values.
+  73:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+  74:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+  75:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+  76:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_DeInit(LPC_RTC_TypeDef *RTCx)
+  77:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+  78:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+  79:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  80:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->CCR = 0x00;
+  81:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	// Disable power and clock for RTC module
+  82:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CLKPWR_ConfigPPWR (CLKPWR_PCONP_PCRTC, DISABLE);
+  83:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+  84:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  85:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+  86:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Reset clock tick counter in RTC peripheral
+  87:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+  88:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+  89:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+  90:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_ResetClockTickCounter(LPC_RTC_TypeDef *RTCx)
+  91:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+  31              	end = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              	.LVL0:
+  35              		.loc 1 94 0
+  92:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+  93:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  94:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->CCR |= RTC_CCR_CTCRST;
+  36              		r3, [r0, #8]	@ zero_extendqisi2
+  37 0000 037A     		.loc 1 91 0
+  38              		@ lr needed for prologue
+  39              		.loc 1 94 0
+  40              		orr	r3, r3, #2
+  41 0002 43F00203 		strb	r3, [r0, #8]
+  42 0006 0372     		.loc 1 95 0
+  95:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->CCR &= (~RTC_CCR_CTCRST) & RTC_CCR_BITMASK;
+  43              	3, [r0, #8]	@ zero_extendqisi2
+  44 0008 037A     		and	r3, r3, #17
+  45 000a 03F01103 		strb	r3, [r0, #8]
+  46 000e 0372     		.loc 1 96 0
+  96:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+  47              	lr
+  48 0010 7047     	.LFE33:
+  50              		.section	.text.RTC_Cmd,"ax",%progbits
+  51 0012 C046     		.align	2
+  52              		.global	RTC_Cmd
+  53              		.thumb
+  54              		.thumb_func
+  56              	RTC_Cmd:
+  57              	.LFB34:
+  58              		.loc 1 107 0
+  97:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+  98:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+  99:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Start/Stop RTC peripheral
+ 100:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 101:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	NewState New State of this function, should be:
+ 102:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- ENABLE: The time counters are enabled
+ 103:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- DISABLE: The time counters are disabled
+ 104:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 105:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 106:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_Cmd (LPC_RTC_TypeDef *RTCx, FunctionalState NewState)
+ 107:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+  59              	 pretend = 0, frame = 0
+  60              		@ frame_needed = 0, uses_anonymous_args = 0
+  61              		@ link register save eliminated.
+  62              	.LVL1:
+  63              		.loc 1 111 0
+ 108:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 109:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_FUNCTIONALSTATE(NewState));
+ 110:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 111:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	if (NewState == ENABLE)
+  64              	r1, #1
+  65 0000 0129     		.loc 1 113 0
+ 112:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 113:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->CCR |= RTC_CCR_CLKEN;
+  66              	tete	eq
+  67 0002 0BBF     		ldrbeq	r3, [r0, #8]	@ zero_extendqisi2
+  68 0004 037A     		.loc 1 117 0
+ 114:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 115:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	else
+ 116:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 117:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->CCR &= (~RTC_CCR_CLKEN) & RTC_CCR_BITMASK;
+  69              	rbne	r3, [r0, #8]	@ zero_extendqisi2
+  70 0006 037A     		.loc 1 113 0
+  71              		orreq	r3, r3, #1
+  72 0008 43F00103 		.loc 1 117 0
+  73              		andne	r3, r3, #18
+  74 000c 03F01203 		.loc 1 107 0
+  75              		@ lr needed for prologue
+  76              		.loc 1 117 0
+  77              		strb	r3, [r0, #8]
+  78 0010 0372     		.loc 1 119 0
+ 118:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 119:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+  79              	E34:
+  81              		.section	.text.RTC_CntIncrIntConfig,"ax",%progbits
+  82              		.align	2
+  83              		.global	RTC_CntIncrIntConfig
+  84              		.thumb
+  85              		.thumb_func
+  87              	RTC_CntIncrIntConfig:
+  88              	.LFB35:
+  89              		.loc 1 146 0
+  90              		@ args = 0, pretend = 0, frame = 0
+ 120:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 121:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 122:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 123:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Enable/Disable Counter increment interrupt for each time type
+ 124:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				in RTC peripheral
+ 125:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 126:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	CntIncrIntType: Counter Increment Interrupt type,
+ 127:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				an increment of this type value below will generates
+ 128:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				an interrupt, should be:
+ 129:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_SECOND
+ 130:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MINUTE
+ 131:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_HOUR
+ 132:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFWEEK
+ 133:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFMONTH
+ 134:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFYEAR
+ 135:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MONTH
+ 136:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_YEAR
+ 137:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	NewState New State of this function, should be:
+ 138:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- ENABLE: Counter Increment interrupt for this
+ 139:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 					time type are enabled
+ 140:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- DISABLE: Counter Increment interrupt for this
+ 141:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 					time type are disabled
+ 142:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 143:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 144:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_CntIncrIntConfig (LPC_RTC_TypeDef *RTCx, uint32_t CntIncrIntType, \
+ 145:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 								FunctionalState NewState)
+ 146:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+  91              	ded = 0, uses_anonymous_args = 0
+  92              		@ link register save eliminated.
+  93              	.LVL2:
+  94              		.loc 1 151 0
+  95              		cmp	r2, #1
+ 147:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 148:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_FUNCTIONALSTATE(NewState));
+ 149:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTC_TIMETYPE(CntIncrIntType));
+ 150:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 151:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	if (NewState ==  ENABLE)
+  96              	 1 146 0
+  97 0000 012A     		@ lr needed for prologue
+  98              		.loc 1 151 0
+  99              		bne	.L10
+ 100              		.loc 1 153 0
+ 101 0002 27D1     		cmp	r1, #7
+ 152:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 153:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		switch (CntIncrIntType)
+ 102              	L31
+ 103 0004 0729     		tbb	[pc, r1]
+ 104 0006 4DD8     	.L21:
+ 105 0008 DFE801F0 		.byte	(.L13-.L21)/2
+ 106              		.byte	(.L14-.L21)/2
+ 107 000c 04       		.byte	(.L15-.L21)/2
+ 108 000d 08       		.byte	(.L16-.L21)/2
+ 109 000e 0C       		.byte	(.L17-.L21)/2
+ 110 000f 10       		.byte	(.L18-.L21)/2
+ 111 0010 14       		.byte	(.L19-.L21)/2
+ 112 0011 18       		.byte	(.L20-.L21)/2
+ 113 0012 1C       		.align	1
+ 114 0013 20       	.L13:
+ 115              		.loc 1 156 0
+ 116              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 154:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		{
+ 155:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_SECOND:
+ 156:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR |= RTC_CIIR_IMSEC;
+ 117              	
+ 118 0014 037B     		b	.L32
+ 119 0016 43F00103 	.L14:
+ 120 001a 42E0     		.loc 1 159 0
+ 121              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 157:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 158:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_MINUTE:
+ 159:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR |= RTC_CIIR_IMMIN;
+ 122              		r3, r3, #2
+ 123 001c 037B     		b	.L32
+ 124 001e 43F00203 	.L15:
+ 125 0022 3EE0     		.loc 1 162 0
+ 126              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 160:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 161:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_HOUR:
+ 162:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR |= RTC_CIIR_IMHOUR;
+ 127              	r3, r3, #4
+ 128 0024 037B     		b	.L32
+ 129 0026 43F00403 	.L16:
+ 130 002a 3AE0     		.loc 1 165 0
+ 131              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 163:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 164:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFWEEK:
+ 165:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR |= RTC_CIIR_IMDOW;
+ 132              	r3, r3, #16
+ 133 002c 037B     		b	.L32
+ 134 002e 43F01003 	.L17:
+ 135 0032 36E0     		.loc 1 168 0
+ 136              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 166:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 167:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFMONTH:
+ 168:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR |= RTC_CIIR_IMDOM;
+ 137              	r3, r3, #8
+ 138 0034 037B     		b	.L32
+ 139 0036 43F00803 	.L18:
+ 140 003a 32E0     		.loc 1 171 0
+ 141              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 169:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 170:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFYEAR:
+ 171:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR |= RTC_CIIR_IMDOY;
+ 142              	r3, r3, #32
+ 143 003c 037B     		b	.L32
+ 144 003e 43F02003 	.L19:
+ 145 0042 2EE0     		.loc 1 174 0
+ 146              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 172:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 173:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_MONTH:
+ 174:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR |= RTC_CIIR_IMMON;
+ 147              	r3, r3, #64
+ 148 0044 037B     		b	.L32
+ 149 0046 43F04003 	.L20:
+ 150 004a 2AE0     		.loc 1 177 0
+ 151              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 175:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 176:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_YEAR:
+ 177:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR |= RTC_CIIR_IMYEAR;
+ 152              	r3, r3, #128
+ 153 004c 037B     		b	.L32
+ 154 004e 43F08003 	.L10:
+ 155 0052 26E0     		.loc 1 183 0
+ 156              		cmp	r1, #7
+ 178:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 179:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		}
+ 180:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 181:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	else
+ 182:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 183:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		switch (CntIncrIntType)
+ 157              	.L31
+ 158 0054 0729     		tbb	[pc, r1]
+ 159 0056 25D8     	.L30:
+ 160 0058 DFE801F0 		.byte	(.L22-.L30)/2
+ 161              		.byte	(.L23-.L30)/2
+ 162 005c 04       		.byte	(.L24-.L30)/2
+ 163 005d 08       		.byte	(.L25-.L30)/2
+ 164 005e 0C       		.byte	(.L26-.L30)/2
+ 165 005f 10       		.byte	(.L27-.L30)/2
+ 166 0060 14       		.byte	(.L28-.L30)/2
+ 167 0061 18       		.byte	(.L29-.L30)/2
+ 168 0062 1C       		.align	1
+ 169 0063 20       	.L22:
+ 170              		.loc 1 186 0
+ 171              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 184:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		{
+ 185:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_SECOND:
+ 186:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR &= (~RTC_CIIR_IMSEC) & RTC_CIIR_BITMASK;
+ 172              	54
+ 173 0064 037B     		b	.L32
+ 174 0066 03F0FE03 	.L23:
+ 175 006a 1AE0     		.loc 1 189 0
+ 176              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 187:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 188:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_MINUTE:
+ 189:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR &= (~RTC_CIIR_IMMIN) & RTC_CIIR_BITMASK;
+ 177              	r3, r3, #253
+ 178 006c 037B     		b	.L32
+ 179 006e 03F0FD03 	.L24:
+ 180 0072 16E0     		.loc 1 192 0
+ 181              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 190:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 191:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_HOUR:
+ 192:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR &= (~RTC_CIIR_IMHOUR) & RTC_CIIR_BITMASK;
+ 182              	r3, r3, #251
+ 183 0074 037B     		b	.L32
+ 184 0076 03F0FB03 	.L25:
+ 185 007a 12E0     		.loc 1 195 0
+ 186              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 193:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 194:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFWEEK:
+ 195:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR &= (~RTC_CIIR_IMDOW) & RTC_CIIR_BITMASK;
+ 187              	r3, r3, #239
+ 188 007c 037B     		b	.L32
+ 189 007e 03F0EF03 	.L26:
+ 190 0082 0EE0     		.loc 1 198 0
+ 191              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 196:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 197:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFMONTH:
+ 198:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR &= (~RTC_CIIR_IMDOM) & RTC_CIIR_BITMASK;
+ 192              	r3, r3, #247
+ 193 0084 037B     		b	.L32
+ 194 0086 03F0F703 	.L27:
+ 195 008a 0AE0     		.loc 1 201 0
+ 196              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 199:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 200:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFYEAR:
+ 201:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR &= (~RTC_CIIR_IMDOY) & RTC_CIIR_BITMASK;
+ 197              	r3, r3, #223
+ 198 008c 037B     		b	.L32
+ 199 008e 03F0DF03 	.L28:
+ 200 0092 06E0     		.loc 1 204 0
+ 201              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 202:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 203:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_MONTH:
+ 204:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR &= (~RTC_CIIR_IMMON) & RTC_CIIR_BITMASK;
+ 202              	r3, r3, #191
+ 203 0094 037B     		b	.L32
+ 204 0096 03F0BF03 	.L29:
+ 205 009a 02E0     		.loc 1 207 0
+ 206              		ldrb	r3, [r0, #12]	@ zero_extendqisi2
+ 205:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 206:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_YEAR:
+ 207:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->CIIR &= (~RTC_CIIR_IMYEAR) & RTC_CIIR_BITMASK;
+ 207              	r3, r3, #127
+ 208 009c 037B     	.L32:
+ 209 009e 03F07F03 		strb	r3, [r0, #12]
+ 210              	.L31:
+ 211 00a2 0373     		.loc 1 211 0
+ 212              		bx	lr
+ 208:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 209:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		}
+ 210:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 211:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 213              	:
+ 215              		.section	.text.RTC_AlarmIntConfig,"ax",%progbits
+ 216              		.align	2
+ 217 00a6 C046     		.global	RTC_AlarmIntConfig
+ 218              		.thumb
+ 219              		.thumb_func
+ 221              	RTC_AlarmIntConfig:
+ 222              	.LFB36:
+ 223              		.loc 1 238 0
+ 224              		@ args = 0, pretend = 0, frame = 0
+ 212:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 213:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 214:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 215:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Enable/Disable Alarm interrupt for each time type
+ 216:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				in RTC peripheral
+ 217:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 218:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	AlarmTimeType: Alarm Time Interrupt type,
+ 219:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				an matching of this type value below with current time
+ 220:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				in RTC will generates an interrupt, should be:
+ 221:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_SECOND
+ 222:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MINUTE
+ 223:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_HOUR
+ 224:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFWEEK
+ 225:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFMONTH
+ 226:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFYEAR
+ 227:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MONTH
+ 228:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_YEAR
+ 229:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	NewState New State of this function, should be:
+ 230:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- ENABLE: Alarm interrupt for this
+ 231:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 					time type are enabled
+ 232:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- DISABLE: Alarm interrupt for this
+ 233:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 					time type are disabled
+ 234:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 235:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 236:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_AlarmIntConfig (LPC_RTC_TypeDef *RTCx, uint32_t AlarmTimeType, \
+ 237:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 								FunctionalState NewState)
+ 238:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 225              	ded = 0, uses_anonymous_args = 0
+ 226              		@ link register save eliminated.
+ 227              	.LVL3:
+ 228              		.loc 1 243 0
+ 229              		cmp	r2, #1
+ 239:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 240:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_FUNCTIONALSTATE(NewState));
+ 241:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTC_TIMETYPE(AlarmTimeType));
+ 242:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 243:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	if (NewState == ENABLE)
+ 230              	 1 238 0
+ 231 0000 012A     		@ lr needed for prologue
+ 232              		.loc 1 243 0
+ 233              		bne	.L34
+ 234              		.loc 1 245 0
+ 235 0002 27D1     		cmp	r1, #7
+ 244:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 245:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		switch (AlarmTimeType)
+ 236              	L55
+ 237 0004 0729     		tbb	[pc, r1]
+ 238 0006 4DD8     	.L45:
+ 239 0008 DFE801F0 		.byte	(.L37-.L45)/2
+ 240              		.byte	(.L38-.L45)/2
+ 241 000c 04       		.byte	(.L39-.L45)/2
+ 242 000d 08       		.byte	(.L40-.L45)/2
+ 243 000e 0C       		.byte	(.L41-.L45)/2
+ 244 000f 10       		.byte	(.L42-.L45)/2
+ 245 0010 14       		.byte	(.L43-.L45)/2
+ 246 0011 18       		.byte	(.L44-.L45)/2
+ 247 0012 1C       		.align	1
+ 248 0013 20       	.L37:
+ 249              		.loc 1 248 0
+ 250              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 246:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		{
+ 247:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_SECOND:
+ 248:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR &= (~RTC_AMR_AMRSEC) & RTC_AMR_BITMASK;
+ 251              	54
+ 252 0014 037C     		b	.L56
+ 253 0016 03F0FE03 	.L38:
+ 254 001a 42E0     		.loc 1 251 0
+ 255              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 249:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 250:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_MINUTE:
+ 251:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR &= (~RTC_AMR_AMRMIN) & RTC_AMR_BITMASK;
+ 256              	r3, r3, #253
+ 257 001c 037C     		b	.L56
+ 258 001e 03F0FD03 	.L39:
+ 259 0022 3EE0     		.loc 1 254 0
+ 260              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 252:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 253:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_HOUR:
+ 254:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR &= (~RTC_AMR_AMRHOUR) & RTC_AMR_BITMASK;
+ 261              	r3, r3, #251
+ 262 0024 037C     		b	.L56
+ 263 0026 03F0FB03 	.L40:
+ 264 002a 3AE0     		.loc 1 257 0
+ 265              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 255:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 256:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFWEEK:
+ 257:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR &= (~RTC_AMR_AMRDOW) & RTC_AMR_BITMASK;
+ 266              	r3, r3, #239
+ 267 002c 037C     		b	.L56
+ 268 002e 03F0EF03 	.L41:
+ 269 0032 36E0     		.loc 1 260 0
+ 270              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 258:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 259:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFMONTH:
+ 260:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR &= (~RTC_AMR_AMRDOM) & RTC_AMR_BITMASK;
+ 271              	r3, r3, #247
+ 272 0034 037C     		b	.L56
+ 273 0036 03F0F703 	.L42:
+ 274 003a 32E0     		.loc 1 263 0
+ 275              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 261:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 262:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFYEAR:
+ 263:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR &= (~RTC_AMR_AMRDOY) & RTC_AMR_BITMASK;
+ 276              	r3, r3, #223
+ 277 003c 037C     		b	.L56
+ 278 003e 03F0DF03 	.L43:
+ 279 0042 2EE0     		.loc 1 266 0
+ 280              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 264:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 265:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_MONTH:
+ 266:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR &= (~RTC_AMR_AMRMON) & RTC_AMR_BITMASK;
+ 281              	r3, r3, #191
+ 282 0044 037C     		b	.L56
+ 283 0046 03F0BF03 	.L44:
+ 284 004a 2AE0     		.loc 1 269 0
+ 285              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 267:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 268:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_YEAR:
+ 269:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR &= (~RTC_AMR_AMRYEAR) & RTC_AMR_BITMASK;
+ 286              	r3, r3, #127
+ 287 004c 037C     		b	.L56
+ 288 004e 03F07F03 	.L34:
+ 289 0052 26E0     		.loc 1 275 0
+ 290              		cmp	r1, #7
+ 270:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 271:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		}
+ 272:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 273:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	else
+ 274:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 275:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		switch (AlarmTimeType)
+ 291              	.L55
+ 292 0054 0729     		tbb	[pc, r1]
+ 293 0056 25D8     	.L54:
+ 294 0058 DFE801F0 		.byte	(.L46-.L54)/2
+ 295              		.byte	(.L47-.L54)/2
+ 296 005c 04       		.byte	(.L48-.L54)/2
+ 297 005d 08       		.byte	(.L49-.L54)/2
+ 298 005e 0C       		.byte	(.L50-.L54)/2
+ 299 005f 10       		.byte	(.L51-.L54)/2
+ 300 0060 14       		.byte	(.L52-.L54)/2
+ 301 0061 18       		.byte	(.L53-.L54)/2
+ 302 0062 1C       		.align	1
+ 303 0063 20       	.L46:
+ 304              		.loc 1 278 0
+ 305              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 276:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		{
+ 277:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_SECOND:
+ 278:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR |= (RTC_AMR_AMRSEC);
+ 306              	
+ 307 0064 037C     		b	.L56
+ 308 0066 43F00103 	.L47:
+ 309 006a 1AE0     		.loc 1 281 0
+ 310              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 279:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 280:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_MINUTE:
+ 281:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR |= (RTC_AMR_AMRMIN);
+ 311              		r3, r3, #2
+ 312 006c 037C     		b	.L56
+ 313 006e 43F00203 	.L48:
+ 314 0072 16E0     		.loc 1 284 0
+ 315              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 282:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 283:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_HOUR:
+ 284:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR |= (RTC_AMR_AMRHOUR);
+ 316              	r3, r3, #4
+ 317 0074 037C     		b	.L56
+ 318 0076 43F00403 	.L49:
+ 319 007a 12E0     		.loc 1 287 0
+ 320              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 285:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 286:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFWEEK:
+ 287:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR |= (RTC_AMR_AMRDOW);
+ 321              	r3, r3, #16
+ 322 007c 037C     		b	.L56
+ 323 007e 43F01003 	.L50:
+ 324 0082 0EE0     		.loc 1 290 0
+ 325              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 288:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 289:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFMONTH:
+ 290:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR |= (RTC_AMR_AMRDOM);
+ 326              	r3, r3, #8
+ 327 0084 037C     		b	.L56
+ 328 0086 43F00803 	.L51:
+ 329 008a 0AE0     		.loc 1 293 0
+ 330              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 291:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 292:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_DAYOFYEAR:
+ 293:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR |= (RTC_AMR_AMRDOY);
+ 331              	r3, r3, #32
+ 332 008c 037C     		b	.L56
+ 333 008e 43F02003 	.L52:
+ 334 0092 06E0     		.loc 1 296 0
+ 335              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 294:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 295:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_MONTH:
+ 296:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR |= (RTC_AMR_AMRMON);
+ 336              	r3, r3, #64
+ 337 0094 037C     		b	.L56
+ 338 0096 43F04003 	.L53:
+ 339 009a 02E0     		.loc 1 299 0
+ 340              		ldrb	r3, [r0, #16]	@ zero_extendqisi2
+ 297:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 298:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		case RTC_TIMETYPE_YEAR:
+ 299:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			RTCx->AMR |= (RTC_AMR_AMRYEAR);
+ 341              	r3, r3, #128
+ 342 009c 037C     	.L56:
+ 343 009e 43F08003 		strb	r3, [r0, #16]
+ 344              	.L55:
+ 345 00a2 0374     		.loc 1 303 0
+ 346              		bx	lr
+ 300:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			break;
+ 301:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		}
+ 302:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 303:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 347              	:
+ 349              		.section	.text.RTC_SetTime,"ax",%progbits
+ 350              		.align	2
+ 351 00a6 C046     		.global	RTC_SetTime
+ 352              		.thumb
+ 353              		.thumb_func
+ 355              	RTC_SetTime:
+ 356              	.LFB37:
+ 357              		.loc 1 322 0
+ 358              		@ args = 0, pretend = 0, frame = 0
+ 304:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 305:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 306:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 307:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Set current time value for each time type in RTC peripheral
+ 308:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 309:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	Timetype: Time Type, should be:
+ 310:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_SECOND
+ 311:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MINUTE
+ 312:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_HOUR
+ 313:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFWEEK
+ 314:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFMONTH
+ 315:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFYEAR
+ 316:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MONTH
+ 317:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_YEAR
+ 318:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	TimeValue Time value to set
+ 319:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 320:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 321:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_SetTime (LPC_RTC_TypeDef *RTCx, uint32_t Timetype, uint32_t TimeValue)
+ 322:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 359              	ded = 0, uses_anonymous_args = 0
+ 360              		@ link register save eliminated.
+ 361              	.LVL4:
+ 362              		@ lr needed for prologue
+ 363              		.loc 1 326 0
+ 364              		cmp	r1, #7
+ 323:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 324:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTC_TIMETYPE(Timetype));
+ 325:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 326:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	switch ( Timetype)
+ 365              	L68
+ 366 0000 0729     		tbb	[pc, r1]
+ 367 0002 2AD8     	.L67:
+ 368 0004 DFE801F0 		.byte	(.L59-.L67)/2
+ 369              		.byte	(.L60-.L67)/2
+ 370 0008 04       		.byte	(.L61-.L67)/2
+ 371 0009 09       		.byte	(.L62-.L67)/2
+ 372 000a 0E       		.byte	(.L63-.L67)/2
+ 373 000b 13       		.byte	(.L64-.L67)/2
+ 374 000c 18       		.byte	(.L65-.L67)/2
+ 375 000d 1D       		.byte	(.L66-.L67)/2
+ 376 000e 21       		.align	1
+ 377 000f 26       	.L59:
+ 378              		.loc 1 331 0
+ 379              		and	r3, r2, #63
+ 327:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 328:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_SECOND:
+ 329:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM(TimeValue < RTC_SECOND_MAX);
+ 330:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 331:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->SEC = TimeValue & RTC_SEC_MASK;
+ 380              	#32]
+ 381 0010 02F03F03 		.loc 1 332 0
+ 382 0014 80F82030 		b	.L68
+ 332:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 383              	0:
+ 384 0018 1FE0     		.loc 1 337 0
+ 385              		and	r3, r2, #63
+ 333:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 334:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_MINUTE:
+ 335:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM(TimeValue < RTC_MINUTE_MAX);
+ 336:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 337:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->MIN = TimeValue & RTC_MIN_MASK;
+ 386              	rb	r3, [r0, #36]
+ 387 001a 02F03F03 		.loc 1 338 0
+ 388 001e 80F82430 		b	.L68
+ 338:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 389              	1:
+ 390 0022 1AE0     		.loc 1 343 0
+ 391              		and	r3, r2, #31
+ 339:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 340:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_HOUR:
+ 341:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM(TimeValue < RTC_HOUR_MAX);
+ 342:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 343:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->HOUR = TimeValue & RTC_HOUR_MASK;
+ 392              	rb	r3, [r0, #40]
+ 393 0024 02F01F03 		.loc 1 344 0
+ 394 0028 80F82830 		b	.L68
+ 344:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 395              	2:
+ 396 002c 15E0     		.loc 1 349 0
+ 397              		and	r3, r2, #7
+ 345:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 346:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFWEEK:
+ 347:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM(TimeValue < RTC_DAYOFWEEK_MAX);
+ 348:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 349:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->DOW = TimeValue & RTC_DOW_MASK;
+ 398              	rb	r3, [r0, #48]
+ 399 002e 02F00703 		.loc 1 350 0
+ 400 0032 80F83030 		b	.L68
+ 350:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 401              	3:
+ 402 0036 10E0     		.loc 1 356 0
+ 403              		and	r3, r2, #31
+ 351:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 352:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFMONTH:
+ 353:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM((TimeValue < RTC_DAYOFMONTH_MAX) \
+ 354:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 				&& (TimeValue > RTC_DAYOFMONTH_MIN));
+ 355:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 356:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->DOM = TimeValue & RTC_DOM_MASK;
+ 404              	rb	r3, [r0, #44]
+ 405 0038 02F01F03 		.loc 1 357 0
+ 406 003c 80F82C30 		b	.L68
+ 357:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 407              	4:
+ 408 0040 0BE0     		.loc 1 363 0
+ 409              		lsls	r3, r2, #23
+ 358:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 359:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFYEAR:
+ 360:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM((TimeValue > RTC_DAYOFYEAR_MIN) \
+ 361:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 				&& (TimeValue < RTC_DAYOFYEAR_MAX));
+ 362:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 363:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->DOY = TimeValue & RTC_DOY_MASK;
+ 410              	rs	r3, r3, #23
+ 411 0042 D305     		strh	r3, [r0, #52]	@ movhi
+ 412 0044 DB0D     		.loc 1 364 0
+ 413 0046 8386     		b	.L68
+ 364:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 414              	:
+ 415 0048 07E0     		.loc 1 370 0
+ 416              		and	r3, r2, #15
+ 365:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 366:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_MONTH:
+ 367:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM((TimeValue > RTC_MONTH_MIN) \
+ 368:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 				&& (TimeValue < RTC_MONTH_MAX));
+ 369:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 370:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->MONTH = TimeValue & RTC_MONTH_MASK;
+ 417              	rb	r3, [r0, #56]
+ 418 004a 02F00F03 		.loc 1 371 0
+ 419 004e 80F83830 		b	.L68
+ 371:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 420              	6:
+ 421 0052 02E0     		.loc 1 376 0
+ 422              		lsls	r3, r2, #20
+ 372:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 373:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_YEAR:
+ 374:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM(TimeValue < RTC_YEAR_MAX);
+ 375:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 376:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->YEAR = TimeValue & RTC_YEAR_MASK;
+ 423              	rs	r3, r3, #20
+ 424 0054 1305     		strh	r3, [r0, #60]	@ movhi
+ 425 0056 1B0D     	.L68:
+ 426 0058 8387     		.loc 1 379 0
+ 427              		bx	lr
+ 377:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 378:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 379:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 428              	7:
+ 430              		.section	.text.RTC_GetTime,"ax",%progbits
+ 431              		.align	2
+ 432              		.global	RTC_GetTime
+ 433              		.thumb
+ 434              		.thumb_func
+ 436              	RTC_GetTime:
+ 437              	.LFB38:
+ 438              		.loc 1 396 0
+ 439              		@ args = 0, pretend = 0, frame = 0
+ 380:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 381:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 382:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Get current time value for each type time type
+ 383:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 384:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	Timetype: Time Type, should be:
+ 385:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_SECOND
+ 386:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MINUTE
+ 387:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_HOUR
+ 388:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFWEEK
+ 389:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFMONTH
+ 390:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFYEAR
+ 391:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MONTH
+ 392:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_YEAR
+ 393:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		Value of time according to specified time type
+ 394:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 395:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** uint32_t RTC_GetTime(LPC_RTC_TypeDef *RTCx, uint32_t Timetype)
+ 396:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 440              	ded = 0, uses_anonymous_args = 0
+ 441              		@ link register save eliminated.
+ 442              	.LVL5:
+ 443              		@ lr needed for prologue
+ 444              		.loc 1 400 0
+ 445              		cmp	r1, #7
+ 397:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 398:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTC_TIMETYPE(Timetype));
+ 399:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 400:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	switch (Timetype)
+ 446              	L70
+ 447 0000 0729     		tbb	[pc, r1]
+ 448 0002 05D8     	.L79:
+ 449 0004 DFE801F0 		.byte	(.L71-.L79)/2
+ 450              		.byte	(.L72-.L79)/2
+ 451 0008 06       		.byte	(.L73-.L79)/2
+ 452 0009 09       		.byte	(.L74-.L79)/2
+ 453 000a 0E       		.byte	(.L75-.L79)/2
+ 454 000b 11       		.byte	(.L76-.L79)/2
+ 455 000c 16       		.byte	(.L77-.L79)/2
+ 456 000d 1B       		.byte	(.L78-.L79)/2
+ 457 000e 1F       		.align	1
+ 458 000f 24       	.L70:
+ 459              		movs	r0, #0
+ 460              	.LVL6:
+ 461 0010 0020     		b	.L80
+ 462              	.LVL7:
+ 463 0012 20E0     	.L71:
+ 464              		.loc 1 403 0
+ 465              		ldrb	r3, [r0, #32]	@ zero_extendqisi2
+ 401:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 402:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_SECOND:
+ 403:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->SEC & RTC_SEC_MASK);
+ 466              	1 406 0
+ 467 0014 90F82030 		ldrb	r3, [r0, #36]	@ zero_extendqisi2
+ 468 0018 01E0     	.L82:
+ 469              		and	r0, r3, #63
+ 404:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 405:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_MINUTE:
+ 406:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->MIN & RTC_MIN_MASK);
+ 470              	8:
+ 471 001a 90F82430 		b	.L80
+ 472              	.LVL9:
+ 473 001e 03F03F00 	.L73:
+ 474              		.loc 1 409 0
+ 475 0022 18E0     		ldrb	r3, [r0, #40]	@ zero_extendqisi2
+ 476              		b	.L83
+ 477              	.L74:
+ 407:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 408:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_HOUR:
+ 409:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->HOUR & RTC_HOUR_MASK);
+ 478              	412 0
+ 479 0024 90F82830 		ldrb	r3, [r0, #48]	@ zero_extendqisi2
+ 480 0028 06E0     		and	r0, r3, #7
+ 481              	.LVL10:
+ 410:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 411:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFWEEK:
+ 412:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->DOW & RTC_DOW_MASK);
+ 482              	L80
+ 483 002a 90F83030 	.LVL11:
+ 484 002e 03F00700 	.L75:
+ 485              		.loc 1 415 0
+ 486 0032 10E0     		ldrb	r3, [r0, #44]	@ zero_extendqisi2
+ 487              	.L83:
+ 488              		and	r0, r3, #31
+ 413:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 414:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFMONTH:
+ 415:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->DOM & RTC_DOM_MASK);
+ 489              	
+ 490 0034 90F82C30 		b	.L80
+ 491              	.LVL13:
+ 492 0038 03F01F00 	.L76:
+ 493              		.loc 1 418 0
+ 494 003c 0BE0     		ldrh	r3, [r0, #52]
+ 495              		lsls	r0, r3, #23
+ 496              	.LVL14:
+ 416:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 417:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFYEAR:
+ 418:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->DOY & RTC_DOY_MASK);
+ 497              	0, r0, #23
+ 498 003e 838E     		b	.L80
+ 499 0040 D805     	.LVL15:
+ 500              	.L77:
+ 501 0042 C00D     		.loc 1 421 0
+ 502 0044 07E0     		ldrb	r3, [r0, #56]	@ zero_extendqisi2
+ 503              		and	r0, r3, #15
+ 504              	.LVL16:
+ 419:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 420:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_MONTH:
+ 421:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->MONTH & RTC_MONTH_MASK);
+ 505              	.LVL17:
+ 506 0046 90F83830 	.L78:
+ 507 004a 03F00F00 		.loc 1 424 0
+ 508              		ldrh	r3, [r0, #60]
+ 509 004e 02E0     		lsls	r0, r3, #20
+ 510              	.LVL18:
+ 511              		lsrs	r0, r0, #20
+ 422:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 423:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_YEAR:
+ 424:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->YEAR & RTC_YEAR_MASK);
+ 512              	.loc 1 430 0
+ 513 0050 838F     		bx	lr
+ 514 0052 1805     	.LFE38:
+ 516 0054 000D     		.section	.text.RTC_SetFullTime,"ax",%progbits
+ 517              		.align	2
+ 425:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 426:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	default:
+ 427:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (0);
+ 428:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 429:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 430:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 518              	al	RTC_SetFullTime
+ 519 0056 7047     		.thumb
+ 520              		.thumb_func
+ 522              	RTC_SetFullTime:
+ 523              	.LFB39:
+ 524              		.loc 1 441 0
+ 525              		@ args = 0, pretend = 0, frame = 0
+ 526              		@ frame_needed = 0, uses_anonymous_args = 0
+ 527              		@ link register save eliminated.
+ 528              	.LVL19:
+ 529              		.loc 1 444 0
+ 431:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 432:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 433:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 434:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Set full of time in RTC peripheral
+ 435:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 436:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	pFullTime Pointer to a RTC_TIME_Type structure that
+ 437:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				contains time value in full.
+ 438:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 439:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 440:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_SetFullTime (LPC_RTC_TypeDef *RTCx, RTC_TIME_Type *pFullTime)
+ 441:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 530              	1, #12]	@ zero_extendqisi2
+ 531              		.loc 1 441 0
+ 532              		@ lr needed for prologue
+ 533              		.loc 1 444 0
+ 534              		and	r3, r3, #31
+ 442:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 443:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 444:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->DOM = pFullTime->DOM & RTC_DOM_MASK;
+ 535              		r3, [r0, #44]
+ 536 0000 0B7B     		.loc 1 445 0
+ 537              		ldrb	r3, [r1, #16]	@ zero_extendqisi2
+ 538              		and	r3, r3, #7
+ 539              		strb	r3, [r0, #48]
+ 540 0002 03F01F03 		.loc 1 446 0
+ 541 0006 80F82C30 		ldrh	r3, [r1, #20]
+ 445:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->DOW = pFullTime->DOW & RTC_DOW_MASK;
+ 542              	3, r3, #23
+ 543 000a 0B7C     		lsrs	r3, r3, #23
+ 544 000c 03F00703 		strh	r3, [r0, #52]	@ movhi
+ 545 0010 80F83030 		.loc 1 447 0
+ 446:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->DOY = pFullTime->DOY & RTC_DOY_MASK;
+ 546              	b	r3, [r1, #8]	@ zero_extendqisi2
+ 547 0014 8B8A     		and	r3, r3, #31
+ 548 0016 DB05     		strb	r3, [r0, #40]
+ 549 0018 DB0D     		.loc 1 448 0
+ 550 001a 8386     		ldrb	r3, [r1, #4]	@ zero_extendqisi2
+ 447:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->HOUR = pFullTime->HOUR & RTC_HOUR_MASK;
+ 551              	r3, r3, #63
+ 552 001c 0B7A     		strb	r3, [r0, #36]
+ 553 001e 03F01F03 		.loc 1 449 0
+ 554 0022 80F82830 		ldrb	r3, [r1, #0]	@ zero_extendqisi2
+ 448:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->MIN = pFullTime->MIN & RTC_MIN_MASK;
+ 555              		r3, r3, #63
+ 556 0026 0B79     		strb	r3, [r0, #32]
+ 557 0028 03F03F03 		.loc 1 450 0
+ 558 002c 80F82430 		ldrb	r3, [r1, #24]	@ zero_extendqisi2
+ 449:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->SEC = pFullTime->SEC & RTC_SEC_MASK;
+ 559              		r3, r3, #15
+ 560 0030 0B78     		strb	r3, [r0, #56]
+ 561 0032 03F03F03 		.loc 1 451 0
+ 562 0036 80F82030 		ldrh	r3, [r1, #28]
+ 450:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->MONTH = pFullTime->MONTH & RTC_MONTH_MASK;
+ 563              	s	r3, r3, #20
+ 564 003a 0B7E     		lsrs	r3, r3, #20
+ 565 003c 03F00F03 		strh	r3, [r0, #60]	@ movhi
+ 566 0040 80F83830 		.loc 1 452 0
+ 451:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->YEAR = pFullTime->YEAR & RTC_YEAR_MASK;
+ 567              	lr
+ 568 0044 8B8B     	.LFE39:
+ 570 0048 1B0D     		.section	.text.RTC_GetFullTime,"ax",%progbits
+ 571 004a 8387     		.align	2
+ 452:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 572              	bal	RTC_GetFullTime
+ 573 004c 7047     		.thumb
+ 574              		.thumb_func
+ 576 004e C046     	RTC_GetFullTime:
+ 577              	.LFB40:
+ 578              		.loc 1 463 0
+ 579              		@ args = 0, pretend = 0, frame = 0
+ 580              		@ frame_needed = 0, uses_anonymous_args = 0
+ 581              		@ link register save eliminated.
+ 582              	.LVL20:
+ 583              		.loc 1 466 0
+ 453:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 454:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 455:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 456:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Get full of time in RTC peripheral
+ 457:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 458:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	pFullTime Pointer to a RTC_TIME_Type structure that
+ 459:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				will be stored time in full.
+ 460:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 461:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 462:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_GetFullTime (LPC_RTC_TypeDef *RTCx, RTC_TIME_Type *pFullTime)
+ 463:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 584              	0, #44]	@ zero_extendqisi2
+ 585              		.loc 1 463 0
+ 586              		@ lr needed for prologue
+ 587              		.loc 1 466 0
+ 588              		and	r3, r3, #31
+ 464:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 465:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 466:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->DOM = RTCx->DOM & RTC_DOM_MASK;
+ 589              	r3, [r1, #12]
+ 590 0000 90F82C30 		.loc 1 467 0
+ 591              		ldrb	r3, [r0, #48]	@ zero_extendqisi2
+ 592              		and	r3, r3, #7
+ 593              		str	r3, [r1, #16]
+ 594 0004 03F01F03 		.loc 1 468 0
+ 595 0008 CB60     		ldrh	r3, [r0, #52]
+ 467:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->DOW = RTCx->DOW & RTC_DOW_MASK;
+ 596              	3, r3, #23
+ 597 000a 90F83030 		lsrs	r3, r3, #23
+ 598 000e 03F00703 		str	r3, [r1, #20]
+ 599 0012 0B61     		.loc 1 469 0
+ 468:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->DOY = RTCx->DOY & RTC_DOY_MASK;
+ 600              	b	r3, [r0, #40]	@ zero_extendqisi2
+ 601 0014 838E     		and	r3, r3, #31
+ 602 0016 DB05     		str	r3, [r1, #8]
+ 603 0018 DB0D     		.loc 1 470 0
+ 604 001a 4B61     		ldrb	r3, [r0, #36]	@ zero_extendqisi2
+ 469:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->HOUR = RTCx->HOUR & RTC_HOUR_MASK;
+ 605              	r3, r3, #63
+ 606 001c 90F82830 		str	r3, [r1, #4]
+ 607 0020 03F01F03 		.loc 1 471 0
+ 608 0024 8B60     		ldrb	r3, [r0, #32]	@ zero_extendqisi2
+ 470:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->MIN = RTCx->MIN & RTC_MIN_MASK;
+ 609              		r3, r3, #63
+ 610 0026 90F82430 		str	r3, [r1, #0]
+ 611 002a 03F03F03 		.loc 1 472 0
+ 612 002e 4B60     		ldrb	r3, [r0, #56]	@ zero_extendqisi2
+ 471:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->SEC = RTCx->SEC & RTC_SEC_MASK;
+ 613              		r3, r3, #15
+ 614 0030 90F82030 		str	r3, [r1, #24]
+ 615 0034 03F03F03 		.loc 1 473 0
+ 616 0038 0B60     		ldrh	r3, [r0, #60]
+ 472:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->MONTH = RTCx->MONTH & RTC_MONTH_MASK;
+ 617              	s	r3, r3, #20
+ 618 003a 90F83830 		lsrs	r3, r3, #20
+ 619 003e 03F00F03 		str	r3, [r1, #28]
+ 620 0042 8B61     		.loc 1 474 0
+ 473:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->YEAR = RTCx->YEAR & RTC_YEAR_MASK;
+ 621              	lr
+ 622 0044 838F     	.LFE40:
+ 624 0048 1B0D     		.section	.text.RTC_SetAlarmTime,"ax",%progbits
+ 625 004a CB61     		.align	2
+ 474:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 626              	bal	RTC_SetAlarmTime
+ 627 004c 7047     		.thumb
+ 628              		.thumb_func
+ 630 004e C046     	RTC_SetAlarmTime:
+ 631              	.LFB41:
+ 632              		.loc 1 493 0
+ 633              		@ args = 0, pretend = 0, frame = 0
+ 634              		@ frame_needed = 0, uses_anonymous_args = 0
+ 635              		@ link register save eliminated.
+ 636              	.LVL21:
+ 637              		@ lr needed for prologue
+ 475:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 476:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 477:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 478:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Set alarm time value for each time type
+ 479:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 480:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	Timetype: Time Type, should be:
+ 481:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_SECOND
+ 482:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MINUTE
+ 483:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_HOUR
+ 484:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFWEEK
+ 485:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFMONTH
+ 486:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFYEAR
+ 487:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MONTH
+ 488:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_YEAR
+ 489:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	ALValue Alarm time value to set
+ 490:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 491:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 492:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_SetAlarmTime (LPC_RTC_TypeDef *RTCx, uint32_t Timetype, uint32_t ALValue)
+ 493:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 638              	0
+ 639              		cmp	r1, #7
+ 640              		bhi	.L99
+ 641              		tbb	[pc, r1]
+ 642              	.L98:
+ 643              		.byte	(.L90-.L98)/2
+ 494:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 495:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 496:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	switch (Timetype)
+ 644              		(.L91-.L98)/2
+ 645 0000 0729     		.byte	(.L92-.L98)/2
+ 646 0002 2CD8     		.byte	(.L93-.L98)/2
+ 647 0004 DFE801F0 		.byte	(.L94-.L98)/2
+ 648              		.byte	(.L95-.L98)/2
+ 649 0008 04       		.byte	(.L96-.L98)/2
+ 650 0009 09       		.byte	(.L97-.L98)/2
+ 651 000a 0E       		.align	1
+ 652 000b 13       	.L90:
+ 653 000c 18       		.loc 1 501 0
+ 654 000d 1D       		and	r3, r2, #63
+ 655 000e 22       		strb	r3, [r0, #96]
+ 656 000f 27       		.loc 1 502 0
+ 657              		b	.L99
+ 658              	.L91:
+ 497:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 498:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_SECOND:
+ 499:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM(ALValue < RTC_SECOND_MAX);
+ 500:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 501:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->ALSEC = ALValue & RTC_SEC_MASK;
+ 659              	and	r3, r2, #63
+ 660 0010 02F03F03 		strb	r3, [r0, #100]
+ 661 0014 80F86030 		.loc 1 508 0
+ 502:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 662              	.L99
+ 663 0018 21E0     	.L92:
+ 664              		.loc 1 513 0
+ 503:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 504:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_MINUTE:
+ 505:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM(ALValue < RTC_MINUTE_MAX);
+ 506:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 507:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->ALMIN = ALValue & RTC_MIN_MASK;
+ 665              	d	r3, r2, #31
+ 666 001a 02F03F03 		strb	r3, [r0, #104]
+ 667 001e 80F86430 		.loc 1 514 0
+ 508:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 668              	.L99
+ 669 0022 1CE0     	.L93:
+ 670              		.loc 1 519 0
+ 509:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 510:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_HOUR:
+ 511:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM(ALValue < RTC_HOUR_MAX);
+ 512:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 513:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->ALHOUR = ALValue & RTC_HOUR_MASK;
+ 671              	d	r3, r2, #7
+ 672 0024 02F01F03 		strb	r3, [r0, #112]
+ 673 0028 80F86830 		.loc 1 520 0
+ 514:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 674              	.L99
+ 675 002c 17E0     	.L94:
+ 676              		.loc 1 526 0
+ 515:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 516:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFWEEK:
+ 517:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM(ALValue < RTC_DAYOFWEEK_MAX);
+ 518:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 519:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->ALDOW = ALValue & RTC_DOW_MASK;
+ 677              	d	r3, r2, #31
+ 678 002e 02F00703 		strb	r3, [r0, #108]
+ 679 0032 80F87030 		.loc 1 527 0
+ 520:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 680              	.L99
+ 681 0036 12E0     	.L95:
+ 682              		.loc 1 533 0
+ 521:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 522:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFMONTH:
+ 523:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM((ALValue < RTC_DAYOFMONTH_MAX) \
+ 524:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 				&& (ALValue > RTC_DAYOFMONTH_MIN));
+ 525:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 526:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->ALDOM = ALValue & RTC_DOM_MASK;
+ 683              	ls	r3, r2, #23
+ 684 0038 02F01F03 		lsrs	r3, r3, #23
+ 685 003c 80F86C30 		strh	r3, [r0, #116]	@ movhi
+ 527:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 686              	oc 1 534 0
+ 687 0040 0DE0     		b	.L99
+ 688              	.L96:
+ 528:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 529:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFYEAR:
+ 530:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM((ALValue > RTC_DAYOFYEAR_MIN) \
+ 531:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 				&& (ALValue < RTC_DAYOFYEAR_MAX));
+ 532:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 533:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->ALDOY = ALValue & RTC_DOY_MASK;
+ 689              	oc 1 540 0
+ 690 0042 D305     		and	r3, r2, #15
+ 691 0044 DB0D     		strb	r3, [r0, #120]
+ 692 0046 A0F87430 		.loc 1 541 0
+ 534:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 693              	L99
+ 694 004a 08E0     	.L97:
+ 695              		.loc 1 546 0
+ 535:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 536:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_MONTH:
+ 537:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM((ALValue > RTC_MONTH_MIN) \
+ 538:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 				&& (ALValue < RTC_MONTH_MAX));
+ 539:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 540:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->ALMON = ALValue & RTC_MONTH_MASK;
+ 696              	ls	r3, r2, #20
+ 697 004c 02F00F03 		lsrs	r3, r3, #20
+ 698 0050 80F87830 		strh	r3, [r0, #124]	@ movhi
+ 541:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 699              	9:
+ 700 0054 03E0     		.loc 1 549 0
+ 701              		bx	lr
+ 542:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 543:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_YEAR:
+ 544:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		CHECK_PARAM(ALValue < RTC_YEAR_MAX);
+ 545:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 546:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->ALYEAR = ALValue & RTC_YEAR_MASK;
+ 702              	E41:
+ 704 0058 1B0D     		.section	.text.RTC_GetAlarmTime,"ax",%progbits
+ 705 005a A0F87C30 		.align	2
+ 706              		.global	RTC_GetAlarmTime
+ 547:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 548:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 549:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 707              	mb
+ 708 005e 7047     		.thumb_func
+ 710              	RTC_GetAlarmTime:
+ 711              	.LFB42:
+ 712              		.loc 1 568 0
+ 713              		@ args = 0, pretend = 0, frame = 0
+ 714              		@ frame_needed = 0, uses_anonymous_args = 0
+ 715              		@ link register save eliminated.
+ 716              	.LVL22:
+ 717              		@ lr needed for prologue
+ 718              		.loc 1 569 0
+ 550:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 551:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 552:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 553:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 554:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Get alarm time value for each time type
+ 555:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 556:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	Timetype: Time Type, should be:
+ 557:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_SECOND
+ 558:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MINUTE
+ 559:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_HOUR
+ 560:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFWEEK
+ 561:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFMONTH
+ 562:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_DAYOFYEAR
+ 563:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_MONTH
+ 564:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- RTC_TIMETYPE_YEAR
+ 565:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****   * @return 	Value of Alarm time according to specified time type
+ 566:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 567:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** uint32_t RTC_GetAlarmTime (LPC_RTC_TypeDef *RTCx, uint32_t Timetype)
+ 568:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 719              		bhi	.L101
+ 720              		tbb	[pc, r1]
+ 721              	.L110:
+ 722              		.byte	(.L102-.L110)/2
+ 723              		.byte	(.L103-.L110)/2
+ 724              		.byte	(.L104-.L110)/2
+ 569:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	switch (Timetype)
+ 725              		(.L105-.L110)/2
+ 726 0000 0729     		.byte	(.L106-.L110)/2
+ 727 0002 05D8     		.byte	(.L107-.L110)/2
+ 728 0004 DFE801F0 		.byte	(.L108-.L110)/2
+ 729              		.byte	(.L109-.L110)/2
+ 730 0008 06       		.align	1
+ 731 0009 09       	.L101:
+ 732 000a 0E       		movs	r0, #0
+ 733 000b 11       	.LVL23:
+ 734 000c 16       		b	.L111
+ 735 000d 1B       	.LVL24:
+ 736 000e 20       	.L102:
+ 737 000f 25       		.loc 1 572 0
+ 738              		ldrb	r3, [r0, #96]	@ zero_extendqisi2
+ 739              		b	.L113
+ 740 0010 0020     	.L103:
+ 741              		.loc 1 575 0
+ 742 0012 22E0     		ldrb	r3, [r0, #100]	@ zero_extendqisi2
+ 743              	.L113:
+ 744              		and	r0, r3, #63
+ 570:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 571:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_SECOND:
+ 572:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->ALSEC & RTC_SEC_MASK);
+ 745              	L26:
+ 746 0014 90F86030 	.L104:
+ 747 0018 01E0     		.loc 1 578 0
+ 748              		ldrb	r3, [r0, #104]	@ zero_extendqisi2
+ 573:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 574:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_MINUTE:
+ 575:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->ALMIN & RTC_MIN_MASK);
+ 749              	L114
+ 750 001a 90F86430 	.L105:
+ 751              		.loc 1 581 0
+ 752 001e 03F03F00 		ldrb	r3, [r0, #112]	@ zero_extendqisi2
+ 753              		and	r0, r3, #7
+ 754 0022 1AE0     	.LVL27:
+ 755              		b	.L111
+ 756              	.LVL28:
+ 576:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 577:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_HOUR:
+ 578:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->ALHOUR & RTC_HOUR_MASK);
+ 757              	.loc 1 584 0
+ 758 0024 90F86830 		ldrb	r3, [r0, #108]	@ zero_extendqisi2
+ 759 0028 06E0     	.L114:
+ 760              		and	r0, r3, #31
+ 579:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 580:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFWEEK:
+ 581:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->ALDOW & RTC_DOW_MASK);
+ 761              	29:
+ 762 002a 90F87030 		b	.L111
+ 763 002e 03F00700 	.LVL30:
+ 764              	.L107:
+ 765 0032 12E0     		.loc 1 587 0
+ 766              		ldrh	r3, [r0, #116]
+ 767              		lsls	r0, r3, #23
+ 582:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 583:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFMONTH:
+ 584:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->ALDOM & RTC_DOM_MASK);
+ 768              	
+ 769 0034 90F86C30 		lsrs	r0, r0, #23
+ 770              		b	.L111
+ 771 0038 03F01F00 	.LVL32:
+ 772              	.L108:
+ 773 003c 0DE0     		.loc 1 590 0
+ 774              		ldrb	r3, [r0, #120]	@ zero_extendqisi2
+ 775              		and	r0, r3, #15
+ 585:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 586:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_DAYOFYEAR:
+ 587:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->ALDOY & RTC_DOY_MASK);
+ 776              	
+ 777 003e B0F87430 		b	.L111
+ 778 0042 D805     	.LVL34:
+ 779              	.L109:
+ 780 0044 C00D     		.loc 1 593 0
+ 781 0046 08E0     		ldrh	r3, [r0, #124]
+ 782              		lsls	r0, r3, #20
+ 783              	.LVL35:
+ 588:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 589:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_MONTH:
+ 590:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->ALMON & RTC_MONTH_MASK);
+ 784              	0, r0, #20
+ 785 0048 90F87830 	.L111:
+ 786 004c 03F00F00 		.loc 1 599 0
+ 787              		bx	lr
+ 788 0050 03E0     	.LFE42:
+ 790              		.section	.text.RTC_SetFullAlarmTime,"ax",%progbits
+ 591:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 592:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	case RTC_TIMETYPE_YEAR:
+ 593:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (RTCx->ALYEAR & RTC_YEAR_MASK);
+ 791              		2
+ 792 0052 B0F87C30 		.global	RTC_SetFullAlarmTime
+ 793 0056 1805     		.thumb
+ 794              		.thumb_func
+ 796              	RTC_SetFullAlarmTime:
+ 594:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 595:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	default:
+ 596:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		return (0);
+ 597:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		break;
+ 598:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 599:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 797              	:
+ 798 005a 7047     		.loc 1 610 0
+ 799              		@ args = 0, pretend = 0, frame = 0
+ 800              		@ frame_needed = 0, uses_anonymous_args = 0
+ 801              		@ link register save eliminated.
+ 802              	.LVL36:
+ 803              		.loc 1 613 0
+ 804              		ldrb	r3, [r1, #12]	@ zero_extendqisi2
+ 805              		.loc 1 610 0
+ 806              		@ lr needed for prologue
+ 807              		.loc 1 613 0
+ 808              		and	r3, r3, #31
+ 600:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 601:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 602:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 603:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Set full of alarm time in RTC peripheral
+ 604:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 605:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	pFullTime Pointer to a RTC_TIME_Type structure that
+ 606:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				contains alarm time value in full.
+ 607:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 608:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 609:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_SetFullAlarmTime (LPC_RTC_TypeDef *RTCx, RTC_TIME_Type *pFullTime)
+ 610:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 809              	0, #108]
+ 810              		.loc 1 614 0
+ 811              		ldrb	r3, [r1, #16]	@ zero_extendqisi2
+ 812              		and	r3, r3, #7
+ 813              		strb	r3, [r0, #112]
+ 611:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 612:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 613:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->ALDOM = pFullTime->DOM & RTC_DOM_MASK;
+ 814              	 1 615 0
+ 815 0000 0B7B     		ldrh	r3, [r1, #20]
+ 816              		lsls	r3, r3, #23
+ 817              		lsrs	r3, r3, #23
+ 818              		strh	r3, [r0, #116]	@ movhi
+ 819 0002 03F01F03 		.loc 1 616 0
+ 820 0006 80F86C30 		ldrb	r3, [r1, #8]	@ zero_extendqisi2
+ 614:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->ALDOW = pFullTime->DOW & RTC_DOW_MASK;
+ 821              	, r3, #31
+ 822 000a 0B7C     		strb	r3, [r0, #104]
+ 823 000c 03F00703 		.loc 1 617 0
+ 824 0010 80F87030 		ldrb	r3, [r1, #4]	@ zero_extendqisi2
+ 615:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->ALDOY = pFullTime->DOY & RTC_DOY_MASK;
+ 825              		r3, r3, #63
+ 826 0014 8B8A     		strb	r3, [r0, #100]
+ 827 0016 DB05     		.loc 1 618 0
+ 828 0018 DB0D     		ldrb	r3, [r1, #0]	@ zero_extendqisi2
+ 829 001a A0F87430 		and	r3, r3, #63
+ 616:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->ALHOUR = pFullTime->HOUR & RTC_HOUR_MASK;
+ 830              		r3, [r0, #96]
+ 831 001e 0B7A     		.loc 1 619 0
+ 832 0020 03F01F03 		ldrb	r3, [r1, #24]	@ zero_extendqisi2
+ 833 0024 80F86830 		and	r3, r3, #15
+ 617:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->ALMIN = pFullTime->MIN & RTC_MIN_MASK;
+ 834              	b	r3, [r0, #120]
+ 835 0028 0B79     		.loc 1 620 0
+ 836 002a 03F03F03 		ldrh	r3, [r1, #28]
+ 837 002e 80F86430 		lsls	r3, r3, #20
+ 618:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->ALSEC = pFullTime->SEC & RTC_SEC_MASK;
+ 838              	s	r3, r3, #20
+ 839 0032 0B78     		strh	r3, [r0, #124]	@ movhi
+ 840 0034 03F03F03 		.loc 1 621 0
+ 841 0038 80F86030 		bx	lr
+ 619:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->ALMON = pFullTime->MONTH & RTC_MONTH_MASK;
+ 842              	43:
+ 844 003e 03F00F03 		.section	.text.RTC_GetFullAlarmTime,"ax",%progbits
+ 845 0042 80F87830 		.align	2
+ 620:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->ALYEAR = pFullTime->YEAR & RTC_YEAR_MASK;
+ 846              	obal	RTC_GetFullAlarmTime
+ 847 0046 8B8B     		.thumb
+ 848 0048 1B05     		.thumb_func
+ 850 004c A0F87C30 	RTC_GetFullAlarmTime:
+ 621:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 851              	4:
+ 852 0050 7047     		.loc 1 632 0
+ 853              		@ args = 0, pretend = 0, frame = 0
+ 854              		@ frame_needed = 0, uses_anonymous_args = 0
+ 855 0052 C046     		@ link register save eliminated.
+ 856              	.LVL37:
+ 857              		.loc 1 635 0
+ 858              		ldrb	r3, [r0, #108]	@ zero_extendqisi2
+ 859              		.loc 1 632 0
+ 860              		@ lr needed for prologue
+ 861              		.loc 1 635 0
+ 862              		and	r3, r3, #31
+ 622:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 623:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 624:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 625:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Get full of alarm time in RTC peripheral
+ 626:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 627:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	pFullTime Pointer to a RTC_TIME_Type structure that
+ 628:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				will be stored alarm time in full.
+ 629:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 630:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 631:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_GetFullAlarmTime (LPC_RTC_TypeDef *RTCx, RTC_TIME_Type *pFullTime)
+ 632:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 863              	, #12]
+ 864              		.loc 1 636 0
+ 865              		ldrb	r3, [r0, #112]	@ zero_extendqisi2
+ 866              		and	r3, r3, #7
+ 867              		str	r3, [r1, #16]
+ 633:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 634:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 635:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->DOM = RTCx->ALDOM & RTC_DOM_MASK;
+ 868              	 1 637 0
+ 869 0000 90F86C30 		ldrh	r3, [r0, #116]
+ 870              		lsls	r3, r3, #23
+ 871              		lsrs	r3, r3, #23
+ 872              		str	r3, [r1, #20]
+ 873 0004 03F01F03 		.loc 1 638 0
+ 874 0008 CB60     		ldrb	r3, [r0, #104]	@ zero_extendqisi2
+ 636:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->DOW = RTCx->ALDOW & RTC_DOW_MASK;
+ 875              	, r3, #31
+ 876 000a 90F87030 		str	r3, [r1, #8]
+ 877 000e 03F00703 		.loc 1 639 0
+ 878 0012 0B61     		ldrb	r3, [r0, #100]	@ zero_extendqisi2
+ 637:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->DOY = RTCx->ALDOY & RTC_DOY_MASK;
+ 879              		r3, r3, #63
+ 880 0014 B0F87430 		str	r3, [r1, #4]
+ 881 0018 DB05     		.loc 1 640 0
+ 882 001a DB0D     		ldrb	r3, [r0, #96]	@ zero_extendqisi2
+ 883 001c 4B61     		and	r3, r3, #63
+ 638:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->HOUR = RTCx->ALHOUR & RTC_HOUR_MASK;
+ 884              	r3, [r1, #0]
+ 885 001e 90F86830 		.loc 1 641 0
+ 886 0022 03F01F03 		ldrb	r3, [r0, #120]	@ zero_extendqisi2
+ 887 0026 8B60     		and	r3, r3, #15
+ 639:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->MIN = RTCx->ALMIN & RTC_MIN_MASK;
+ 888              		r3, [r1, #24]
+ 889 0028 90F86430 		.loc 1 642 0
+ 890 002c 03F03F03 		ldrh	r3, [r0, #124]
+ 891 0030 4B60     		lsls	r3, r3, #20
+ 640:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->SEC = RTCx->ALSEC & RTC_SEC_MASK;
+ 892              	s	r3, r3, #20
+ 893 0032 90F86030 		str	r3, [r1, #28]
+ 894 0036 03F03F03 		.loc 1 643 0
+ 895 003a 0B60     		bx	lr
+ 641:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->MONTH = RTCx->ALMON & RTC_MONTH_MASK;
+ 896              	44:
+ 898 0040 03F00F03 		.section	.text.RTC_GetIntPending,"ax",%progbits
+ 899 0044 8B61     		.align	2
+ 642:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	pFullTime->YEAR = RTCx->ALYEAR & RTC_YEAR_MASK;
+ 900              	obal	RTC_GetIntPending
+ 901 0046 B0F87C30 		.thumb
+ 902 004a 1B05     		.thumb_func
+ 904 004e CB61     	RTC_GetIntPending:
+ 643:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 905              	5:
+ 906 0050 7047     		.loc 1 659 0
+ 907              		@ args = 0, pretend = 0, frame = 0
+ 908              		@ frame_needed = 0, uses_anonymous_args = 0
+ 909 0052 C046     		@ link register save eliminated.
+ 910              	.LVL38:
+ 911              		.loc 1 663 0
+ 912              		ldrb	r3, [r0, #0]	@ zero_extendqisi2
+ 913              		.loc 1 659 0
+ 914              		@ lr needed for prologue
+ 915              		.loc 1 663 0
+ 916              		tst	r1, r3
+ 644:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 645:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 646:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 647:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Check whether if specified Location interrupt in
+ 648:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				RTC peripheral is set or not
+ 649:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 650:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	IntType Interrupt location type, should be:
+ 651:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 						- RTC_INT_COUNTER_INCREASE: Counter Increment Interrupt
+ 652:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 							block generated an interrupt.
+ 653:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 						- RTC_INT_ALARM: Alarm generated an
+ 654:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 							interrupt.
+ 655:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		New state of specified Location interrupt in RTC peripheral
+ 656:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				(SET or RESET)
+ 657:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 658:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** IntStatus RTC_GetIntPending (LPC_RTC_TypeDef *RTCx, uint32_t IntType)
+ 659:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 917              	0
+ 918              		ite	eq
+ 919              		moveq	r0, #0
+ 920              		movne	r0, #1
+ 921              	.LVL39:
+ 660:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 661:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTC_INT(IntType));
+ 662:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 663:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	return ((RTCx->ILR & IntType) ? SET : RESET);
+ 922              	r
+ 923 0000 0378     	.LFE45:
+ 925              		.section	.text.RTC_ClearIntPending,"ax",%progbits
+ 926              		.align	2
+ 927 0002 1942     		.global	RTC_ClearIntPending
+ 664:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 928              	b
+ 929 0004 0CBF     		.thumb_func
+ 931 0008 0120     	RTC_ClearIntPending:
+ 932              	.LFB46:
+ 933 000a 7047     		.loc 1 678 0
+ 934              		@ args = 0, pretend = 0, frame = 0
+ 935              		@ frame_needed = 0, uses_anonymous_args = 0
+ 936              		@ link register save eliminated.
+ 937              	.LVL40:
+ 938              		.loc 1 682 0
+ 939              		uxtb	r1, r1
+ 940              	.LVL41:
+ 941              		.loc 1 678 0
+ 942              		@ lr needed for prologue
+ 943              		.loc 1 682 0
+ 665:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 666:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 667:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 668:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Clear specified Location interrupt pending in
+ 669:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				RTC peripheral
+ 670:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 671:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	IntType Interrupt location type, should be:
+ 672:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 						- RTC_INT_COUNTER_INCREASE: Clear Counter Increment
+ 673:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 						Interrupt pending.
+ 674:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 						- RTC_INT_ALARM: Clear alarm interrupt pending
+ 675:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 676:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 677:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_ClearIntPending (LPC_RTC_TypeDef *RTCx, uint32_t IntType)
+ 678:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 944              	0]
+ 945              		.loc 1 683 0
+ 946              		bx	lr
+ 947              	.LFE46:
+ 679:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 680:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTC_INT(IntType));
+ 681:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 682:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->ILR = IntType;
+ 949              	tion	.text.RTC_CalibCounterCmd,"ax",%progbits
+ 950 0000 C9B2     		.align	2
+ 951              		.global	RTC_CalibCounterCmd
+ 952              		.thumb
+ 953              		.thumb_func
+ 955 0002 0170     	RTC_CalibCounterCmd:
+ 683:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 956              	
+ 957 0004 7047     		.loc 1 694 0
+ 958              		@ args = 0, pretend = 0, frame = 0
+ 959              		@ frame_needed = 0, uses_anonymous_args = 0
+ 960 0006 C046     		@ link register save eliminated.
+ 961              	.LVL42:
+ 962              		.loc 1 698 0
+ 963              		cmp	r1, #1
+ 964              		.loc 1 700 0
+ 965              		itete	eq
+ 966              		ldrbeq	r3, [r0, #8]	@ zero_extendqisi2
+ 967              		.loc 1 704 0
+ 684:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 685:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 686:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Enable/Disable calibration counter in RTC peripheral
+ 687:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 688:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	NewState New State of this function, should be:
+ 689:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- ENABLE: The calibration counter is enabled and counting
+ 690:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				- DISABLE: The calibration counter is disabled and reset to zero
+ 691:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 692:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 693:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_CalibCounterCmd(LPC_RTC_TypeDef *RTCx, FunctionalState NewState)
+ 694:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 968              	 [r0, #8]	@ zero_extendqisi2
+ 969              		.loc 1 700 0
+ 970              		andeq	r3, r3, #3
+ 971              		.loc 1 704 0
+ 972              		orrne	r3, r3, #16
+ 695:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 696:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_FUNCTIONALSTATE(NewState));
+ 697:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 698:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	if (NewState == ENABLE)
+ 973              	 1 694 0
+ 974 0000 0129     		@ lr needed for prologue
+ 699:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 700:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->CCR &= (~RTC_CCR_CCALEN) & RTC_CCR_BITMASK;
+ 975              	loc 1 704 0
+ 976 0002 0BBF     		strb	r3, [r0, #8]
+ 977 0004 037A     		.loc 1 706 0
+ 701:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 702:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	else
+ 703:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	{
+ 704:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 		RTCx->CCR |= RTC_CCR_CCALEN;
+ 978              		lr
+ 979 0006 037A     	.LFE47:
+ 981 0008 03F00303 		.section	.text.RTC_CalibConfig,"ax",%progbits
+ 982              		.align	2
+ 983 000c 43F01003 		.global	RTC_CalibConfig
+ 984              		.thumb
+ 985              		.thumb_func
+ 987 0010 0372     	RTC_CalibConfig:
+ 705:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	}
+ 706:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 988              	loc 1 720 0
+ 989 0012 7047     		@ args = 0, pretend = 0, frame = 0
+ 990              		@ frame_needed = 0, uses_anonymous_args = 0
+ 991              		@ link register save eliminated.
+ 992              	.LVL43:
+ 993              		.loc 1 725 0
+ 994              		subs	r1, r1, #1
+ 995              	.LVL44:
+ 996              		bic	r1, r1, #-16777216
+ 997              		cmp	r2, #1
+ 998              		ite	eq
+ 999              		moveq	r2, #131072
+ 707:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 708:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 709:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 710:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Configures Calibration in RTC peripheral
+ 711:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 712:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	CalibValue Calibration value, should be in range from
+ 713:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 					0 to 131,072
+ 714:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	CalibDir Calibration Direction, should be:
+ 715:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 					- RTC_CALIB_DIR_FORWARD: Forward calibration
+ 716:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 					- RTC_CALIB_DIR_BACKWARD: Backward calibration
+ 717:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 718:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 719:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_CalibConfig(LPC_RTC_TypeDef *RTCx, uint32_t CalibValue, uint8_t CalibDir)
+ 720:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 1000              	0
+ 1001              	.LVL45:
+ 1002              		bic	r1, r1, #16646144
+ 1003              		orrs	r2, r2, r1
+ 1004              		.loc 1 720 0
+ 721:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 722:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTC_CALIB_DIR(CalibDir));
+ 723:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(CalibValue > RTC_CALIBRATION_MAX);
+ 724:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 725:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	RTCx->CALIBRATION = ((CalibValue - 1) & RTC_CALIBRATION_CALVAL_MASK) \
+ 1005              	 needed for prologue
+ 1006 0000 0139     		.loc 1 725 0
+ 1007              		str	r2, [r0, #64]
+ 1008 0002 21F07F41 		.loc 1 727 0
+ 1009 0006 012A     		bx	lr
+ 1010 0008 0CBF     	.LFE48:
+ 1012 000e 0022     		.section	.text.RTC_WriteGPREG,"ax",%progbits
+ 1013              		.align	2
+ 1014 0010 21F47E01 		.global	RTC_WriteGPREG
+ 1015 0014 0A43     		.thumb
+ 1016              		.thumb_func
+ 1018              	RTC_WriteGPREG:
+ 1019 0016 0264     	.LFB49:
+ 726:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 			| ((CalibDir == RTC_CALIB_DIR_BACKWARD) ? RTC_CALIBRATION_LIBDIR : 0);
+ 727:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 1020              	@ args = 0, pretend = 0, frame = 0
+ 1021 0018 7047     		@ frame_needed = 0, uses_anonymous_args = 0
+ 1022              		@ link register save eliminated.
+ 1023              	.LVL46:
+ 1024 001a C046     		.loc 1 750 0
+ 1025              		adds	r0, r0, #68
+ 1026              	.LVL47:
+ 1027              		.loc 1 751 0
+ 1028              		lsls	r1, r1, #2
+ 1029              	.LVL48:
+ 1030              		.loc 1 742 0
+ 1031              		@ lr needed for prologue
+ 728:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 729:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 730:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 731:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Write value to General purpose registers
+ 732:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 733:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	Channel General purpose registers Channel number,
+ 734:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				should be in range from 0 to 4.
+ 735:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	Value Value to write
+ 736:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		None
+ 737:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * Note: These General purpose registers can be used to store important
+ 738:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * information when the main power supply is off. The value in these
+ 739:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * registers is not affected by chip reset.
+ 740:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 741:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** void RTC_WriteGPREG (LPC_RTC_TypeDef *RTCx, uint8_t Channel, uint32_t Value)
+ 742:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 1032              	0
+ 1033              		str	r2, [r0, r1]
+ 1034              		.loc 1 753 0
+ 1035              		bx	lr
+ 1036              	.LFE49:
+ 743:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	// mthomas uint32_t *preg;
+ 744:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	volatile uint32_t *preg;
+ 745:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 746:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 747:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTC_GPREG_CH(Channel));
+ 748:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 749:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	// mthomas preg = (uint32_t *)&RTCx->GPREG0;
+ 750:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	preg = &RTCx->GPREG0;
+ 1037              	e	RTC_WriteGPREG, .-RTC_WriteGPREG
+ 1038 0000 4430     		.section	.text.RTC_ReadGPREG,"ax",%progbits
+ 1039              		.align	2
+ 751:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	preg += Channel;
+ 1040              	lobal	RTC_ReadGPREG
+ 1041 0002 8900     		.thumb
+ 1042              		.thumb_func
+ 1044              	RTC_ReadGPREG:
+ 752:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	*preg = Value;
+ 1045              	0:
+ 1046 0004 4250     		.loc 1 767 0
+ 753:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 1047              	 args = 0, pretend = 0, frame = 0
+ 1048 0006 7047     		@ frame_needed = 0, uses_anonymous_args = 0
+ 1049              		@ link register save eliminated.
+ 1050              	.LVL49:
+ 1051              		.loc 1 776 0
+ 1052              		adds	r0, r0, #68
+ 1053              	.LVL50:
+ 1054              		.loc 1 777 0
+ 1055              		lsls	r1, r1, #2
+ 1056              	.LVL51:
+ 1057              		.loc 1 767 0
+ 1058              		@ lr needed for prologue
+ 754:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 755:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 756:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** /*********************************************************************//**
+ 757:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @brief 		Read value from General purpose registers
+ 758:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	RTCx	RTC peripheral selected, should be RTC
+ 759:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @param[in]	Channel General purpose registers Channel number,
+ 760:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * 				should be in range from 0 to 4.
+ 761:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * @return 		Read Value
+ 762:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * Note: These General purpose registers can be used to store important
+ 763:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * information when the main power supply is off. The value in these
+ 764:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  * registers is not affected by chip reset.
+ 765:Libraries/NXP/Drivers/source/lpc17xx_rtc.c ****  **********************************************************************/
+ 766:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** uint32_t RTC_ReadGPREG (LPC_RTC_TypeDef *RTCx, uint8_t Channel)
+ 767:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** {
+ 1059              	0
+ 1060              		ldr	r0, [r0, r1]
+ 1061              	.LVL52:
+ 1062              	.LVL53:
+ 1063              		.loc 1 780 0
+ 768:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	// mthomas uint32_t *preg;
+ 769:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	volatile uint32_t *preg;
+ 770:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	uint32_t value;
+ 771:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 772:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTCx(RTCx));
+ 773:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	CHECK_PARAM(PARAM_RTC_GPREG_CH(Channel));
+ 774:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 
+ 775:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	// mthomas preg = (uint32_t *)&RTCx->GPREG0;
+ 776:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	preg = &RTCx->GPREG0;
+ 1064              	r
+ 1065 0000 4430     	.LFE50:
+ 777:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	preg += Channel;
+ 1067              	ection	.text.RTC_DeInit,"ax",%progbits
+ 1068 0002 8900     		.align	2
+ 1069              		.global	RTC_DeInit
+ 1070              		.thumb
+ 1071              		.thumb_func
+ 778:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	value = *preg;
+ 1072              	e	RTC_DeInit, %function
+ 1073 0004 4058     	RTC_DeInit:
+ 1074              	.LFB32:
+ 1075              		.loc 1 77 0
+ 779:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** 	return (value);
+ 780:Libraries/NXP/Drivers/source/lpc17xx_rtc.c **** }
+ 1076              	rgs = 0, pretend = 0, frame = 0
+ 1077 0006 7047     		@ frame_needed = 0, uses_anonymous_args = 0
+ 1078              	.LVL54:
+ 1079              		.loc 1 80 0
+ 1080              		movs	r1, #0
+ 1081              		.loc 1 77 0
+ 1082              		push	{r4, lr}
+ 1083              	.LCFI0:
+ 1084              		.loc 1 80 0
+ 1085              		strb	r1, [r0, #8]
+ 1086              		.loc 1 82 0
+ 1087              		mov	r0, #512
+ 1088              	.LVL55:
+ 1089              		bl	CLKPWR_ConfigPPWR
+ 1090              		.loc 1 83 0
+ 1091              		pop	{r4, pc}
+ 1092              	.LFE32:
+ 1094              		.section	.text.RTC_Init,"ax",%progbits
+ 1095 0002 10B5     		.align	2
+ 1096              		.global	RTC_Init
+ 1097              		.thumb
+ 1098 0004 0172     		.thumb_func
+ 1100 0006 4FF40070 	RTC_Init:
+ 1101              	.LFB31:
+ 1102 000a FFF7FEFF 		.loc 1 55 0
+ 1103              		@ args = 0, pretend = 0, frame = 0
+ 1104 000e 10BD     		@ frame_needed = 0, uses_anonymous_args = 0
+ 1105              	.LVL56:
+ 1106              		push	{r4, lr}
+ 1107              	.LCFI1:
+ 1108              		.loc 1 59 0
+ 1109              		movs	r1, #1
+ 1110              		.loc 1 55 0
+ 1111              		mov	r4, r0
+ 1112              		.loc 1 59 0
+ 1113              		mov	r0, #512
+ 1114              	.LVL57:
+ 1115              		bl	CLKPWR_ConfigPPWR
+ 1116              		.loc 1 62 0
+ 1117              		movs	r2, #0
+ 1118              		.loc 1 65 0
+ 1119 0000 10B5     		mov	r3, #-1
+ 1120              		.loc 1 62 0
+ 1121              		strb	r2, [r4, #0]
+ 1122 0002 0121     		.loc 1 63 0
+ 1123              		strb	r2, [r4, #8]
+ 1124 0004 0446     		.loc 1 64 0
+ 1125              		strb	r2, [r4, #12]
+ 1126 0006 4FF40070 		.loc 1 65 0
+ 1127              		strb	r3, [r4, #16]
+ 1128 000a FFF7FEFF 		.loc 1 66 0
+ 1129              		str	r2, [r4, #64]
+ 1130 000e 0022     		.loc 1 67 0
+ 1131              		pop	{r4, pc}
+ 1132 0010 4FF0FF33 	.LFE31:
+ 1134 0014 2270     		.section	.debug_frame,"",%progbits
+ 1135              	.Lframe0:
+ 1136 0016 2272     		.4byte	.LECIE0-.LSCIE0
+ 1137              	.LSCIE0:
+ 1138 0018 2273     		.4byte	0xffffffff
+ 1139              		.byte	0x1
+ 1140 001a 2374     		.ascii	"\000"
+ 1141              		.uleb128 0x1
+ 1142 001c 2264     		.sleb128 -4
+ 1143              		.byte	0xe
+ 1144 001e 10BD     		.byte	0xc
+ 1145              		.uleb128 0xd
+ 1146              		.uleb128 0x0
+ 1339              		.4byte	.LVL10
+DEFINED SYMBOLS
+                            *ABS*:00000000 lpc17xx_rtc.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:28     .text.RTC_ResetClockTickCounter:00000000 RTC_ResetClockTickCounter
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:25     .text.RTC_ResetClockTickCounter:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:57     .text.RTC_Cmd:00000000 RTC_Cmd
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:54     .text.RTC_Cmd:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:89     .text.RTC_CntIncrIntConfig:00000000 RTC_CntIncrIntConfig
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:86     .text.RTC_CntIncrIntConfig:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:107    .text.RTC_CntIncrIntConfig:0000000c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:118    .text.RTC_CntIncrIntConfig:00000014 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:162    .text.RTC_CntIncrIntConfig:0000005c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:173    .text.RTC_CntIncrIntConfig:00000064 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:223    .text.RTC_AlarmIntConfig:00000000 RTC_AlarmIntConfig
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:220    .text.RTC_AlarmIntConfig:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:241    .text.RTC_AlarmIntConfig:0000000c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:252    .text.RTC_AlarmIntConfig:00000014 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:296    .text.RTC_AlarmIntConfig:0000005c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:307    .text.RTC_AlarmIntConfig:00000064 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:357    .text.RTC_SetTime:00000000 RTC_SetTime
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:354    .text.RTC_SetTime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:370    .text.RTC_SetTime:00000008 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:381    .text.RTC_SetTime:00000010 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:438    .text.RTC_GetTime:00000000 RTC_GetTime
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:435    .text.RTC_GetTime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:451    .text.RTC_GetTime:00000008 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:461    .text.RTC_GetTime:00000010 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:528    .text.RTC_SetFullTime:00000000 RTC_SetFullTime
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:525    .text.RTC_SetFullTime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:582    .text.RTC_GetFullTime:00000000 RTC_GetFullTime
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:579    .text.RTC_GetFullTime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:636    .text.RTC_SetAlarmTime:00000000 RTC_SetAlarmTime
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:633    .text.RTC_SetAlarmTime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:649    .text.RTC_SetAlarmTime:00000008 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:660    .text.RTC_SetAlarmTime:00000010 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:717    .text.RTC_GetAlarmTime:00000000 RTC_GetAlarmTime
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:714    .text.RTC_GetAlarmTime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:730    .text.RTC_GetAlarmTime:00000008 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:740    .text.RTC_GetAlarmTime:00000010 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:807    .text.RTC_SetFullAlarmTime:00000000 RTC_SetFullAlarmTime
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:804    .text.RTC_SetFullAlarmTime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:861    .text.RTC_GetFullAlarmTime:00000000 RTC_GetFullAlarmTime
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:858    .text.RTC_GetFullAlarmTime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:915    .text.RTC_GetIntPending:00000000 RTC_GetIntPending
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:912    .text.RTC_GetIntPending:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:942    .text.RTC_ClearIntPending:00000000 RTC_ClearIntPending
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:939    .text.RTC_ClearIntPending:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:966    .text.RTC_CalibCounterCmd:00000000 RTC_CalibCounterCmd
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:963    .text.RTC_CalibCounterCmd:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:998    .text.RTC_CalibConfig:00000000 RTC_CalibConfig
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:995    .text.RTC_CalibConfig:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:1030   .text.RTC_WriteGPREG:00000000 RTC_WriteGPREG
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:1027   .text.RTC_WriteGPREG:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:1057   .text.RTC_ReadGPREG:00000000 RTC_ReadGPREG
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:1054   .text.RTC_ReadGPREG:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:1086   .text.RTC_DeInit:00000000 RTC_DeInit
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:1083   .text.RTC_DeInit:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:1113   .text.RTC_Init:00000000 RTC_Init
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:1110   .text.RTC_Init:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:1149   .debug_frame:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccC8baaa.s:1343   .debug_loc:00000000 $d
+
+UNDEFINED SYMBOLS
+CLKPWR_ConfigPPWR

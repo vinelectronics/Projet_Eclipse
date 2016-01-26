@@ -1,0 +1,1003 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"lpc17xx_gpdma.c"
+  21              	.Ltext0:
+  22              		.section	.text.GPDMA_Setup,"ax",%progbits
+  23              		.align	2
+  24              		.global	GPDMA_Setup
+  25              		.thumb
+  26              		.thumb_func
+  28              	GPDMA_Setup:
+  29              	.LFB32:
+  30              		.file 1 "Libraries/NXP/Drivers/source/lpc17xx_gpdma.c"
+   1:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /**
+   2:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @file	: lpc17xx_gpdma.c
+   3:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @brief	: Contains all functions support for GPDMA firmware library on LPC17xx
+   4:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @version	: 1.0
+   5:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @date	: 20. Apr. 2009
+   6:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @author	: HieuNguyen
+   7:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  **************************************************************************
+   8:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * Software that is described herein is for illustrative purposes only
+   9:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * which provides customers with programming information regarding the
+  10:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * products. This software is supplied "AS IS" without any warranties.
+  11:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * NXP Semiconductors assumes no responsibility or liability for the
+  12:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * use of the software, conveys no license or title under any patent,
+  13:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * copyright, or mask work right to the product. NXP Semiconductors
+  14:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * reserves the right to make changes in the software without
+  15:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * notification. NXP Semiconductors also make no representation or
+  16:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * warranty that such application will be suitable for the specified
+  17:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * use without further testing or modification.
+  18:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  **********************************************************************/
+  19:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+  20:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /* Peripheral group ----------------------------------------------------------- */
+  21:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /** @addtogroup GPDMA
+  22:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @{
+  23:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  */
+  24:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+  25:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /* Includes ------------------------------------------------------------------- */
+  26:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #include "lpc17xx_gpdma.h"
+  27:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #include "lpc17xx_clkpwr.h"
+  28:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+  29:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /* If this source file built with example, the LPC17xx FW library configuration
+  30:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * file in each example directory ("lpc17xx_libcfg.h") must be included,
+  31:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * otherwise the default FW library configuration file must be included instead
+  32:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  */
+  33:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #ifdef __BUILD_WITH_EXAMPLE__
+  34:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #include "lpc17xx_libcfg.h"
+  35:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #else
+  36:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #include "lpc17xx_libcfg_default.h"
+  37:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #endif /* __BUILD_WITH_EXAMPLE__ */
+  38:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+  39:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #ifdef _GPDMA
+  40:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+  41:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+  42:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /* Private Variables ---------------------------------------------------------- */
+  43:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /** @defgroup GPDMA_Private_Variables
+  44:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @{
+  45:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  */
+  46:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+  47:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /**
+  48:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @brief Lookup Table of Connection Type matched with
+  49:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * Peripheral Data (FIFO) register base address
+  50:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  */
+  51:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #ifdef __IAR_SYSTEMS_ICC__
+  52:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** volatile const void *GPDMA_LUTPerAddr[] = {
+  53:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_SSP0->DR),				// SSP0 Tx
+  54:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_SSP0->DR),				// SSP0 Rx
+  55:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_SSP1->DR),				// SSP1 Tx
+  56:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_SSP1->DR),				// SSP1 Rx
+  57:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_ADC->ADGDR),			// ADC
+  58:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_I2S->I2STXFIFO), 		// I2S Tx
+  59:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_I2S->I2SRXFIFO), 		// I2S Rx
+  60:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_DAC->DACR),				// DAC
+  61:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_UART0->/*RBTHDLR.*/THR),	// UART0 Tx
+  62:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_UART0->/*RBTHDLR.*/RBR),	// UART0 Rx
+  63:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_UART1->/*RBTHDLR.*/THR),	// UART1 Tx
+  64:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_UART1->/*RBTHDLR.*/RBR),	// UART1 Rx
+  65:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_UART2->/*RBTHDLR.*/THR),	// UART2 Tx
+  66:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_UART2->/*RBTHDLR.*/RBR),	// UART2 Rx
+  67:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_UART3->/*RBTHDLR.*/THR),	// UART3 Tx
+  68:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_UART3->/*RBTHDLR.*/RBR),	// UART3 Rx
+  69:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_TIM0->MR0),				// MAT0.0
+  70:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_TIM0->MR1),				// MAT0.1
+  71:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_TIM1->MR0),				// MAT1.0
+  72:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_TIM1->MR1),				// MAT1.1
+  73:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_TIM2->MR0),				// MAT2.0
+  74:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_TIM2->MR1),				// MAT2.1
+  75:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_TIM3->MR0),				// MAT3.0
+  76:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		(&LPC_TIM3->MR1),				// MAT3.1
+  77:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** };
+  78:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #else
+  79:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** const uint32_t GPDMA_LUTPerAddr[] = {
+  80:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_SSP0->DR),				// SSP0 Tx
+  81:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_SSP0->DR),				// SSP0 Rx
+  82:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_SSP1->DR),				// SSP1 Tx
+  83:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_SSP1->DR),				// SSP1 Rx
+  84:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_ADC->ADGDR),			// ADC
+  85:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_I2S->I2STXFIFO), 		// I2S Tx
+  86:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_I2S->I2SRXFIFO), 		// I2S Rx
+  87:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_DAC->DACR),				// DAC
+  88:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_UART0->/*RBTHDLR.*/THR),	// UART0 Tx
+  89:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_UART0->/*RBTHDLR.*/RBR),	// UART0 Rx
+  90:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_UART1->/*RBTHDLR.*/THR),	// UART1 Tx
+  91:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_UART1->/*RBTHDLR.*/RBR),	// UART1 Rx
+  92:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_UART2->/*RBTHDLR.*/THR),	// UART2 Tx
+  93:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_UART2->/*RBTHDLR.*/RBR),	// UART2 Rx
+  94:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_UART3->/*RBTHDLR.*/THR),	// UART3 Tx
+  95:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_UART3->/*RBTHDLR.*/RBR),	// UART3 Rx
+  96:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_TIM0->MR0),				// MAT0.0
+  97:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_TIM0->MR1),				// MAT0.1
+  98:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_TIM1->MR0),				// MAT1.0
+  99:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_TIM1->MR1),				// MAT1.1
+ 100:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_TIM2->MR0),				// MAT2.0
+ 101:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_TIM2->MR1),				// MAT2.1
+ 102:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_TIM3->MR0),				// MAT3.0
+ 103:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		((uint32_t)&LPC_TIM3->MR1),				// MAT3.1
+ 104:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** };
+ 105:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** #endif
+ 106:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /**
+ 107:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @brief Lookup Table of GPDMA Channel Number matched with
+ 108:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * GPDMA channel pointer
+ 109:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  */
+ 110:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** const LPC_GPDMACH_TypeDef *pGPDMACh[8] = {
+ 111:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		LPC_GPDMACH0,	// GPDMA Channel 0
+ 112:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		LPC_GPDMACH1,	// GPDMA Channel 1
+ 113:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		LPC_GPDMACH2,	// GPDMA Channel 2
+ 114:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		LPC_GPDMACH3,	// GPDMA Channel 3
+ 115:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		LPC_GPDMACH4,	// GPDMA Channel 4
+ 116:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		LPC_GPDMACH5,	// GPDMA Channel 5
+ 117:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		LPC_GPDMACH6,	// GPDMA Channel 6
+ 118:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		LPC_GPDMACH7,	// GPDMA Channel 7
+ 119:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** };
+ 120:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /**
+ 121:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @brief Optimized Peripheral Source and Destination burst size
+ 122:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  */
+ 123:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** const uint8_t GPDMA_LUTPerBurst[] = {
+ 124:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_4,				// SSP0 Tx
+ 125:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_4,				// SSP0 Rx
+ 126:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_4,				// SSP1 Tx
+ 127:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_4,				// SSP1 Rx
+ 128:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_4,				// ADC
+ 129:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_32, 			// I2S channel 0
+ 130:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_32, 			// I2S channel 1
+ 131:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// DAC
+ 132:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// UART0 Tx
+ 133:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// UART0 Rx
+ 134:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// UART1 Tx
+ 135:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// UART1 Rx
+ 136:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// UART2 Tx
+ 137:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// UART2 Rx
+ 138:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// UART3 Tx
+ 139:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// UART3 Rx
+ 140:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// MAT0.0
+ 141:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// MAT0.1
+ 142:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// MAT1.0
+ 143:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// MAT1.1
+ 144:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// MAT2.0
+ 145:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// MAT2.1
+ 146:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// MAT3.0
+ 147:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_BSIZE_1,				// MAT3.1
+ 148:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** };
+ 149:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /**
+ 150:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @brief Optimized Peripheral Source and Destination transfer width
+ 151:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  */
+ 152:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** const uint8_t GPDMA_LUTPerWid[] = {
+ 153:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// SSP0 Tx
+ 154:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// SSP0 Rx
+ 155:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// SSP1 Tx
+ 156:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// SSP1 Rx
+ 157:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD,				// ADC
+ 158:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD, 				// I2S channel 0
+ 159:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD, 				// I2S channel 1
+ 160:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// DAC
+ 161:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// UART0 Tx
+ 162:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// UART0 Rx
+ 163:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// UART1 Tx
+ 164:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// UART1 Rx
+ 165:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// UART2 Tx
+ 166:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// UART2 Rx
+ 167:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// UART3 Tx
+ 168:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_BYTE,				// UART3 Rx
+ 169:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD,				// MAT0.0
+ 170:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD,				// MAT0.1
+ 171:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD,				// MAT1.0
+ 172:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD,				// MAT1.1
+ 173:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD,				// MAT2.0
+ 174:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD,				// MAT2.1
+ 175:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD,				// MAT3.0
+ 176:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		GPDMA_WIDTH_WORD,				// MAT3.1
+ 177:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** };
+ 178:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 179:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /** Interrupt Call-back function pointer data for each GPDMA channel */
+ 180:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** static fnGPDMACbs_Type *_apfnGPDMACbs[8] = {
+ 181:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		NULL, 	// GPDMA Call-back function pointer for Channel 0
+ 182:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		NULL, 	// GPDMA Call-back function pointer for Channel 1
+ 183:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		NULL, 	// GPDMA Call-back function pointer for Channel 2
+ 184:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		NULL, 	// GPDMA Call-back function pointer for Channel 3
+ 185:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		NULL, 	// GPDMA Call-back function pointer for Channel 4
+ 186:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		NULL, 	// GPDMA Call-back function pointer for Channel 5
+ 187:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		NULL, 	// GPDMA Call-back function pointer for Channel 6
+ 188:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		NULL, 	// GPDMA Call-back function pointer for Channel 7
+ 189:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** };
+ 190:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 191:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /**
+ 192:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @}
+ 193:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  */
+ 194:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 195:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /* Public Functions ----------------------------------------------------------- */
+ 196:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /** @addtogroup GPDMA_Public_Functions
+ 197:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @{
+ 198:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  */
+ 199:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 200:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /********************************************************************//**
+ 201:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @brief 		Initialize GPDMA controller
+ 202:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @param 		None
+ 203:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @return 		None
+ 204:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  *********************************************************************/
+ 205:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** void GPDMA_Init(void)
+ 206:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** {
+ 207:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	/* Enable GPDMA clock */
+ 208:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	CLKPWR_ConfigPPWR (CLKPWR_PCONP_PCGPDMA, ENABLE);
+ 209:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 210:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Reset all channel configuration register
+ 211:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMACH0->DMACCConfig = 0;
+ 212:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMACH1->DMACCConfig = 0;
+ 213:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMACH2->DMACCConfig = 0;
+ 214:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMACH3->DMACCConfig = 0;
+ 215:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMACH4->DMACCConfig = 0;
+ 216:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMACH5->DMACCConfig = 0;
+ 217:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMACH6->DMACCConfig = 0;
+ 218:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMACH7->DMACCConfig = 0;
+ 219:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 220:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	/* Clear all DMA interrupt and error flag */
+ 221:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMA->DMACIntTCClear = 0xFF;
+ 222:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMA->DMACIntErrClr = 0xFF;
+ 223:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** }
+ 224:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 225:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /********************************************************************//**
+ 226:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @brief 		Setup GPDMA channel peripheral according to the specified
+ 227:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  *               parameters in the GPDMAChannelConfig.
+ 228:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @param[in]	GPDMAChannelConfig Pointer to a GPDMA_CH_CFG_Type
+ 229:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * 									structure that contains the configuration
+ 230:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * 									information for the specified GPDMA channel peripheral.
+ 231:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @param[in]	pfnGPDMACbs			Pointer to a GPDMA interrupt call-back function
+ 232:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @return		ERROR if selected channel is enabled before
+ 233:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * 				or SUCCESS if channel is configured successfully
+ 234:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  *********************************************************************/
+ 235:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** Status GPDMA_Setup(GPDMA_Channel_CFG_Type *GPDMAChannelConfig, fnGPDMACbs_Type *pfnGPDMACbs)
+ 236:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** {
+  31              	tend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              	.LVL0:
+  34              		push	{r4, r5, r6, r7, lr}
+  35 0000 F0B5     	.LCFI0:
+  36              		.loc 1 236 0
+  37              		mov	r5, r0
+  38 0002 0546     		.loc 1 240 0
+ 237:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMACH_TypeDef *pDMAch;
+ 238:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	uint32_t tmp1, tmp2;
+ 239:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 240:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	if (LPC_GPDMA->DMACEnbldChns & (GPDMA_DMACEnbldChns_Ch(GPDMAChannelConfig->ChannelNum))) {
+  39              	 [r0, #0]
+  40 0004 0068     	.LVL1:
+  41              		movs	r2, #1
+  42 0006 0122     		lsls	r2, r2, r0
+  43 0008 8240     		ldr	r6, .L26
+  44 000a 6A4E     		ldr	r3, [r6, #28]
+  45 000c F369     		and	r3, r3, #255
+  46 000e 03F0FF03 		ands	r4, r3, r2
+  47 0012 13EA0204 		bne	.L2
+  48 0016 40F0CA80 		.loc 1 246 0
+ 241:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		// This channel is enabled, return ERROR, need to release this channel first
+ 242:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		return ERROR;
+ 243:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	}
+ 244:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 245:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Get Channel pointer
+ 246:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	pDMAch = (LPC_GPDMACH_TypeDef *) pGPDMACh[GPDMAChannelConfig->ChannelNum];
+  49              	L26+4
+  50 001a 674B     		ldr	r7, [r3, r0, lsl #2]
+  51 001c 53F82070 	.LVL2:
+  52              		.loc 1 249 0
+ 247:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 248:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Setup call back function for this channel
+ 249:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	_apfnGPDMACbs[GPDMAChannelConfig->ChannelNum] = pfnGPDMACbs;
+  53              		r3, .L26+8
+  54 0020 664B     		str	r1, [r3, r0, lsl #2]
+  55 0022 43F82010 		.loc 1 252 0
+ 250:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 251:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Reset the Interrupt status
+ 252:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMA->DMACIntTCClear = GPDMA_DMACIntTCClear_Ch(GPDMAChannelConfig->ChannelNum);
+  56              	d	r3, r2, #255
+  57 0026 02F0FF03 		str	r3, [r6, #8]
+  58 002a B360     		.loc 1 253 0
+ 253:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMA->DMACIntErrClr = GPDMA_DMACIntErrClr_Ch(GPDMAChannelConfig->ChannelNum);
+  59              	r	r3, [r6, #16]
+  60 002c 3361     		.loc 1 256 0
+ 254:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 255:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Clear DMA configure
+ 256:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	pDMAch->DMACCControl = 0x00;
+  61              	tr	r4, [r7, #12]
+  62 002e FC60     		.loc 1 257 0
+ 257:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	pDMAch->DMACCConfig = 0x00;
+  63              	tr	r4, [r7, #16]
+  64 0030 3C61     		.loc 1 260 0
+ 258:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 259:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	/* Assign Linker List Item value */
+ 260:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	pDMAch->DMACCLLI = GPDMAChannelConfig->DMALLI;
+  65              	dr	r3, [r5, #32]
+  66 0032 2B6A     		str	r3, [r7, #8]
+  67 0034 BB60     		.loc 1 263 0
+ 261:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 262:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	/* Set value to Channel Control Registers */
+ 263:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	switch (GPDMAChannelConfig->TransferType)
+  68              	r	r3, [r5, #20]
+  69 0036 6B69     		cmp	r3, #3
+  70 0038 032B     		bhi	.L2
+  71 003a 00F2B880 		tbb	[pc, r3]
+  72 003e DFE803F0 	.L8:
+  73              		.byte	(.L4-.L8)/2
+  74 0042 02       		.byte	(.L5-.L8)/2
+  75 0043 11       		.byte	(.L6-.L8)/2
+  76 0044 30       		.byte	(.L7-.L8)/2
+  77 0045 46       		.align	1
+  78              	.L4:
+  79              		.loc 1 268 0
+ 264:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	{
+ 265:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Memory to memory
+ 266:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	case GPDMA_TRANSFERTYPE_M2M:
+ 267:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		// Assign physical source and destination address
+ 268:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCSrcAddr = GPDMAChannelConfig->SrcMemAddr;
+  80              	, #12]
+  81 0046 EB68     		str	r3, [r7, #0]
+  82 0048 3B60     		.loc 1 269 0
+ 269:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCDestAddr = GPDMAChannelConfig->DstMemAddr;
+  83              	r	r3, [r5, #16]
+  84 004a 2B69     		str	r3, [r7, #4]
+  85 004c 7B60     		.loc 1 270 0
+ 270:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCControl
+  86              	r	r3, [r5, #4]
+  87 004e 6B68     		ldr	r2, [r5, #8]
+  88 0050 AA68     		lsls	r3, r3, #20
+  89 0052 1B05     		lsrs	r3, r3, #20
+  90 0054 1B0D     		orr	r3, r3, #-1946157056
+  91 0056 43F00C43 		and	r2, r2, #7
+  92 005a 02F00702 		orr	r3, r3, #147456
+  93 005e 43F41033 		b	.L24
+  94 0062 18E0     	.L5:
+  95              		.loc 1 283 0
+ 271:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				= GPDMA_DMACCxControl_TransferSize(GPDMAChannelConfig->TransferSize) \
+ 272:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_SBSize(GPDMA_BSIZE_32) \
+ 273:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_DBSize(GPDMA_BSIZE_32) \
+ 274:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_SWidth(GPDMAChannelConfig->TransferWidth) \
+ 275:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_DWidth(GPDMAChannelConfig->TransferWidth) \
+ 276:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_SI \
+ 277:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_DI \
+ 278:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_I;
+ 279:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		break;
+ 280:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Memory to peripheral
+ 281:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	case GPDMA_TRANSFERTYPE_M2P:
+ 282:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		// Assign physical source
+ 283:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCSrcAddr = GPDMAChannelConfig->SrcMemAddr;
+  96              	r5, #12]
+  97 0064 EB68     		str	r3, [r7, #0]
+  98 0066 3B60     		.loc 1 285 0
+ 284:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		// Assign peripheral destination address
+ 285:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCDestAddr = (uint32_t)GPDMA_LUTPerAddr[GPDMAChannelConfig->DstConn];
+  99              	r	r2, [r5, #28]
+ 100 0068 EA69     		ldr	r3, .L26+12
+ 101 006a 554B     		ldr	r3, [r3, r2, lsl #2]
+ 102 006c 53F82230 		str	r3, [r7, #4]
+ 103 0070 7B60     		.loc 1 286 0
+ 286:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCControl
+ 104              	r2, [r5, #28]
+ 105 0072 EA69     		ldr	r3, .L26+16
+ 106 0074 534B     		ldrb	r1, [r3, r2]	@ zero_extendqisi2
+ 107 0076 995C     	.LVL3:
+ 108              		ldr	r3, .L26+20
+ 109 0078 534B     		and	r1, r1, #7
+ 110 007a 01F00701 		ldrb	r2, [r3, r2]	@ zero_extendqisi2
+ 111 007e 9A5C     		ldr	r3, [r5, #4]
+ 112 0080 6B68     		and	r2, r2, #7
+ 113 0082 02F00702 		lsls	r3, r3, #20
+ 114 0086 1B05     		lsrs	r3, r3, #20
+ 115 0088 1B0D     		orr	r3, r3, #-2080374784
+ 116 008a 43F00443 	.L25:
+ 117              		orr	r3, r3, r1, lsl #12
+ 118 008e 43EA0133 		orr	r3, r3, r1, lsl #15
+ 119 0092 43EAC133 	.LVL4:
+ 120              	.L24:
+ 121              		orr	r3, r3, r2, lsl #18
+ 122 0096 43EA8243 		orr	r3, r3, r2, lsl #21
+ 123 009a 43EA4253 		str	r3, [r7, #12]
+ 124 009e FB60     		.loc 1 294 0
+ 287:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				= GPDMA_DMACCxControl_TransferSize((uint32_t)GPDMAChannelConfig->TransferSize) \
+ 288:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_SBSize((uint32_t)GPDMA_LUTPerBurst[GPDMAChannelConfig->DstConn]) \
+ 289:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_DBSize((uint32_t)GPDMA_LUTPerBurst[GPDMAChannelConfig->DstConn]) \
+ 290:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_SWidth((uint32_t)GPDMA_LUTPerWid[GPDMAChannelConfig->DstConn]) \
+ 291:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_DWidth((uint32_t)GPDMA_LUTPerWid[GPDMAChannelConfig->DstConn]) \
+ 292:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_SI \
+ 293:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_I;
+ 294:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		break;
+ 125              	98 0
+ 126 00a0 3CE0     		ldr	r2, [r5, #24]
+ 127              		ldr	r3, .L26+12
+ 295:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Peripheral to memory
+ 296:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	case GPDMA_TRANSFERTYPE_P2M:
+ 297:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		// Assign peripheral source address
+ 298:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCSrcAddr = (uint32_t)GPDMA_LUTPerAddr[GPDMAChannelConfig->SrcConn];
+ 128              	r	r3, [r3, r2, lsl #2]
+ 129 00a2 AA69     		str	r3, [r7, #0]
+ 130 00a4 464B     		.loc 1 300 0
+ 131 00a6 53F82230 		ldr	r3, [r5, #16]
+ 132 00aa 3B60     		str	r3, [r7, #4]
+ 299:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		// Assign memory destination address
+ 300:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCDestAddr = GPDMAChannelConfig->DstMemAddr;
+ 133              	 1 301 0
+ 134 00ac 2B69     		ldr	r2, [r5, #24]
+ 135 00ae 7B60     		ldr	r3, .L26+16
+ 301:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCControl
+ 136              	rb	r1, [r3, r2]	@ zero_extendqisi2
+ 137 00b0 AA69     	.LVL5:
+ 138 00b2 444B     		ldr	r3, .L26+20
+ 139 00b4 995C     		and	r1, r1, #7
+ 140              		ldrb	r2, [r3, r2]	@ zero_extendqisi2
+ 141 00b6 444B     		ldr	r3, [r5, #4]
+ 142 00b8 01F00701 		and	r2, r2, #7
+ 143 00bc 9A5C     		lsls	r3, r3, #20
+ 144 00be 6B68     		lsrs	r3, r3, #20
+ 145 00c0 02F00702 		orr	r3, r3, #-2013265920
+ 146 00c4 1B05     		b	.L25
+ 147 00c6 1B0D     	.LVL6:
+ 148 00c8 43F00843 	.L7:
+ 149 00cc DFE7     		.loc 1 313 0
+ 150              		ldr	r3, [r5, #24]
+ 151              		ldr	r2, .L26+12
+ 302:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				= GPDMA_DMACCxControl_TransferSize((uint32_t)GPDMAChannelConfig->TransferSize) \
+ 303:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_SBSize((uint32_t)GPDMA_LUTPerBurst[GPDMAChannelConfig->SrcConn]) \
+ 304:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_DBSize((uint32_t)GPDMA_LUTPerBurst[GPDMAChannelConfig->SrcConn]) \
+ 305:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_SWidth((uint32_t)GPDMA_LUTPerWid[GPDMAChannelConfig->SrcConn]) \
+ 306:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_DWidth((uint32_t)GPDMA_LUTPerWid[GPDMAChannelConfig->SrcConn]) \
+ 307:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_DI \
+ 308:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_I;
+ 309:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		break;
+ 310:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Peripheral to peripheral
+ 311:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	case GPDMA_TRANSFERTYPE_P2P:
+ 312:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		// Assign peripheral source address
+ 313:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCSrcAddr = (uint32_t)GPDMA_LUTPerAddr[GPDMAChannelConfig->SrcConn];
+ 152              	dr	r1, .L26+16
+ 153 00ce AB69     	.LVL7:
+ 154 00d0 3B4A     		.loc 1 313 0
+ 314:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		// Assign peripheral destination address
+ 315:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCDestAddr = (uint32_t)GPDMA_LUTPerAddr[GPDMAChannelConfig->DstConn];
+ 316:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCControl
+ 155              	r	r3, [r2, r3, lsl #2]
+ 156 00d2 3C49     		str	r3, [r7, #0]
+ 157              		.loc 1 315 0
+ 158              		ldr	r3, [r5, #28]
+ 159 00d4 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 160 00d8 3B60     		str	r3, [r7, #4]
+ 161              		.loc 1 316 0
+ 162 00da EB69     		ldr	r0, [r5, #24]
+ 163 00dc 52F82330 		ldr	r2, [r5, #4]
+ 164 00e0 7B60     		ldrb	r3, [r1, r0]	@ zero_extendqisi2
+ 165              		lsls	r2, r2, #20
+ 166 00e2 A869     		ldr	r4, [r5, #28]
+ 167 00e4 6A68     		lsrs	r2, r2, #20
+ 168 00e6 0B5C     		and	r3, r3, #7
+ 169 00e8 1205     		orr	r2, r2, #-2147483648
+ 170 00ea EC69     		orr	r2, r2, r3, lsl #12
+ 171 00ec 120D     		ldrb	r3, [r1, r4]	@ zero_extendqisi2
+ 172 00ee 03F00703 		ldr	r1, .L26+20
+ 173 00f2 42F00042 		and	r3, r3, #7
+ 174 00f6 42EA0332 		orr	r2, r2, r3, lsl #15
+ 175 00fa 0B5D     		ldrb	r3, [r1, r0]	@ zero_extendqisi2
+ 176 00fc 3249     		and	r3, r3, #7
+ 177 00fe 03F00703 		orr	r2, r2, r3, lsl #18
+ 178 0102 42EAC332 		ldrb	r3, [r1, r4]	@ zero_extendqisi2
+ 179 0106 0B5C     		and	r3, r3, #7
+ 180 0108 03F00703 		orr	r2, r2, r3, lsl #21
+ 181 010c 42EA8342 		str	r2, [r7, #12]
+ 182 0110 0B5D     	.LVL8:
+ 183 0112 03F00703 	.L9:
+ 184 0116 42EA4352 		.loc 1 331 0
+ 185 011a FA60     		ldr	r6, [r5, #24]
+ 186              	.LVL9:
+ 187              		cmp	r6, #15
+ 317:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				= GPDMA_DMACCxControl_TransferSize((uint32_t)GPDMAChannelConfig->TransferSize) \
+ 318:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_SBSize((uint32_t)GPDMA_LUTPerBurst[GPDMAChannelConfig->SrcConn]) \
+ 319:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_DBSize((uint32_t)GPDMA_LUTPerBurst[GPDMAChannelConfig->DstConn]) \
+ 320:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_SWidth((uint32_t)GPDMA_LUTPerWid[GPDMAChannelConfig->SrcConn]) \
+ 321:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_DWidth((uint32_t)GPDMA_LUTPerWid[GPDMAChannelConfig->DstConn]) \
+ 322:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 						| GPDMA_DMACCxControl_I;
+ 323:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		break;
+ 324:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Do not support any more transfer type, return ERROR
+ 325:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	default:
+ 326:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		return ERROR;
+ 327:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		break;
+ 328:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	}
+ 329:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 330:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	/* Re-Configure DMA Request Select for source peripheral */
+ 331:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	if (GPDMAChannelConfig->SrcConn > 15)
+ 188              	r6, #16
+ 189 011c AE69     		movs	r3, #1
+ 190              		lsls	r3, r3, r2
+ 191 011e 0F2E     		ldr	r1, .L26+24
+ 192 0120 08D9     	.LVL10:
+ 332:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	{
+ 333:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		DMAREQSEL |= (1<<(GPDMAChannelConfig->SrcConn - 16));
+ 193              	r0, [r1, #0]
+ 194 0122 A6F11002 		orrs	r3, r3, r0
+ 195 0126 0123     		str	r3, [r1, #0]
+ 196 0128 9340     		b	.L12
+ 197 012a 2849     	.LVL11:
+ 198              	.L10:
+ 199 012c 0868     		.loc 1 335 0
+ 200 012e 0343     		sub	r1, r6, #8
+ 201 0130 0B60     	.LVL12:
+ 202 0132 08E0     		movs	r3, #1
+ 203              		lsls	r3, r3, r1
+ 204              		ldr	r0, .L26+24
+ 334:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	} else {
+ 335:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		DMAREQSEL &= ~(1<<(GPDMAChannelConfig->SrcConn - 8));
+ 205              	, #0]
+ 206 0134 A6F10801 		bic	r2, r2, r3
+ 207              		str	r2, [r0, #0]
+ 208 0138 0123     	.L12:
+ 209 013a 8B40     		.loc 1 339 0
+ 210 013c 2348     		ldr	r4, [r5, #28]
+ 211 013e 0268     	.LVL13:
+ 212 0140 22EA0302 		cmp	r4, #15
+ 213 0144 0260     		bls	.L13
+ 214              		.loc 1 341 0
+ 336:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	}
+ 337:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 338:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	/* Re-Configure DMA Request Select for Destination peripheral */
+ 339:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	if (GPDMAChannelConfig->DstConn > 15)
+ 215              	4, #16
+ 216 0146 EC69     		movs	r3, #1
+ 217              		lsls	r3, r3, r2
+ 218 0148 0F2C     		ldr	r1, .L26+24
+ 219 014a 08D9     		ldr	r0, [r1, #0]
+ 340:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	{
+ 341:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		DMAREQSEL |= (1<<(GPDMAChannelConfig->DstConn - 16));
+ 220              		r3, r3, r0
+ 221 014c A4F11002 		str	r3, [r1, #0]
+ 222 0150 0123     		b	.L15
+ 223 0152 9340     	.L13:
+ 224 0154 1D49     		.loc 1 343 0
+ 225 0156 0868     		sub	r1, r4, #8
+ 226 0158 0343     		movs	r3, #1
+ 227 015a 0B60     		lsls	r3, r3, r1
+ 228 015c 08E0     		ldr	r0, .L26+24
+ 229              		ldr	r2, [r0, #0]
+ 342:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	} else {
+ 343:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		DMAREQSEL &= ~(1<<(GPDMAChannelConfig->DstConn - 8));
+ 230              	2, r3
+ 231 015e A4F10801 		str	r2, [r0, #0]
+ 232 0162 0123     	.L15:
+ 233 0164 8B40     		.loc 1 347 0
+ 234 0166 1948     		ldr	r3, .L26
+ 235 0168 0268     		movs	r2, #1
+ 236 016a 22EA0302 		str	r2, [r3, #48]
+ 237 016e 0260     	.L16:
+ 238              		.loc 1 348 0
+ 344:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	}
+ 345:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 346:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	/* Enable DMA channels, little endian */
+ 347:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMA->DMACConfig = GPDMA_DMACConfig_E;
+ 239              	.L26
+ 240 0170 104B     		ldr	r3, [r3, #48]
+ 241 0172 0122     		tst	r3, #1
+ 242 0174 1A63     		beq	.L16
+ 243              		.loc 1 357 0
+ 348:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	while (!(LPC_GPDMA->DMACConfig & GPDMA_DMACConfig_E));
+ 244              	r3, [r5, #20]
+ 245 0176 0F4B     		.loc 1 352 0
+ 246 0178 1B6B     		cmp	r6, #15
+ 247 017a 13F0010F 		it	hi
+ 248 017e FAD0     		subhi	r6, r6, #8
+ 349:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 350:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Calculate absolute value for Connection number
+ 351:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	tmp1 = GPDMAChannelConfig->SrcConn;
+ 352:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	tmp1 = ((tmp1 > 15) ? (tmp1 - 8) : tmp1);
+ 353:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	tmp2 = GPDMAChannelConfig->DstConn;
+ 354:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	tmp2 = ((tmp2 > 15) ? (tmp2 - 8) : tmp2);
+ 355:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 356:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Configure DMA Channel, enable Error Counter and Terminate counter
+ 357:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	pDMAch->DMACCConfig = GPDMA_DMACCxConfig_IE | GPDMA_DMACCxConfig_ITC /*| GPDMA_DMACCxConfig_E*/ \
+ 249              	 1 357 0
+ 250 0180 6B69     		and	r3, r3, #7
+ 251              		.loc 1 354 0
+ 252 0182 0F2E     		cmp	r4, #15
+ 253 0184 88BF     		it	hi
+ 254 0186 083E     		subhi	r4, r4, #8
+ 255              		.loc 1 357 0
+ 256 0188 03F00703 		lsls	r3, r3, #11
+ 257              		and	r2, r6, #31
+ 258 018c 0F2C     		orr	r3, r3, #49152
+ 259 018e 88BF     		orr	r3, r3, r2, lsl #1
+ 260 0190 083C     		and	r2, r4, #31
+ 261              		orr	r3, r3, r2, lsl #6
+ 262 0192 DB02     		str	r3, [r7, #16]
+ 263 0194 06F01F02 		movs	r0, #1
+ 264 0198 43F44043 		.loc 1 362 0
+ 265 019c 43EA4203 		b	.L22
+ 266 01a0 04F01F02 	.LVL14:
+ 267 01a4 43EA8213 	.L2:
+ 268 01a8 3B61     		movs	r0, #0
+ 269 01aa 0120     	.LVL15:
+ 358:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		| GPDMA_DMACCxConfig_TransferType((uint32_t)GPDMAChannelConfig->TransferType) \
+ 359:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		| GPDMA_DMACCxConfig_SrcPeripheral(tmp1) \
+ 360:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		| GPDMA_DMACCxConfig_DestPeripheral(tmp2);
+ 361:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 362:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	return SUCCESS;
+ 270              	pop	{r4, r5, r6, r7, pc}
+ 271 01ac 00E0     	.L27:
+ 272              		.align	2
+ 273              	.L26:
+ 274 01ae 0020     		.word	1342193664
+ 275              		.word	.LANCHOR0
+ 276              		.word	.LANCHOR1
+ 363:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** }
+ 277              	.LANCHOR2
+ 278 01b0 F0BD     		.word	.LANCHOR3
+ 279              		.word	.LANCHOR4
+ 280 01b2 C046     		.word	1073791428
+ 281              	.LFE32:
+ 283 01b8 00000000 		.section	.text.GPDMA_ChannelCmd,"ax",%progbits
+ 284 01bc 00000000 		.align	2
+ 285 01c0 00000000 		.global	GPDMA_ChannelCmd
+ 286 01c4 00000000 		.thumb
+ 287 01c8 00000000 		.thumb_func
+ 289              	GPDMA_ChannelCmd:
+ 290              	.LFB33:
+ 291              		.loc 1 375 0
+ 292              		@ args = 0, pretend = 0, frame = 0
+ 293              		@ frame_needed = 0, uses_anonymous_args = 0
+ 294              		@ link register save eliminated.
+ 295              	.LVL16:
+ 296              		.loc 1 379 0
+ 297              		ldr	r3, .L34
+ 298              		.loc 1 381 0
+ 364:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 365:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 366:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /*********************************************************************//**
+ 367:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @brief		Enable/Disable DMA channel
+ 368:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @param[in]	channelNum	GPDMA channel, should be in range from 0 to 7
+ 369:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @param[in]	NewState	New State of this command, should be:
+ 370:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * 					- ENABLE.
+ 371:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * 					- DISABLE.
+ 372:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @return		None
+ 373:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  **********************************************************************/
+ 374:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** void GPDMA_ChannelCmd(uint8_t channelNum, FunctionalState NewState)
+ 375:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** {
+ 299              	9 0
+ 300              		ldr	r2, [r3, r0, lsl #2]
+ 301              	.LVL17:
+ 302              		.loc 1 375 0
+ 303              		@ lr needed for prologue
+ 376:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	LPC_GPDMACH_TypeDef * pDMAch;
+ 377:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 378:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Get Channel pointer
+ 379:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	pDMAch = (LPC_GPDMACH_TypeDef *) pGPDMACh[channelNum];
+ 304              	 1 382 0
+ 305 0000 064B     		itete	eq
+ 380:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 381:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	if (NewState == ENABLE) {
+ 306              	dreq	r3, [r2, #16]
+ 307 0002 0129     		.loc 1 384 0
+ 308              		ldrne	r3, [r2, #16]
+ 309 0004 53F82020 		.loc 1 382 0
+ 310              		orreq	r3, r3, #1
+ 311              		.loc 1 384 0
+ 312              		bicne	r3, r3, #1
+ 382:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCConfig |= GPDMA_DMACCxConfig_E;
+ 313              	, [r2, #16]
+ 314 0008 0BBF     		.loc 1 386 0
+ 315 000a 1369     		bx	lr
+ 383:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	} else {
+ 384:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		pDMAch->DMACCConfig &= ~GPDMA_DMACCxConfig_E;
+ 316              	5:
+ 317 000c 1369     		.align	2
+ 318              	.L34:
+ 319 000e 43F00103 		.word	.LANCHOR0
+ 320              	.LFE33:
+ 322 0016 1361     		.section	.text.GPDMA_IntHandler,"ax",%progbits
+ 385:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	}
+ 386:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** }
+ 323              		2
+ 324 0018 7047     		.global	GPDMA_IntHandler
+ 325              		.thumb
+ 326 001a C046     		.thumb_func
+ 328 001c 00000000 	GPDMA_IntHandler:
+ 329              	.LFB34:
+ 330              		.loc 1 396 0
+ 331              		@ args = 0, pretend = 0, frame = 0
+ 332              		@ frame_needed = 0, uses_anonymous_args = 0
+ 333              		push	{r4, r5, r6, lr}
+ 334              	.LCFI1:
+ 335              		.loc 1 396 0
+ 336              		movs	r5, #0
+ 337              	.LVL18:
+ 338              		mov	r6, r5
+ 387:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 
+ 388:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** /*********************************************************************//**
+ 389:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @brief		Standard GPDMA interrupt handler, this function will check
+ 390:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * 				all interrupt status of GPDMA channels, then execute the call
+ 391:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * 				back function id they're already installed
+ 392:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @param[in]	None
+ 393:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  * @return		None
+ 394:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c ****  **********************************************************************/
+ 395:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** void GPDMA_IntHandler(void)
+ 396:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** {
+ 339              	0 0
+ 340              		movs	r0, #1
+ 341              		lsls	r4, r0, r5
+ 342 0000 70B5     		ldr	r2, .L47
+ 343              		ldr	r3, [r2, #0]
+ 344              		and	r3, r3, #255
+ 345 0002 0025     		tst	r3, r4
+ 346              		beq	.L38
+ 347 0004 2E46     		.loc 1 402 0
+ 348              		ldr	r3, [r2, #4]
+ 397:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	uint32_t tmp;
+ 398:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	// Scan interrupt pending
+ 399:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	for (tmp = 0; tmp <= 7; tmp++) {
+ 400:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		if (LPC_GPDMA->DMACIntStat & GPDMA_DMACIntStat_Ch(tmp)) {
+ 349              	3, #255
+ 350 0006 0120     		tst	r3, r4
+ 351 0008 10FA05F4 		beq	.L40
+ 352 000c 124A     		.loc 1 404 0
+ 353 000e 1368     		and	r3, r4, #255
+ 354 0010 03F0FF03 		str	r3, [r2, #8]
+ 355 0014 2342     		.loc 1 406 0
+ 356 0016 19D0     		ldr	r3, .L47+4
+ 401:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 			// Check counter terminal status
+ 402:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 			if (LPC_GPDMA->DMACIntTCStat & GPDMA_DMACIntTCStat_Ch(tmp)) {
+ 357              	 [r6, r3]
+ 358 0018 5368     		cbz	r3, .L40
+ 359 001a 03F0FF03 		.loc 1 407 0
+ 360 001e 2342     		blx	r3
+ 361 0020 06D0     	.L40:
+ 403:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				// Clear terminate counter Interrupt pending
+ 404:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				LPC_GPDMA->DMACIntTCClear = GPDMA_DMACIntTCClear_Ch(tmp);
+ 362              	 1 411 0
+ 363 0022 04F0FF03 		ldr	r2, .L47
+ 364 0026 9360     		ldr	r3, [r2, #12]
+ 405:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				// Execute call-back function if it is already installed
+ 406:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				if(_apfnGPDMACbs[tmp] != NULL) {
+ 365              	d	r3, r3, #255
+ 366 0028 0C4B     		tst	r3, r4
+ 367 002a F358     		beq	.L38
+ 368 002c 03B1     		.loc 1 413 0
+ 407:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 					_apfnGPDMACbs[tmp](GPDMA_STAT_INTTC);
+ 369              		r3, r4, #255
+ 370 002e 9847     		str	r3, [r2, #16]
+ 371              		.loc 1 415 0
+ 408:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				}
+ 409:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 			}
+ 410:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 			// Check error terminal status
+ 411:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 			if (LPC_GPDMA->DMACIntErrStat & GPDMA_DMACIntErrStat_Ch(tmp)) {
+ 372              	r	r3, .L47+4
+ 373 0030 094A     		ldr	r3, [r6, r3]
+ 374 0032 D368     		cbz	r3, .L38
+ 375 0034 03F0FF03 		.loc 1 416 0
+ 376 0038 2342     		movs	r0, #2
+ 377 003a 07D0     		blx	r3
+ 412:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				// Clear error counter Interrupt pending
+ 413:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				LPC_GPDMA->DMACIntErrClr = GPDMA_DMACIntErrClr_Ch(tmp);
+ 378              		.loc 1 399 0
+ 379 003c 04F0FF03 		adds	r5, r5, #1
+ 380 0040 1361     		adds	r6, r6, #4
+ 414:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				// Execute call-back function if it is already installed
+ 415:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				if(_apfnGPDMACbs[tmp] != NULL) {
+ 381              	p	r5, #8
+ 382 0042 064B     		bne	.L37
+ 383 0044 F358     		.loc 1 421 0
+ 384 0046 0BB1     		pop	{r4, r5, r6, pc}
+ 416:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 					_apfnGPDMACbs[tmp](GPDMA_STAT_INTERR);
+ 385              	:
+ 386 0048 0220     		.align	2
+ 387 004a 9847     	.L47:
+ 388              		.word	1342193664
+ 389              		.word	.LANCHOR1
+ 390 004c 0135     	.LFE34:
+ 392 0050 082D     		.section	.text.GPDMA_Init,"ax",%progbits
+ 393 0052 D8D1     		.align	2
+ 417:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 				}
+ 418:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 			}
+ 419:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 		}
+ 420:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** 	}
+ 421:Libraries/NXP/Drivers/source/lpc17xx_gpdma.c **** }
+ 394              	GPDMA_Init
+ 395 0054 70BD     		.thumb
+ 396              		.thumb_func
+ 398              	GPDMA_Init:
+ 399 0058 00400050 	.LFB31:
+ 400 005c 00000000 		.loc 1 206 0
+ 401              		@ args = 0, pretend = 0, frame = 0
+ 402              		@ frame_needed = 0, uses_anonymous_args = 0
+ 403              		push	{r4, lr}
+ 404              	.LCFI2:
+ 405              		.loc 1 208 0
+ 406              		mov	r0, #536870912
+ 407              		movs	r1, #1
+ 408              		bl	CLKPWR_ConfigPPWR
+ 409              		.loc 1 211 0
+ 410              		ldr	r3, .L51
+ 411              		movs	r2, #0
+ 412              		str	r2, [r3, #16]
+ 413              		.loc 1 212 0
+ 414 0000 10B5     		adds	r3, r3, #32
+ 415              		str	r2, [r3, #16]
+ 416              		.loc 1 213 0
+ 417 0002 4FF00050 		adds	r3, r3, #32
+ 418 0006 0121     		str	r2, [r3, #16]
+ 419 0008 FFF7FEFF 		.loc 1 214 0
+ 420              		adds	r3, r3, #32
+ 421 000c 0A4B     		str	r2, [r3, #16]
+ 422 000e 0022     		.loc 1 215 0
+ 423 0010 1A61     		adds	r3, r3, #32
+ 424              		str	r2, [r3, #16]
+ 425 0012 2033     		.loc 1 216 0
+ 426 0014 1A61     		adds	r3, r3, #32
+ 427              		str	r2, [r3, #16]
+ 428 0016 2033     		.loc 1 217 0
+ 429 0018 1A61     		adds	r3, r3, #32
+ 430              		str	r2, [r3, #16]
+ 431 001a 2033     		.loc 1 218 0
+ 432 001c 1A61     		adds	r3, r3, #32
+ 433              		str	r2, [r3, #16]
+ 434 001e 2033     		.loc 1 221 0
+ 435 0020 1A61     		ldr	r2, .L51+4
+ 436              		movs	r3, #255
+ 437 0022 2033     		str	r3, [r2, #8]
+ 438 0024 1A61     		.loc 1 222 0
+ 439              		str	r3, [r2, #16]
+ 440 0026 2033     		.loc 1 223 0
+ 441 0028 1A61     		pop	{r4, pc}
+ 442              	.L52:
+ 443 002a 2033     		.align	2
+ 444 002c 1A61     	.L51:
+ 445              		.word	1342193920
+ 446 002e 034A     		.word	1342193664
+ 447 0030 FF23     	.LFE31:
+ 449              		.global	GPDMA_LUTPerAddr
+ 450 0034 1361     		.global	pGPDMACh
+ 451              		.global	GPDMA_LUTPerBurst
+ 452 0036 10BD     		.global	GPDMA_LUTPerWid
+ 453              		.section	.data.pGPDMACh,"aw",%progbits
+ 454              		.align	2
+ 455              		.set	.LANCHOR0,. + 0
+ 458              	pGPDMACh:
+ 459              		.word	1342193920
+ 460              		.word	1342193952
+ 461              		.word	1342193984
+ 462              		.word	1342194016
+ 463              		.word	1342194048
+ 464              		.word	1342194080
+ 465              		.word	1342194112
+ 466              		.word	1342194144
+ 467              		.section	.rodata.GPDMA_LUTPerAddr,"a",%progbits
+ 468              		.align	2
+ 469              		.set	.LANCHOR2,. + 0
+ 472 0008 40410050 	GPDMA_LUTPerAddr:
+ 473 000c 60410050 		.word	1074298888
+ 474 0010 80410050 		.word	1074298888
+ 475 0014 A0410050 		.word	1073938440
+ 476 0018 C0410050 		.word	1073938440
+ 477 001c E0410050 		.word	1073954820
+ 478              		.word	1074429960
+ 479              		.word	1074429964
+ 480              		.word	1074315264
+ 481              		.word	1073790976
+ 482              		.word	1073790976
+ 483              		.word	1073807360
+ 484 0000 08800840 		.word	1073807360
+ 485 0004 08800840 		.word	1074364416
+ 486 0008 08000340 		.word	1074364416
+ 487 000c 08000340 		.word	1074380800
+ 488 0010 04400340 		.word	1074380800
+ 489 0014 08800A40 		.word	1073758232
+ 490 0018 0C800A40 		.word	1073758236
+ 491 001c 00C00840 		.word	1073774616
+ 492 0020 00C00040 		.word	1073774620
+ 493 0024 00C00040 		.word	1074331672
+ 494 0028 00000140 		.word	1074331676
+ 495 002c 00000140 		.word	1074348056
+ 496 0030 00800940 		.word	1074348060
+ 497 0034 00800940 		.section	.rodata.GPDMA_LUTPerWid,"a",%progbits
+ 498 0038 00C00940 		.set	.LANCHOR4,. + 0
+ 501 0044 1C400040 	GPDMA_LUTPerWid:
+ 502 0048 18800040 		.byte	0
+ 503 004c 1C800040 		.byte	0
+ 504 0050 18000940 		.byte	0
+ 505 0054 1C000940 		.byte	0
+ 506 0058 18400940 		.byte	2
+ 507 005c 1C400940 		.byte	2
+ 508              		.byte	2
+ 509              		.byte	0
+ 510              		.byte	0
+ 511              		.byte	0
+ 512              		.byte	0
+ 513 0000 00       		.byte	0
+ 514 0001 00       		.byte	0
+ 515 0002 00       		.byte	0
+ 516 0003 00       		.byte	0
+ 517 0004 02       		.byte	0
+ 518 0005 02       		.byte	2
+ 519 0006 02       		.byte	2
+ 520 0007 00       		.byte	2
+ 521 0008 00       		.byte	2
+ 522 0009 00       		.byte	2
+ 523 000a 00       		.byte	2
+ 524 000b 00       		.byte	2
+ 525 000c 00       		.byte	2
+ 526 000d 00       		.section	.bss._apfnGPDMACbs,"aw",%nobits
+ 527 000e 00       		.align	2
+ 528 000f 00       		.set	.LANCHOR1,. + 0
+ 531 0012 02       	_apfnGPDMACbs:
+ 532 0013 02       		.space	32
+ 533 0014 02       		.section	.rodata.GPDMA_LUTPerBurst,"a",%progbits
+ 534 0015 02       		.set	.LANCHOR3,. + 0
+ 537              	GPDMA_LUTPerBurst:
+ 538              		.byte	1
+ 539              		.byte	1
+ 540              		.byte	1
+ 541              		.byte	1
+ 542              		.byte	1
+ 543 0000 00000000 		.byte	4
+ 543      00000000 
+ 543      00000000 
+ 543      00000000 
+ 543      00000000 
+ 544              		.byte	4
+ 545              		.byte	0
+ 546              		.byte	0
+ 547              		.byte	0
+ 548              		.byte	0
+ 549 0000 01       		.byte	0
+ 550 0001 01       		.byte	0
+ 551 0002 01       		.byte	0
+ 552 0003 01       		.byte	0
+ 553 0004 01       		.byte	0
+ 554 0005 04       		.byte	0
+ 555 0006 04       		.byte	0
+ 556 0007 00       		.byte	0
+ 557 0008 00       		.byte	0
+ 558 0009 00       		.byte	0
+ 559 000a 00       		.byte	0
+ 560 000b 00       		.byte	0
+ 561 000c 00       		.byte	0
+ 562 000d 00       		.section	.debug_frame,"",%progbits
+ 563 000e 00       	.Lframe0:
+ 564 000f 00       		.4byte	.LECIE0-.LSCIE0
+ 565 0010 00       	.LSCIE0:
+ 566 0011 00       		.4byte	0xffffffff
+ 567 0012 00       		.byte	0x1
+ 568 0013 00       		.ascii	"\000"
+ 569 0014 00       		.uleb128 0x1
+ 570 0015 00       		.sleb128 -4
+ 571 0016 00       		.byte	0xe
+ 572 0017 00       		.byte	0xc
+ 655              		.byte	0x7d
+DEFINED SYMBOLS
+                            *ABS*:00000000 lpc17xx_gpdma.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:28     .text.GPDMA_Setup:00000000 GPDMA_Setup
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:25     .text.GPDMA_Setup:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:74     .text.GPDMA_Setup:00000042 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:81     .text.GPDMA_Setup:00000046 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:282    .text.GPDMA_Setup:000001b4 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:297    .text.GPDMA_ChannelCmd:00000000 GPDMA_ChannelCmd
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:294    .text.GPDMA_ChannelCmd:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:328    .text.GPDMA_ChannelCmd:0000001c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:337    .text.GPDMA_IntHandler:00000000 GPDMA_IntHandler
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:334    .text.GPDMA_IntHandler:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:399    .text.GPDMA_IntHandler:00000058 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:409    .text.GPDMA_Init:00000000 GPDMA_Init
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:406    .text.GPDMA_Init:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:456    .text.GPDMA_Init:00000038 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:483    .rodata.GPDMA_LUTPerAddr:00000000 GPDMA_LUTPerAddr
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:469    .data.pGPDMACh:00000000 pGPDMACh
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:548    .rodata.GPDMA_LUTPerBurst:00000000 GPDMA_LUTPerBurst
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:512    .rodata.GPDMA_LUTPerWid:00000000 GPDMA_LUTPerWid
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:470    .data.pGPDMACh:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:484    .rodata.GPDMA_LUTPerAddr:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:513    .rodata.GPDMA_LUTPerWid:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:542    .bss._apfnGPDMACbs:00000000 _apfnGPDMACbs
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:549    .rodata.GPDMA_LUTPerBurst:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccMVcaaa.s:659    .debug_loc:00000000 $d
+
+UNDEFINED SYMBOLS
+CLKPWR_ConfigPPWR

@@ -1,0 +1,2221 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"lpc17xx_ssp.c"
+  21              	.Ltext0:
+  22              		.section	.text.SSP_getNum,"ax",%progbits
+  23              		.align	2
+  24              		.thumb
+  25              		.thumb_func
+  27              	SSP_getNum:
+  28              	.LFB31:
+  29              		.file 1 "Libraries/NXP/Drivers/source/lpc17xx_ssp.c"
+   1:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /**
+   2:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @file	: lpc17xx_ssp.c
+   3:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief	: Contains all functions support for SSP firmware library on LPC17xx
+   4:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @version	: 1.0
+   5:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @date	: 9. April. 2009
+   6:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @author	: HieuNguyen
+   7:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **************************************************************************
+   8:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * Software that is described herein is for illustrative purposes only
+   9:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * which provides customers with programming information regarding the
+  10:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * products. This software is supplied "AS IS" without any warranties.
+  11:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * NXP Semiconductors assumes no responsibility or liability for the
+  12:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * use of the software, conveys no license or title under any patent,
+  13:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * copyright, or mask work right to the product. NXP Semiconductors
+  14:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * reserves the right to make changes in the software without
+  15:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * notification. NXP Semiconductors also make no representation or
+  16:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * warranty that such application will be suitable for the specified
+  17:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * use without further testing or modification.
+  18:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+  19:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  20:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /* Peripheral group ----------------------------------------------------------- */
+  21:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /** @addtogroup SSP
+  22:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @{
+  23:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  */
+  24:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  25:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /* Includes ------------------------------------------------------------------- */
+  26:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** #include "lpc17xx_ssp.h"
+  27:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** #include "lpc17xx_clkpwr.h"
+  28:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  29:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  30:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /* If this source file built with example, the LPC17xx FW library configuration
+  31:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * file in each example directory ("lpc17xx_libcfg.h") must be included,
+  32:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * otherwise the default FW library configuration file must be included instead
+  33:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  */
+  34:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** #ifdef __BUILD_WITH_EXAMPLE__
+  35:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** #include "lpc17xx_libcfg.h"
+  36:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** #else
+  37:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** #include "lpc17xx_libcfg_default.h"
+  38:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** #endif /* __BUILD_WITH_EXAMPLE__ */
+  39:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  40:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  41:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** #ifdef _SSP
+  42:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  43:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /* Private Types -------------------------------------------------------------- */
+  44:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /** @defgroup SSP_Private_Types
+  45:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @{
+  46:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  */
+  47:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  48:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /** @brief SSP device configuration structure type */
+  49:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** typedef struct
+  50:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+  51:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	int32_t 	dataword;				/* Current data word: 0 - 8 bit; 1 - 16 bit */
+  52:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	uint32_t    txrx_setup; 			/* Transmission setup */
+  53:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	void		(*inthandler)(LPC_SSP_TypeDef *SSPx);   	/* Transmission interrupt handler */
+  54:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** } SSP_CFG_T;
+  55:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  56:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /**
+  57:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @}
+  58:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  */
+  59:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  60:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /* Private Variables ---------------------------------------------------------- */
+  61:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /* SSP configuration data */
+  62:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** static SSP_CFG_T sspdat[2];
+  63:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  64:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  65:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /* Private Functions ---------------------------------------------------------- */
+  66:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /** @defgroup SSP_Private_Functions
+  67:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @{
+  68:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  */
+  69:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  70:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /**
+  71:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief Convert from SSP peripheral to number
+  72:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  */
+  73:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** static int32_t SSP_getNum(LPC_SSP_TypeDef *SSPx){
+  30              	tend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33              	.LVL0:
+  34              		.loc 1 74 0
+  74:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if (SSPx == LPC_SSP0) {
+  35              	r3, .L8
+  36 0000 054B     		.loc 1 73 0
+  37              		@ lr needed for prologue
+  38              		.loc 1 74 0
+  39              		cmp	r0, r3
+  40 0002 9842     		bne	.L2
+  41 0004 01D1     		movs	r0, #0
+  42 0006 0020     	.LVL1:
+  43              		b	.L4
+  44 0008 05E0     	.LVL2:
+  45              	.L2:
+  46              		.loc 1 76 0
+  75:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		return (0);
+  76:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	} else if (SSPx == LPC_SSP1) {
+  47              	+4
+  48 000a 044B     		cmp	r0, r3
+  49 000c 9842     		ite	ne
+  50 000e 14BF     		movne	r0, #-1
+  51 0010 4FF0FF30 		moveq	r0, #1
+  52 0014 0120     	.LVL3:
+  53              	.L4:
+  54              		.loc 1 80 0
+  77:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		return (1);
+  78:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+  79:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	return (-1);
+  80:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+  55              	L9:
+  56 0016 7047     		.align	2
+  57              	.L8:
+  58              		.word	1074298880
+  59              		.word	1073938432
+  60 0018 00800840 	.LFE31:
+  62              		.section	.text.SSP_ConfigStructInit,"ax",%progbits
+  63              		.align	2
+  64              		.global	SSP_ConfigStructInit
+  65              		.thumb
+  66              		.thumb_func
+  68              	SSP_ConfigStructInit:
+  69              	.LFB36:
+  70              		.loc 1 354 0
+  71              		@ args = 0, pretend = 0, frame = 0
+  81:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  82:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  83:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+  84:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief 		Standard Private SSP Interrupt handler
+  85:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param		SSPx: SSP peripheral definition, should be
+  86:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 					  SSP0 or SSP1.
+  87:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return 		None
+  88:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  ***********************************************************************/
+  89:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_IntHandler(LPC_SSP_TypeDef *SSPx)
+  90:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+  91:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSP_DATA_SETUP_Type *xf_setup;
+  92:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     uint16_t tmp;
+  93:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     int32_t sspnum;
+  94:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  95:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     // Disable interrupt
+  96:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     SSPx->IMSC = 0;
+  97:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+  98:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     sspnum = SSP_getNum(SSPx);
+  99:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     xf_setup = (SSP_DATA_SETUP_Type *)sspdat[sspnum].txrx_setup;
+ 100:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 101:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     // save status
+ 102:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     tmp = SSPx->RIS;
+ 103:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     xf_setup->status = tmp;
+ 104:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 105:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     // Check overrun error
+ 106:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     if (tmp & SSP_RIS_ROR){
+ 107:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	// Clear interrupt
+ 108:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	SSPx->ICR = SSP_RIS_ROR;
+ 109:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	// update status
+ 110:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	xf_setup->status |= SSP_STAT_ERROR;
+ 111:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	// Callback
+ 112:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	if (xf_setup->callback != NULL){
+ 113:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     		xf_setup->callback();
+ 114:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	}
+ 115:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	return;
+ 116:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     }
+ 117:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 118:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     if ((xf_setup->tx_cnt != xf_setup->length) || (xf_setup->rx_cnt != xf_setup->length)){
+ 119:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	/* check if RX FIFO contains data */
+ 120:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		while ((SSPx->SR & SSP_SR_RNE) && (xf_setup->rx_cnt != xf_setup->length)){
+ 121:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Read data from SSP data
+ 122:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			tmp = SSP_ReceiveData(SSPx);
+ 123:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 124:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Store data to destination
+ 125:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			if (xf_setup->rx_data != NULL)
+ 126:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			{
+ 127:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (sspdat[sspnum].dataword == 0){
+ 128:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					*(uint8_t *)((uint32_t)xf_setup->rx_data + xf_setup->rx_cnt) = (uint8_t) tmp;
+ 129:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				} else {
+ 130:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					*(uint16_t *)((uint32_t)xf_setup->rx_data + xf_setup->rx_cnt) = (uint16_t) tmp;
+ 131:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 132:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 133:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Increase counter
+ 134:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			if (sspdat[sspnum].dataword == 0){
+ 135:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				xf_setup->rx_cnt++;
+ 136:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			} else {
+ 137:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				xf_setup->rx_cnt += 2;
+ 138:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 139:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		}
+ 140:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 141:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		while ((SSPx->SR & SSP_SR_TNF) && (xf_setup->tx_cnt != xf_setup->length)){
+ 142:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Write data to buffer
+ 143:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			if(xf_setup->tx_data == NULL){
+ 144:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (sspdat[sspnum].dataword == 0){
+ 145:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					SSP_SendData(SSPx, 0xFF);
+ 146:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					xf_setup->tx_cnt++;
+ 147:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				} else {
+ 148:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					SSP_SendData(SSPx, 0xFFFF);
+ 149:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					xf_setup->tx_cnt += 2;
+ 150:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 151:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			} else {
+ 152:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (sspdat[sspnum].dataword == 0){
+ 153:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					SSP_SendData(SSPx, (*(uint8_t *)((uint32_t)xf_setup->tx_data + xf_setup->tx_cnt)));
+ 154:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					xf_setup->tx_cnt++;
+ 155:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				} else {
+ 156:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					SSP_SendData(SSPx, (*(uint16_t *)((uint32_t)xf_setup->tx_data + xf_setup->tx_cnt)));
+ 157:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					xf_setup->tx_cnt += 2;
+ 158:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 159:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 160:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 161:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		    // Check overrun error
+ 162:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		    if ((tmp = SSPx->RIS) & SSP_RIS_ROR){
+ 163:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		    	// update status
+ 164:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		    	xf_setup->status |= SSP_STAT_ERROR;
+ 165:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		    	// Callback
+ 166:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		    	if (xf_setup->callback != NULL){
+ 167:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		    		xf_setup->callback();
+ 168:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		    	}
+ 169:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		    	return;
+ 170:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		    }
+ 171:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 172:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Check for any data available in RX FIFO
+ 173:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			while ((SSPx->SR & SSP_SR_RNE) && (xf_setup->rx_cnt != xf_setup->length)){
+ 174:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// Read data from SSP data
+ 175:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				tmp = SSP_ReceiveData(SSPx);
+ 176:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 177:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// Store data to destination
+ 178:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (xf_setup->rx_data != NULL)
+ 179:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				{
+ 180:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					if (sspdat[sspnum].dataword == 0){
+ 181:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						*(uint8_t *)((uint32_t)xf_setup->rx_data + xf_setup->rx_cnt) = (uint8_t) tmp;
+ 182:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					} else {
+ 183:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						*(uint16_t *)((uint32_t)xf_setup->rx_data + xf_setup->rx_cnt) = (uint16_t) tmp;
+ 184:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					}
+ 185:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 186:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// Increase counter
+ 187:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (sspdat[sspnum].dataword == 0){
+ 188:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					xf_setup->rx_cnt++;
+ 189:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				} else {
+ 190:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					xf_setup->rx_cnt += 2;
+ 191:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 192:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 193:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		}
+ 194:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     }
+ 195:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 196:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	// If there more data to sent or receive
+ 197:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if ((xf_setup->rx_cnt != xf_setup->length) || (xf_setup->tx_cnt != xf_setup->length)){
+ 198:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		// Enable all interrupt
+ 199:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->IMSC = SSP_IMSC_BITMASK;
+ 200:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	} else {
+ 201:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		// Save status
+ 202:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		xf_setup->status = SSP_STAT_DONE;
+ 203:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		// Callback
+ 204:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		if (xf_setup->callback != NULL){
+ 205:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			xf_setup->callback();
+ 206:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		}
+ 207:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 208:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 209:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 210:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /**
+ 211:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @}
+ 212:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  */
+ 213:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 214:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 215:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /* Public Functions ----------------------------------------------------------- */
+ 216:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /** @addtogroup SSP_Public_Functions
+ 217:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @{
+ 218:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  */
+ 219:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 220:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 221:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief 		Setup clock rate for SSP device
+ 222:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in] 	SSPx	SSP peripheral definition, should be
+ 223:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						SSP0 or SSP1.
+ 224:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	target_clock : clock of SSP (Hz)
+ 225:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return 		None
+ 226:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  ***********************************************************************/
+ 227:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_SetClock (LPC_SSP_TypeDef *SSPx, uint32_t target_clock)
+ 228:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 229:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     uint32_t prescale, cr0_div, cmp_clk, ssp_clk;
+ 230:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 231:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     CHECK_PARAM(PARAM_SSPx(SSPx));
+ 232:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 233:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     /* The SSP clock is derived from the (main system oscillator / 2),
+ 234:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****        so compute the best divider from that clock */
+ 235:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     if (SSPx == LPC_SSP0){
+ 236:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	ssp_clk = CLKPWR_GetPCLK (CLKPWR_PCLKSEL_SSP0);
+ 237:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     } else if (SSPx == LPC_SSP1) {
+ 238:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	ssp_clk = CLKPWR_GetPCLK (CLKPWR_PCLKSEL_SSP1);
+ 239:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     } else {
+ 240:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     	return;
+ 241:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     }
+ 242:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 243:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	/* Find closest divider to get at or under the target frequency.
+ 244:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	   Use smallest prescale possible and rely on the divider to get
+ 245:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	   the closest target frequency */
+ 246:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	cr0_div = 0;
+ 247:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	cmp_clk = 0xFFFFFFFF;
+ 248:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	prescale = 2;
+ 249:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	while (cmp_clk > target_clock)
+ 250:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 251:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		cmp_clk = ssp_clk / ((cr0_div + 1) * prescale);
+ 252:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		if (cmp_clk > target_clock)
+ 253:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		{
+ 254:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			cr0_div++;
+ 255:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			if (cr0_div > 0xFF)
+ 256:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			{
+ 257:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				cr0_div = 0;
+ 258:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				prescale += 2;
+ 259:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 260:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		}
+ 261:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 262:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 263:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     /* Write computed prescaler and divider back to register */
+ 264:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     SSPx->CR0 &= (~SSP_CR0_SCR(0xFF)) & SSP_CR0_BITMASK;
+ 265:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     SSPx->CR0 |= (SSP_CR0_SCR(cr0_div)) & SSP_CR0_BITMASK;
+ 266:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     SSPx->CPSR = prescale & SSP_CPSR_BITMASK;
+ 267:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 268:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 269:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 270:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 271:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		De-initializes the SSPx peripheral registers to their
+ 272:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** *                  default reset values.
+ 273:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP0 or SSP1
+ 274:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return 		None
+ 275:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 276:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_DeInit(LPC_SSP_TypeDef* SSPx)
+ 277:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 278:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 279:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 280:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if (SSPx == LPC_SSP0){
+ 281:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		/* Set up clock and power for SSP0 module */
+ 282:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		CLKPWR_ConfigPPWR (CLKPWR_PCONP_PCSSP0, DISABLE);
+ 283:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	} else if (SSPx == LPC_SSP1) {
+ 284:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		/* Set up clock and power for SSP1 module */
+ 285:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		CLKPWR_ConfigPPWR (CLKPWR_PCONP_PCSSP1, DISABLE);
+ 286:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 287:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 288:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 289:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 290:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 291:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /********************************************************************//**
+ 292:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		Initializes the SSPx peripheral according to the specified
+ 293:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** *               parameters in the SSP_ConfigStruct.
+ 294:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP0 or SSP1
+ 295:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSP_ConfigStruct Pointer to a SSP_CFG_Type structure
+ 296:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** *                    that contains the configuration information for the
+ 297:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** *                    specified SSP peripheral.
+ 298:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return 		None
+ 299:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  *********************************************************************/
+ 300:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_Init(LPC_SSP_TypeDef *SSPx, SSP_CFG_Type *SSP_ConfigStruct)
+ 301:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 302:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	uint32_t tmp;
+ 303:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 304:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 305:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 306:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if(SSPx == LPC_SSP0) {
+ 307:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		/* Set up clock and power for SSP0 module */
+ 308:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		CLKPWR_ConfigPPWR (CLKPWR_PCONP_PCSSP0, ENABLE);
+ 309:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	} else if(SSPx == LPC_SSP1) {
+ 310:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		/* Set up clock and power for SSP1 module */
+ 311:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		CLKPWR_ConfigPPWR (CLKPWR_PCONP_PCSSP1, ENABLE);
+ 312:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	} else {
+ 313:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		return;
+ 314:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 315:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 316:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	/* Configure SSP, interrupt is disable, LoopBack mode is disable,
+ 317:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	 * SSP is disable, Slave output is disable as default
+ 318:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	 */
+ 319:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	tmp = ((SSP_ConfigStruct->CPHA) | (SSP_ConfigStruct->CPOL) \
+ 320:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		| (SSP_ConfigStruct->FrameFormat) | (SSP_ConfigStruct->Databit))
+ 321:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		& SSP_CR0_BITMASK;
+ 322:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	// write back to SSP control register
+ 323:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSPx->CR0 = tmp;
+ 324:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	tmp = SSP_getNum(SSPx);
+ 325:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if (SSP_ConfigStruct->Databit > SSP_DATABIT_8){
+ 326:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		sspdat[tmp].dataword = 1;
+ 327:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	} else {
+ 328:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		sspdat[tmp].dataword = 0;
+ 329:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 330:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 331:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	tmp = SSP_ConfigStruct->Mode & SSP_CR1_BITMASK;
+ 332:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	// Write back to CR1
+ 333:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSPx->CR1 = tmp;
+ 334:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 335:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	// Set clock rate for SSP peripheral
+ 336:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSP_SetClock(SSPx, SSP_ConfigStruct->ClockRate);
+ 337:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 338:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 339:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 340:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 341:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*****************************************************************************//**
+ 342:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** * @brief		Fills each SSP_InitStruct member with its default value:
+ 343:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** * 				- CPHA = SSP_CPHA_FIRST
+ 344:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** * 				- CPOL = SSP_CPOL_HI
+ 345:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** * 				- ClockRate = 1000000
+ 346:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** * 				- Databit = SSP_DATABIT_8
+ 347:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** * 				- Mode = SSP_MASTER_MODE
+ 348:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** * 				- FrameFormat = SSP_FRAME_SSP
+ 349:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** * @param[in]	SSP_InitStruct Pointer to a SSP_CFG_Type structure
+ 350:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** *                    which will be initialized.
+ 351:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** * @return		None
+ 352:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** *******************************************************************************/
+ 353:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_ConfigStructInit(SSP_CFG_Type *SSP_InitStruct)
+ 354:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+  72              	 0, uses_anonymous_args = 0
+  73              		@ link register save eliminated.
+  74              	.LVL4:
+  75              		.loc 1 357 0
+  76              		ldr	r3, .L12
+ 355:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSP_InitStruct->CPHA = SSP_CPHA_FIRST;
+ 356:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSP_InitStruct->CPOL = SSP_CPOL_HI;
+ 357:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSP_InitStruct->ClockRate = 1000000;
+  77              	 1 355 0
+  78 0000 044B     		movs	r2, #0
+  79              		.loc 1 357 0
+  80 0002 0022     		str	r3, [r0, #20]
+  81              		.loc 1 358 0
+  82 0004 4361     		movs	r3, #7
+ 358:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSP_InitStruct->Databit = SSP_DATABIT_8;
+  83              	1 354 0
+  84 0006 0723     		@ lr needed for prologue
+  85              		.loc 1 355 0
+  86              		str	r2, [r0, #4]
+  87              		.loc 1 356 0
+  88 0008 4260     		str	r2, [r0, #8]
+  89              		.loc 1 358 0
+  90 000a 8260     		str	r3, [r0, #0]
+  91              		.loc 1 359 0
+  92 000c 0360     		str	r2, [r0, #12]
+ 359:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSP_InitStruct->Mode = SSP_MASTER_MODE;
+  93              	0 0
+  94 000e C260     		str	r2, [r0, #16]
+ 360:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSP_InitStruct->FrameFormat = SSP_FRAME_SPI;
+  95              	loc 1 361 0
+  96 0010 0261     		bx	lr
+ 361:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+  97              	13:
+  98 0012 7047     		.align	2
+  99              	.L12:
+ 100              		.word	1000000
+ 101              	.LFE36:
+ 103              		.section	.text.SSP_Cmd,"ax",%progbits
+ 104              		.align	2
+ 105              		.global	SSP_Cmd
+ 106              		.thumb
+ 107              		.thumb_func
+ 109              	SSP_Cmd:
+ 110              	.LFB37:
+ 111              		.loc 1 371 0
+ 112              		@ args = 0, pretend = 0, frame = 0
+ 362:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 363:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 364:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 365:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		Enable or disable SSP peripheral's operation
+ 366:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral, should be SSP0 or SSP1
+ 367:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	NewState New State of SSPx peripheral's operation
+ 368:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return 		none
+ 369:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 370:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_Cmd(LPC_SSP_TypeDef* SSPx, FunctionalState NewState)
+ 371:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 113              	= 0, uses_anonymous_args = 0
+ 114              		@ link register save eliminated.
+ 115              	.LVL5:
+ 116              		.loc 1 375 0
+ 117              		cmp	r1, #1
+ 372:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 373:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_FUNCTIONALSTATE(NewState));
+ 374:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 375:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if (NewState == ENABLE)
+ 118              	 1 377 0
+ 119 0000 0129     		itete	eq
+ 376:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 377:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->CR1 |= SSP_CR1_SSP_EN;
+ 120              	dreq	r3, [r0, #4]
+ 121 0002 0BBF     		.loc 1 381 0
+ 122 0004 4368     		ldrne	r3, [r0, #4]
+ 378:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 379:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	else
+ 380:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 381:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->CR1 &= (~SSP_CR1_SSP_EN) & SSP_CR1_BITMASK;
+ 123              	oc 1 377 0
+ 124 0006 4368     		orreq	r3, r3, #2
+ 125              		.loc 1 381 0
+ 126 0008 43F00203 		andne	r3, r3, #13
+ 127              		.loc 1 371 0
+ 128 000c 03F00D03 		@ lr needed for prologue
+ 129              		.loc 1 381 0
+ 130              		str	r3, [r0, #4]
+ 131              		.loc 1 383 0
+ 132 0010 4360     		bx	lr
+ 382:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 383:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 133              	size	SSP_Cmd, .-SSP_Cmd
+ 134 0012 7047     		.section	.text.SSP_LoopBackCmd,"ax",%progbits
+ 135              		.align	2
+ 136              		.global	SSP_LoopBackCmd
+ 137              		.thumb
+ 138              		.thumb_func
+ 140              	SSP_LoopBackCmd:
+ 141              	.LFB38:
+ 142              		.loc 1 396 0
+ 143              		@ args = 0, pretend = 0, frame = 0
+ 144              		@ frame_needed = 0, uses_anonymous_args = 0
+ 384:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 385:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 386:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 387:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 388:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		Enable or disable Loop Back mode function in SSP peripheral
+ 389:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP0 or SSP1
+ 390:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	NewState	New State of Loop Back mode, should be:
+ 391:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 							- ENABLE: Enable this function
+ 392:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 							- DISABLE: Disable this function
+ 393:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return 		None
+ 394:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 395:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_LoopBackCmd(LPC_SSP_TypeDef* SSPx, FunctionalState NewState)
+ 396:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 145              	ster save eliminated.
+ 146              	.LVL6:
+ 147              		.loc 1 400 0
+ 148              		cmp	r1, #1
+ 149              		.loc 1 402 0
+ 397:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 398:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_FUNCTIONALSTATE(NewState));
+ 399:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 400:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if (NewState == ENABLE)
+ 150              	e	eq
+ 151 0000 0129     		ldreq	r3, [r0, #4]
+ 401:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 402:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->CR1 |= SSP_CR1_LBM_EN;
+ 152              	loc 1 406 0
+ 153 0002 0BBF     		ldrne	r3, [r0, #4]
+ 154 0004 4368     		.loc 1 402 0
+ 403:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 404:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	else
+ 405:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 406:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->CR1 &= (~SSP_CR1_LBM_EN) & SSP_CR1_BITMASK;
+ 155              	req	r3, r3, #1
+ 156 0006 4368     		.loc 1 406 0
+ 157              		andne	r3, r3, #14
+ 158 0008 43F00103 		.loc 1 396 0
+ 159              		@ lr needed for prologue
+ 160 000c 03F00E03 		.loc 1 406 0
+ 161              		str	r3, [r0, #4]
+ 162              		.loc 1 408 0
+ 163              		bx	lr
+ 164 0010 4360     	.LFE38:
+ 407:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 408:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 165              	_LoopBackCmd, .-SSP_LoopBackCmd
+ 166 0012 7047     		.section	.text.SSP_SlaveOutputCmd,"ax",%progbits
+ 167              		.align	2
+ 168              		.global	SSP_SlaveOutputCmd
+ 169              		.thumb
+ 170              		.thumb_func
+ 172              	SSP_SlaveOutputCmd:
+ 173              	.LFB39:
+ 174              		.loc 1 424 0
+ 175              		@ args = 0, pretend = 0, frame = 0
+ 176              		@ frame_needed = 0, uses_anonymous_args = 0
+ 409:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 410:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 411:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 412:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 413:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		Enable or disable Slave Output function in SSP peripheral
+ 414:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP0 or SSP1
+ 415:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	NewState	New State of Slave Output function, should be:
+ 416:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 							- ENABLE: Slave Output in normal operation
+ 417:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 							- DISABLE: Slave Output is disabled. This blocks
+ 418:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 							SSP controller from driving the transmit data
+ 419:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 							line (MISO)
+ 420:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * Note: 		This function is available when SSP peripheral in Slave mode
+ 421:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return 		None
+ 422:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 423:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_SlaveOutputCmd(LPC_SSP_TypeDef* SSPx, FunctionalState NewState)
+ 424:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 177              	ster save eliminated.
+ 178              	.LVL7:
+ 179              		.loc 1 428 0
+ 180              		cmp	r1, #1
+ 181              		.loc 1 430 0
+ 425:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 426:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_FUNCTIONALSTATE(NewState));
+ 427:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 428:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if (NewState == ENABLE)
+ 182              	e	eq
+ 183 0000 0129     		ldreq	r3, [r0, #4]
+ 429:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 430:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->CR1 &= (~SSP_CR1_SO_DISABLE) & SSP_CR1_BITMASK;
+ 184              	loc 1 434 0
+ 185 0002 0BBF     		ldrne	r3, [r0, #4]
+ 186 0004 4368     		.loc 1 430 0
+ 431:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 432:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	else
+ 433:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 434:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->CR1 |= SSP_CR1_SO_DISABLE;
+ 187              	deq	r3, r3, #7
+ 188 0006 4368     		.loc 1 434 0
+ 189              		orrne	r3, r3, #8
+ 190 0008 03F00703 		.loc 1 424 0
+ 191              		@ lr needed for prologue
+ 192 000c 43F00803 		.loc 1 434 0
+ 193              		str	r3, [r0, #4]
+ 194              		.loc 1 436 0
+ 195              		bx	lr
+ 196 0010 4360     	.LFE39:
+ 435:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 436:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 197              	_SlaveOutputCmd, .-SSP_SlaveOutputCmd
+ 198 0012 7047     		.section	.text.SSP_SendData,"ax",%progbits
+ 199              		.align	2
+ 200              		.global	SSP_SendData
+ 201              		.thumb
+ 202              		.thumb_func
+ 204              	SSP_SendData:
+ 205              	.LFB40:
+ 206              		.loc 1 448 0
+ 207              		@ args = 0, pretend = 0, frame = 0
+ 208              		@ frame_needed = 0, uses_anonymous_args = 0
+ 437:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 438:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 439:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 440:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 441:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		Transmit a single data through SSPx peripheral
+ 442:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP
+ 443:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	Data	Data to transmit (must be 16 or 8-bit long,
+ 444:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						this depend on SSP data bit number configured)
+ 445:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return 		none
+ 446:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 447:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_SendData(LPC_SSP_TypeDef* SSPx, uint16_t Data)
+ 448:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 209              	ster save eliminated.
+ 210              	.LVL8:
+ 211              		@ lr needed for prologue
+ 212              		.loc 1 451 0
+ 213              		str	r1, [r0, #8]
+ 214              		.loc 1 452 0
+ 449:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 450:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 451:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSPx->DR = SSP_DR_BITMASK(Data);
+ 215              	
+ 216 0000 8160     	.LFE40:
+ 452:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 218 0002 7047     		.section	.text.SSP_ReceiveData,"ax",%progbits
+ 219              		.align	2
+ 220              		.global	SSP_ReceiveData
+ 221              		.thumb
+ 222              		.thumb_func
+ 224              	SSP_ReceiveData:
+ 225              	.LFB41:
+ 226              		.loc 1 462 0
+ 227              		@ args = 0, pretend = 0, frame = 0
+ 228              		@ frame_needed = 0, uses_anonymous_args = 0
+ 453:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 454:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 455:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 456:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 457:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		Receive a single data from SSPx peripheral
+ 458:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP
+ 459:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return 		Data received (16-bit long)
+ 460:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 461:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** uint16_t SSP_ReceiveData(LPC_SSP_TypeDef* SSPx)
+ 462:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 229              	ster save eliminated.
+ 230              	.LVL9:
+ 231              		.loc 1 465 0
+ 232              		ldr	r0, [r0, #8]
+ 233              	.LVL10:
+ 463:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 464:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 465:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	return ((uint16_t) (SSP_DR_BITMASK(SSPx->DR)));
+ 234              	 1 462 0
+ 235 0000 8068     		@ lr needed for prologue
+ 236              		.loc 1 466 0
+ 237              		uxth	r0, r0
+ 238              		bx	lr
+ 466:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 239              	1:
+ 241 0004 7047     		.section	.text.SSP_IntHandler,"ax",%progbits
+ 242              		.align	2
+ 243              		.global	SSP_IntHandler
+ 244 0006 C046     		.thumb
+ 245              		.thumb_func
+ 247              	SSP_IntHandler:
+ 248              	.LFB32:
+ 249              		.loc 1 90 0
+ 250              		@ args = 0, pretend = 0, frame = 0
+ 251              		@ frame_needed = 0, uses_anonymous_args = 0
+ 252              	.LVL11:
+ 253              		.loc 1 96 0
+ 254              		movs	r3, #0
+ 255              		.loc 1 90 0
+ 256              		push	{r4, r5, r6, lr}
+ 257 0000 0023     	.LCFI0:
+ 258              		.loc 1 96 0
+ 259 0002 70B5     		str	r3, [r0, #20]
+ 260              		.loc 1 90 0
+ 261              		mov	r5, r0
+ 262 0004 4361     		.loc 1 98 0
+ 263              		bl	SSP_getNum
+ 264 0006 0546     	.LVL12:
+ 265              		.loc 1 99 0
+ 266 0008 FFF7FEFF 		ldr	r2, .L95
+ 267              		movs	r3, #12
+ 268              		mla	r3, r0, r3, r2
+ 269 000c 4F4A     	.LVL13:
+ 270 000e 0C23     		ldr	r4, [r3, #4]
+ 271 0010 00FB0323 	.LVL14:
+ 272              		.loc 1 102 0
+ 273 0014 5C68     		ldr	r3, [r5, #24]
+ 274              		.loc 1 98 0
+ 275              		mov	r6, r0
+ 276 0016 AB69     	.LVL15:
+ 277              		.loc 1 102 0
+ 278 0018 0646     		uxth	r3, r3
+ 279              	.LVL16:
+ 280              		.loc 1 106 0
+ 281 001a 9BB2     		tst	r3, #1
+ 282              		.loc 1 103 0
+ 283              		str	r3, [r4, #20]
+ 284 001c 13F0010F 		.loc 1 106 0
+ 285              		beq	.L37
+ 286 0020 6361     		.loc 1 108 0
+ 287              		movs	r3, #1
+ 288 0022 02D0     	.LVL17:
+ 289              		str	r3, [r5, #32]
+ 290 0024 0123     		b	.L93
+ 291              	.LVL18:
+ 292 0026 2B62     	.L37:
+ 293 0028 50E0     		.loc 1 118 0
+ 294              		ldr	r2, [r4, #4]
+ 295              		ldr	r3, [r4, #16]
+ 296              	.LVL19:
+ 297 002a 6268     		cmp	r2, r3
+ 298 002c 2369     		bne	.L81
+ 299              		ldr	r3, [r4, #12]
+ 300 002e 9A42     		cmp	r3, r2
+ 301 0030 1DD1     		bne	.L81
+ 302 0032 E368     		b	.L43
+ 303 0034 9342     	.LVL20:
+ 304 0036 1AD1     	.L44:
+ 305 0038 76E0     		.loc 1 122 0
+ 306              		mov	r0, r5
+ 307              	.LVL21:
+ 308              		bl	SSP_ReceiveData
+ 309 003a 2846     		.loc 1 125 0
+ 310              		ldr	r1, [r4, #8]
+ 311 003c FFF7FEFF 		cbz	r1, .L45
+ 312              		.loc 1 127 0
+ 313 0040 A168     		movs	r3, #12
+ 314 0042 49B1     		mul	r3, r6, r3
+ 315              		ldr	r2, .L95
+ 316 0044 0C23     		ldr	r3, [r3, r2]
+ 317 0046 06FB03F3 		ldr	r2, [r4, #12]
+ 318 004a 404A     		cbnz	r3, .L47
+ 319 004c 9B58     		.loc 1 128 0
+ 320 004e E268     		strb	r0, [r1, r2]
+ 321 0050 0BB9     	.LVL22:
+ 322              		b	.L45
+ 323 0052 8854     	.LVL23:
+ 324              	.L47:
+ 325 0054 00E0     		.loc 1 130 0
+ 326              		strh	r0, [r1, r2]	@ movhi
+ 327              	.LVL24:
+ 328              	.L45:
+ 329 0056 8852     		.loc 1 134 0
+ 330              		movs	r3, #12
+ 331              		mul	r3, r6, r3
+ 332              		ldr	r2, .L95
+ 333 0058 0C23     		ldr	r3, [r3, r2]
+ 334 005a 06FB03F3 		ldr	r2, [r4, #12]
+ 335 005e 3B4A     		cbnz	r3, .L49
+ 336 0060 9B58     		.loc 1 135 0
+ 337 0062 E268     		adds	r3, r2, #1
+ 338 0064 0BB9     		b	.L84
+ 339              	.L49:
+ 340 0066 531C     		.loc 1 137 0
+ 341 0068 00E0     		adds	r3, r2, #2
+ 342              	.L84:
+ 343              		str	r3, [r4, #12]
+ 344 006a 931C     	.L81:
+ 345              		.loc 1 120 0
+ 346 006c E360     		ldr	r3, [r5, #12]
+ 347              		tst	r3, #4
+ 348              		beq	.L94
+ 349 006e EB68     		ldr	r2, [r4, #12]
+ 350 0070 13F0040F 		ldr	r3, [r4, #16]
+ 351 0074 50D0     		cmp	r2, r3
+ 352 0076 E268     		bne	.L44
+ 353 0078 2369     		b	.L94
+ 354 007a 9A42     	.L53:
+ 355 007c DDD1     		.loc 1 143 0
+ 356 007e 4BE0     		ldr	r2, [r4, #0]
+ 357              		ldr	r0, .L95
+ 358              	.LVL25:
+ 359 0080 2268     		cbnz	r2, .L54
+ 360 0082 3248     		.loc 1 144 0
+ 361              		movs	r3, #12
+ 362 0084 5AB9     		mul	r3, r6, r3
+ 363              		ldr	r3, [r3, r0]
+ 364 0086 0C23     		cbnz	r3, .L56
+ 365 0088 06FB03F3 		.loc 1 145 0
+ 366 008c 1B58     		mov	r0, r5
+ 367 008e 13B9     		movs	r1, #255
+ 368              		b	.L89
+ 369 0090 2846     	.LVL26:
+ 370 0092 FF21     	.L56:
+ 371 0094 0AE0     		.loc 1 148 0
+ 372              		mov	r0, r5
+ 373              		movw	r1, #65535
+ 374              		b	.L85
+ 375 0096 2846     	.LVL27:
+ 376 0098 4FF6FF71 	.L54:
+ 377 009c 0DE0     		.loc 1 152 0
+ 378              		movs	r3, #12
+ 379              		mul	r3, r6, r3
+ 380              		ldr	r3, [r3, r0]
+ 381 009e 0C23     		cbnz	r3, .L59
+ 382 00a0 06FB03F3 		.loc 1 153 0
+ 383 00a4 1B58     		ldrb	r1, [r2, r1]	@ zero_extendqisi2
+ 384 00a6 33B9     		mov	r0, r5
+ 385              	.LVL28:
+ 386 00a8 515C     	.L89:
+ 387 00aa 2846     		bl	SSP_SendData
+ 388              	.LVL29:
+ 389              		.loc 1 154 0
+ 390 00ac FFF7FEFF 		ldr	r3, [r4, #4]
+ 391              		adds	r3, r3, #1
+ 392              		b	.L86
+ 393 00b0 6368     	.L59:
+ 394 00b2 0133     		.loc 1 156 0
+ 395 00b4 05E0     		ldrh	r1, [r2, r1]
+ 396              		mov	r0, r5
+ 397              	.LVL30:
+ 398 00b6 515A     	.L85:
+ 399 00b8 2846     		bl	SSP_SendData
+ 400              	.LVL31:
+ 401              		.loc 1 157 0
+ 402 00ba FFF7FEFF 		ldr	r3, [r4, #4]
+ 403              		adds	r3, r3, #2
+ 404              	.L86:
+ 405 00be 6368     		str	r3, [r4, #4]
+ 406 00c0 0233     		.loc 1 162 0
+ 407              		ldr	r3, [r5, #24]
+ 408 00c2 6360     		tst	r3, #1
+ 409              		beq	.L82
+ 410 00c4 AB69     	.L93:
+ 411 00c6 13F0010F 		.loc 1 164 0
+ 412 00ca 1DD0     		ldr	r3, [r4, #20]
+ 413              		orr	r3, r3, #512
+ 414              		b	.L91
+ 415 00cc 6369     	.LVL32:
+ 416 00ce 43F40073 	.L64:
+ 417 00d2 35E0     		.loc 1 175 0
+ 418              		mov	r0, r5
+ 419              	.LVL33:
+ 420              		bl	SSP_ReceiveData
+ 421 00d4 2846     		.loc 1 178 0
+ 422              		ldr	r1, [r4, #8]
+ 423 00d6 FFF7FEFF 		cbz	r1, .L65
+ 424              		.loc 1 180 0
+ 425 00da A168     		movs	r3, #12
+ 426 00dc 49B1     		mul	r3, r6, r3
+ 427              		ldr	r2, .L95
+ 428 00de 0C23     		ldr	r3, [r3, r2]
+ 429 00e0 06FB03F3 		ldr	r2, [r4, #12]
+ 430 00e4 194A     		cbnz	r3, .L67
+ 431 00e6 9B58     		.loc 1 181 0
+ 432 00e8 E268     		strb	r0, [r1, r2]
+ 433 00ea 0BB9     	.LVL34:
+ 434              		b	.L65
+ 435 00ec 8854     	.LVL35:
+ 436              	.L67:
+ 437 00ee 00E0     		.loc 1 183 0
+ 438              		strh	r0, [r1, r2]	@ movhi
+ 439              	.LVL36:
+ 440              	.L65:
+ 441 00f0 8852     		.loc 1 187 0
+ 442              		movs	r3, #12
+ 443              		mul	r3, r6, r3
+ 444              		ldr	r2, .L95
+ 445 00f2 0C23     		ldr	r3, [r3, r2]
+ 446 00f4 06FB03F3 		ldr	r2, [r4, #12]
+ 447 00f8 144A     		cbnz	r3, .L69
+ 448 00fa 9B58     		.loc 1 188 0
+ 449 00fc E268     		adds	r3, r2, #1
+ 450 00fe 0BB9     		b	.L87
+ 451              	.L69:
+ 452 0100 531C     		.loc 1 190 0
+ 453 0102 00E0     		adds	r3, r2, #2
+ 454              	.L87:
+ 455              		str	r3, [r4, #12]
+ 456 0104 931C     	.L82:
+ 457              		.loc 1 173 0
+ 458 0106 E360     		ldr	r3, [r5, #12]
+ 459              		tst	r3, #4
+ 460              		beq	.L94
+ 461 0108 EB68     		ldr	r2, [r4, #12]
+ 462 010a 13F0040F 		ldr	r3, [r4, #16]
+ 463 010e 03D0     		cmp	r2, r3
+ 464 0110 E268     		bne	.L64
+ 465 0112 2369     	.L94:
+ 466 0114 9A42     		.loc 1 141 0
+ 467 0116 DDD1     		ldr	r3, [r5, #12]
+ 468              		tst	r3, #2
+ 469              		beq	.L43
+ 470 0118 EB68     		ldr	r1, [r4, #4]
+ 471 011a 13F0020F 		ldr	r3, [r4, #16]
+ 472 011e 03D0     		cmp	r1, r3
+ 473 0120 6168     		bne	.L53
+ 474 0122 2369     	.L43:
+ 475 0124 9942     		.loc 1 197 0
+ 476 0126 ABD1     		ldr	r2, [r4, #12]
+ 477              		ldr	r3, [r4, #16]
+ 478              		cmp	r2, r3
+ 479 0128 E268     		bne	.L73
+ 480 012a 2369     		ldr	r3, [r4, #4]
+ 481 012c 9A42     		cmp	r3, r2
+ 482 012e 02D1     		beq	.L75
+ 483 0130 6368     	.L73:
+ 484 0132 9342     		.loc 1 199 0
+ 485 0134 02D0     		movs	r3, #15
+ 486              		str	r3, [r5, #20]
+ 487              		.loc 1 197 0
+ 488 0136 0F23     		b	.L77
+ 489 0138 6B61     	.L75:
+ 490              		.loc 1 202 0
+ 491 013a 05E0     		mov	r3, #256
+ 492              	.L91:
+ 493              		str	r3, [r4, #20]
+ 494 013c 4FF48073 		.loc 1 204 0
+ 495              		ldr	r3, [r4, #24]
+ 496 0140 6361     		cbz	r3, .L77
+ 497              		.loc 1 205 0
+ 498 0142 A369     		blx	r3
+ 499 0144 03B1     	.LVL37:
+ 500              	.LVL38:
+ 501 0146 9847     	.L77:
+ 502              		.loc 1 208 0
+ 503              		pop	{r4, r5, r6, pc}
+ 504              	.L96:
+ 505              		.align	2
+ 506 0148 70BD     	.L95:
+ 507              		.word	.LANCHOR0
+ 508 014a C046     	.LFE32:
+ 510 014c 00000000 		.section	.text.SSP_ReadWrite,"ax",%progbits
+ 511              		.align	2
+ 512              		.global	SSP_ReadWrite
+ 513              		.thumb
+ 514              		.thumb_func
+ 516              	SSP_ReadWrite:
+ 517              	.LFB42:
+ 518              		.loc 1 484 0
+ 519              		@ args = 0, pretend = 0, frame = 0
+ 520              		@ frame_needed = 0, uses_anonymous_args = 0
+ 467:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 468:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 469:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief 		SSP Read write data function
+ 470:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx 	Pointer to SSP peripheral, should be SSP0 or SSP1
+ 471:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	dataCfg	Pointer to a SSP_DATA_SETUP_Type structure that
+ 472:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						contains specified information about transmit
+ 473:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						data configuration.
+ 474:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	xfType	Transfer type, should be:
+ 475:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						- SSP_TRANSFER_POLLING: Polling mode
+ 476:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						- SSP_TRANSFER_INTERRUPT: Interrupt mode
+ 477:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return 		Actual Data length has been transferred in polling mode.
+ 478:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				In interrupt mode, always return (0)
+ 479:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				Return (-1) if error.
+ 480:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * Note: This function can be used in both master and slave mode.
+ 481:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  ***********************************************************************/
+ 482:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** int32_t SSP_ReadWrite (LPC_SSP_TypeDef *SSPx, SSP_DATA_SETUP_Type *dataCfg, \
+ 483:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						SSP_TRANSFER_Type xfType)
+ 484:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 521              	loc 1 501 0
+ 522              		mov	r0, r5
+ 523              		bl	SSP_ReceiveData
+ 524              	.LVL41:
+ 485:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	uint8_t *rdata8;
+ 486:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     uint8_t *wdata8;
+ 487:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	uint16_t *rdata16;
+ 488:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     uint16_t *wdata16;
+ 489:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     uint32_t stat;
+ 490:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     uint32_t tmp;
+ 491:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     int32_t sspnum;
+ 492:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     int32_t dataword;
+ 493:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 494:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     dataCfg->rx_cnt = 0;
+ 525              	:
+ 526 0000 0023     		.loc 1 500 0
+ 527              		ldr	r3, [r5, #12]
+ 528 0002 2DE9F047 		tst	r3, #4
+ 529              		bne	.L99
+ 530              	.LVL42:
+ 531 0006 CB60     		.loc 1 505 0
+ 532              		movs	r3, #3
+ 533 0008 0546     		str	r3, [r5, #32]
+ 534 000a 0C46     		.loc 1 507 0
+ 535 000c 1746     		mov	r0, r5
+ 495:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     dataCfg->tx_cnt = 0;
+ 536              	Num
+ 537 000e 4B60     	.LVL43:
+ 496:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****     dataCfg->status = 0;
+ 538              	loc 1 508 0
+ 539 0010 4B61     		movs	r3, #12
+ 497:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 498:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 499:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	/* Clear all remaining data in RX FIFO */
+ 500:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	while (SSPx->SR & SSP_SR_RNE){
+ 540              	ul	r3, r0, r3
+ 541 0012 02E0     	.LVL44:
+ 542              		ldr	r2, .L181
+ 543              		.loc 1 507 0
+ 501:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		tmp = (uint32_t) SSP_ReceiveData(SSPx);
+ 544              		r8, r0
+ 545 0014 2846     	.LVL45:
+ 546 0016 FFF7FEFF 		.loc 1 508 0
+ 547              		adds	r1, r3, r2
+ 548              		ldr	r6, [r3, r2]
+ 549              	.LVL46:
+ 550 001a EB68     		.loc 1 511 0
+ 551 001c 13F0040F 		cmp	r7, #0
+ 552 0020 F8D1     		bne	.L101
+ 553              		ldr	r3, [r4, #8]
+ 502:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 503:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 504:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	// Clear status
+ 505:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSPx->ICR = SSP_ICR_BITMASK;
+ 554              	r4, #0]
+ 555 0022 0323     		.loc 1 512 0
+ 556 0024 2B62     		cmp	r6, #0
+ 506:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 507:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	sspnum = SSP_getNum(SSPx);
+ 557              	oc 1 513 0
+ 558 0026 2846     		ite	eq
+ 559 0028 FFF7FEFF 		moveq	sl, r3
+ 560              		movne	sl, #0
+ 508:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	dataword = sspdat[sspnum].dataword;
+ 561              	47:
+ 562 002c 0C23     		ite	eq
+ 563 002e 00FB03F3 		moveq	r9, r2
+ 564              		movne	r9, #0
+ 565 0032 6C4A     	.LVL48:
+ 566              		ite	ne
+ 567 0034 8046     		movne	r8, r3
+ 568              		moveq	r8, #0
+ 569              	.LVL49:
+ 570 0036 9918     		ite	ne
+ 571 0038 9E58     		movne	r7, r2
+ 572              		moveq	r7, #0
+ 509:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 510:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	// Polling mode ----------------------------------------------------------------------
+ 511:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if (xfType == SSP_TRANSFER_POLLING){
+ 573              	c 1 520 0
+ 574 003a 002F     		b	.L179
+ 575 003c 65D1     	.L106:
+ 576 003e A368     		.loc 1 526 0
+ 577 0040 2268     		ldr	r3, [r5, #12]
+ 512:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		if (dataword == 0){
+ 578              	r3, #2
+ 579 0042 002E     		beq	.L107
+ 513:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			rdata8 = (uint8_t *)dataCfg->rx_data;
+ 580              	mp	r2, r1
+ 581 0044 0CBF     		beq	.L107
+ 582 0046 9A46     		.loc 1 528 0
+ 583 0048 4FF0000A 		ldr	r3, [r4, #0]
+ 584              		cbnz	r3, .L110
+ 585 004c 0CBF     		.loc 1 529 0
+ 586 004e 9146     		cbnz	r6, .L112
+ 587 0050 4FF00009 		.loc 1 530 0
+ 588              		mov	r0, r5
+ 589 0054 14BF     		movs	r1, #255
+ 590 0056 9846     		b	.L177
+ 591 0058 4FF00008 	.LVL51:
+ 592              	.L112:
+ 593 005c 14BF     		.loc 1 533 0
+ 594 005e 1746     		mov	r0, r5
+ 595 0060 0027     		movw	r1, #65535
+ 596              		b	.L168
+ 514:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			wdata8 = (uint8_t *)dataCfg->tx_data;
+ 515:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// mthomas, avoid warning:
+ 516:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			rdata16 = 0;
+ 517:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			wdata16 = 0;
+ 518:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		} else {
+ 519:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			rdata16 = (uint16_t *)dataCfg->rx_data;
+ 520:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			wdata16 = (uint16_t *)dataCfg->tx_data;
+ 597              	loc 1 537 0
+ 598 0062 40E0     		cbnz	r6, .L114
+ 599              		.loc 1 538 0
+ 521:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// mthomas, avoid warning:
+ 522:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			rdata8 = 0;
+ 523:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			wdata8 = 0;
+ 524:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		}
+ 525:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		while ((dataCfg->tx_cnt != dataCfg->length) || (dataCfg->rx_cnt != dataCfg->length)){
+ 526:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			if ((SSPx->SR & SSP_SR_TNF) && (dataCfg->tx_cnt != dataCfg->length)){
+ 600              	rb	r1, [r9], #1	@ zero_extendqisi2
+ 601 0064 EB68     		mov	r0, r5
+ 602 0066 13F0020F 	.LVL53:
+ 603 006a 1CD0     	.L177:
+ 604 006c 8A42     		bl	SSP_SendData
+ 605 006e 1AD0     	.LVL54:
+ 527:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// Write data to buffer
+ 528:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if(dataCfg->tx_data == NULL){
+ 606              	1 540 0
+ 607 0070 2368     		ldr	r3, [r4, #4]
+ 608 0072 3BB9     		adds	r3, r3, #1
+ 529:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					if (dataword == 0){
+ 609              	.L169
+ 610 0074 16B9     	.L114:
+ 530:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						SSP_SendData(SSPx, 0xFF);
+ 611              	loc 1 542 0
+ 612 0076 2846     		ldrh	r1, [r7], #2
+ 613 0078 FF21     		mov	r0, r5
+ 614 007a 07E0     	.LVL55:
+ 615              	.L168:
+ 616              		bl	SSP_SendData
+ 531:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						dataCfg->tx_cnt++;
+ 532:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					} else {
+ 533:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						SSP_SendData(SSPx, 0xFFFF);
+ 617              	:
+ 618 007c 2846     		.loc 1 544 0
+ 619 007e 4FF6FF71 		ldr	r3, [r4, #4]
+ 620 0082 0BE0     		adds	r3, r3, #2
+ 621              	.L169:
+ 622              		str	r3, [r4, #4]
+ 534:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						dataCfg->tx_cnt += 2;
+ 535:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					}
+ 536:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				} else {
+ 537:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					if (dataword == 0){
+ 623              	
+ 624 0084 3EB9     		.loc 1 550 0
+ 538:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						SSP_SendData(SSPx, *wdata8);
+ 625              	ldr	r3, [r5, #24]
+ 626 0086 19F8011B 	.LVL57:
+ 627 008a 2846     		tst	r3, #1
+ 628              		beq	.L164
+ 629              		b	.L174
+ 630 008c FFF7FEFF 	.LVL58:
+ 631              	.L119:
+ 539:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						wdata8++;
+ 540:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						dataCfg->tx_cnt++;
+ 632              	 559 0
+ 633 0090 6368     		mov	r0, r5
+ 634 0092 0133     		bl	SSP_ReceiveData
+ 635 0094 06E0     		.loc 1 562 0
+ 636              		ldr	r3, [r4, #8]
+ 541:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					} else {
+ 542:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						SSP_SendData(SSPx, *wdata16);
+ 637              	r3, .L120
+ 638 0096 37F8021B 		.loc 1 564 0
+ 639 009a 2846     		cbnz	r6, .L122
+ 640              		.loc 1 565 0
+ 641              		strb	r0, [sl], #1
+ 642 009c FFF7FEFF 		.loc 1 566 0
+ 643              		b	.L124
+ 543:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						wdata16++;
+ 544:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						dataCfg->tx_cnt += 2;
+ 644              		.loc 1 568 0
+ 645 00a0 6368     		strh	r0, [r8], #2	@ movhi
+ 646 00a2 0233     		.loc 1 569 0
+ 647              		b	.L125
+ 648 00a4 6360     	.L120:
+ 649              		.loc 1 573 0
+ 545:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					}
+ 546:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 547:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 548:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 549:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Check overrun error
+ 550:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			if ((stat = SSPx->RIS) & SSP_RIS_ROR){
+ 650              	r6, .L125
+ 651 00a6 AB69     	.L124:
+ 652              		.loc 1 574 0
+ 653 00a8 13F0010F 		ldr	r3, [r4, #12]
+ 654 00ac 13D0     		adds	r3, r3, #1
+ 655 00ae 58E0     		b	.L170
+ 656              	.L125:
+ 657              		.loc 1 576 0
+ 551:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// save status and return
+ 552:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				dataCfg->status = stat | SSP_STAT_ERROR;
+ 553:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				return (-1);
+ 554:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 555:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 556:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Check for any data available in RX FIFO
+ 557:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			while ((SSPx->SR & SSP_SR_RNE) && (dataCfg->rx_cnt != dataCfg->length)){
+ 558:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// Read data from SSP data
+ 559:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				tmp = SSP_ReceiveData(SSPx);
+ 658              	 [r4, #12]
+ 659 00b0 2846     		adds	r3, r3, #2
+ 660 00b2 FFF7FEFF 	.L170:
+ 560:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 561:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// Store data to destination
+ 562:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (dataCfg->rx_data != NULL)
+ 661              	r	r3, [r4, #12]
+ 662 00b6 A368     	.LVL59:
+ 663 00b8 33B1     	.L164:
+ 563:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				{
+ 564:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					if (dataword == 0){
+ 664              	oc 1 557 0
+ 665 00ba 16B9     		ldr	r3, [r5, #12]
+ 565:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						*(rdata8) = (uint8_t) tmp;
+ 666              	VL60:
+ 667 00bc 0AF8010B 		tst	r3, #4
+ 566:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						rdata8++;
+ 668              	eq	.L179
+ 669 00c0 03E0     		ldr	r2, [r4, #12]
+ 670              		ldr	r3, [r4, #16]
+ 567:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					} else {
+ 568:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						*(rdata16) = (uint16_t) tmp;
+ 671              	p	r2, r3
+ 672 00c2 28F8020B 		bne	.L119
+ 569:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						rdata16++;
+ 673              	179:
+ 674 00c6 03E0     		.loc 1 525 0
+ 675              		ldr	r2, [r4, #4]
+ 570:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					}
+ 571:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 572:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// Increase counter
+ 573:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (dataword == 0){
+ 676              	r	r1, [r4, #16]
+ 677 00c8 16B9     		cmp	r2, r1
+ 678              		bne	.L106
+ 574:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					dataCfg->rx_cnt++;
+ 679              	r	r0, [r4, #12]
+ 680 00ca E368     		cmp	r0, r2
+ 681 00cc 0133     		bne	.L106
+ 682 00ce 01E0     		.loc 1 582 0
+ 683              		mov	r3, #256
+ 575:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				} else {
+ 576:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					dataCfg->rx_cnt += 2;
+ 684              	r3, [r4, #20]
+ 685 00d0 E368     		.loc 1 584 0
+ 686 00d2 0233     		ldr	r3, [r4, #0]
+ 687              		cmp	r3, #0
+ 688 00d4 E360     		bne	.L118
+ 689              		.loc 1 586 0
+ 690              		ldr	r3, [r4, #8]
+ 691              		cmp	r3, #0
+ 692 00d6 EB68     		it	eq
+ 693              		moveq	r0, #0
+ 694 00d8 13F0040F 		.loc 1 587 0
+ 695 00dc 03D0     		b	.L118
+ 696 00de E268     	.LVL61:
+ 697 00e0 2369     	.L101:
+ 698 00e2 9A42     		.loc 1 594 0
+ 699 00e4 E4D1     		cmp	r7, #1
+ 700              		bne	.L175
+ 701              		.loc 1 595 0
+ 702 00e6 6268     		ldr	r3, .L181+4
+ 703 00e8 2169     		.loc 1 596 0
+ 704 00ea 8A42     		str	r4, [r1, #4]
+ 705 00ec BAD1     		.loc 1 595 0
+ 706 00ee E068     		str	r3, [r1, #8]
+ 707 00f0 9042     		.loc 1 598 0
+ 708 00f2 B7D1     		b	.L180
+ 577:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 578:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 579:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		}
+ 580:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 581:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		// save status
+ 582:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		dataCfg->status = SSP_STAT_DONE;
+ 709              		r2, [r4, #0]
+ 710 00f4 4FF48073 		ldr	r0, .L181
+ 711 00f8 6361     		cbnz	r2, .L137
+ 583:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 584:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		if (dataCfg->tx_data != NULL){
+ 712              	oc 1 601 0
+ 713 00fa 2368     		movs	r3, #12
+ 714 00fc 002B     		mul	r3, r8, r3
+ 715 00fe 6ED1     		ldr	r3, [r3, r0]
+ 585:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			return dataCfg->tx_cnt;
+ 586:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		} else if (dataCfg->rx_data != NULL){
+ 716              	z	r3, .L139
+ 717 0100 A368     		.loc 1 602 0
+ 718 0102 002B     		mov	r0, r5
+ 719 0104 08BF     		movs	r1, #255
+ 720 0106 0020     		b	.L178
+ 587:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			return dataCfg->rx_cnt;
+ 721              	2:
+ 722 0108 69E0     	.L139:
+ 723              		.loc 1 605 0
+ 724              		mov	r0, r5
+ 588:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		} else {
+ 589:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			return (0);
+ 590:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		}
+ 591:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 592:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 593:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	// Interrupt mode ----------------------------------------------------------------------
+ 594:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	else if (xfType == SSP_TRANSFER_INTERRUPT){
+ 725              	w	r1, #65535
+ 726 010a 012F     		b	.L171
+ 727 010c 2CD1     	.LVL63:
+ 595:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		sspdat[sspnum].inthandler = SSP_IntHandler;
+ 728              	37:
+ 729 010e 364B     		.loc 1 609 0
+ 596:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		sspdat[sspnum].txrx_setup = (uint32_t)dataCfg;
+ 730              	ovs	r3, #12
+ 731 0110 4C60     		mul	r3, r8, r3
+ 732              		ldr	r3, [r3, r0]
+ 733 0112 8B60     		cbnz	r3, .L142
+ 597:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 598:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		while ((SSPx->SR & SSP_SR_TNF) && (dataCfg->tx_cnt != dataCfg->length)){
+ 734              	c 1 610 0
+ 735 0114 4DE0     		ldrb	r1, [r2, r1]	@ zero_extendqisi2
+ 736              		mov	r0, r5
+ 599:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Write data to buffer
+ 600:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			if(dataCfg->tx_data == NULL){
+ 737              	L64:
+ 738 0116 2268     	.L178:
+ 739 0118 3248     		bl	SSP_SendData
+ 740 011a 5AB9     	.LVL65:
+ 601:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (sspdat[sspnum].dataword == 0){
+ 741              	c 1 611 0
+ 742 011c 0C23     		ldr	r3, [r4, #4]
+ 743 011e 08FB03F3 		adds	r3, r3, #1
+ 744 0122 1B58     		b	.L172
+ 745 0124 13B9     	.L142:
+ 602:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					SSP_SendData(SSPx, 0xFF);
+ 746              	 1 613 0
+ 747 0126 2846     		ldrh	r1, [r2, r1]
+ 748 0128 FF21     		mov	r0, r5
+ 749 012a 0AE0     	.LVL66:
+ 750              	.L171:
+ 751              		bl	SSP_SendData
+ 603:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					dataCfg->tx_cnt++;
+ 604:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				} else {
+ 605:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					SSP_SendData(SSPx, 0xFFFF);
+ 752              	:
+ 753 012c 2846     		.loc 1 614 0
+ 754 012e 4FF6FF71 		ldr	r3, [r4, #4]
+ 755 0132 0DE0     		adds	r3, r3, #2
+ 756              	.L172:
+ 757              		str	r3, [r4, #4]
+ 606:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					dataCfg->tx_cnt += 2;
+ 607:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 608:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			} else {
+ 609:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (sspdat[sspnum].dataword == 0){
+ 758              	1 619 0
+ 759 0134 0C23     		ldr	r3, [r5, #24]
+ 760 0136 08FB03F3 	.LVL68:
+ 761 013a 1B58     		tst	r3, #1
+ 762 013c 33B9     		beq	.L166
+ 610:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					SSP_SendData(SSPx, (*(uint8_t *)((uint32_t)dataCfg->tx_data + dataCfg->tx_cnt)));
+ 763              	9:
+ 764 013e 515C     	.L174:
+ 765 0140 2846     		.loc 1 621 0
+ 766              		orr	r3, r3, #512
+ 767              	.LVL70:
+ 768 0142 FFF7FEFF 		str	r3, [r4, #20]
+ 769              	.L175:
+ 611:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					dataCfg->tx_cnt++;
+ 770              	, #-1
+ 771 0146 6368     		.loc 1 622 0
+ 772 0148 0133     		b	.L118
+ 773 014a 05E0     	.LVL71:
+ 774              	.L146:
+ 612:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				} else {
+ 613:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					SSP_SendData(SSPx, (*(uint16_t *)((uint32_t)dataCfg->tx_data + dataCfg->tx_cnt)));
+ 775              	 1 628 0
+ 776 014c 515A     		mov	r0, r5
+ 777 014e 2846     		bl	SSP_ReceiveData
+ 778              		.loc 1 631 0
+ 779              		ldr	r1, [r4, #8]
+ 780 0150 FFF7FEFF 		cbz	r1, .L147
+ 781              		.loc 1 633 0
+ 614:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					dataCfg->tx_cnt += 2;
+ 782              	3, #12
+ 783 0154 6368     		mul	r3, r8, r3
+ 784 0156 0233     		ldr	r2, .L181
+ 785              		ldr	r3, [r3, r2]
+ 786 0158 6360     		ldr	r2, [r4, #12]
+ 615:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 616:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 617:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 618:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Check error
+ 619:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			if ((stat = SSPx->RIS) & SSP_RIS_ROR){
+ 787              		r3, .L149
+ 788 015a AB69     		.loc 1 634 0
+ 789              		strb	r0, [r1, r2]
+ 790 015c 13F0010F 		b	.L147
+ 791 0160 1FD0     	.L149:
+ 792              		.loc 1 636 0
+ 793              		strh	r0, [r1, r2]	@ movhi
+ 620:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// save status and return
+ 621:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				dataCfg->status = stat | SSP_STAT_ERROR;
+ 794              		.loc 1 640 0
+ 795 0162 43F40073 		movs	r3, #12
+ 796              		mul	r3, r8, r3
+ 797 0166 6361     		ldr	r2, .L181
+ 798              		ldr	r3, [r3, r2]
+ 799 0168 4FF0FF30 		ldr	r2, [r4, #12]
+ 622:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				return (-1);
+ 800              	r3, .L151
+ 801 016c 37E0     		.loc 1 641 0
+ 802              		adds	r3, r2, #1
+ 803              		b	.L173
+ 623:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 624:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 625:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Check for any data available in RX FIFO
+ 626:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			while ((SSPx->SR & SSP_SR_RNE) && (dataCfg->rx_cnt != dataCfg->length)){
+ 627:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// Read data from SSP data
+ 628:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				tmp = SSP_ReceiveData(SSPx);
+ 804              	1:
+ 805 016e 2846     		.loc 1 643 0
+ 806 0170 FFF7FEFF 		adds	r3, r2, #2
+ 629:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 630:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// Store data to destination
+ 631:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (dataCfg->rx_data != NULL)
+ 807              	73:
+ 808 0174 A168     		str	r3, [r4, #12]
+ 809 0176 49B1     	.LVL72:
+ 632:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				{
+ 633:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					if (sspdat[sspnum].dataword == 0){
+ 810              	66:
+ 811 0178 0C23     		.loc 1 626 0
+ 812 017a 08FB03F3 		ldr	r3, [r5, #12]
+ 813 017e 194A     	.LVL73:
+ 814 0180 9B58     		tst	r3, #4
+ 815 0182 E268     		beq	.L180
+ 816 0184 0BB9     		ldr	r2, [r4, #12]
+ 634:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						*(uint8_t *)((uint32_t)dataCfg->rx_data + dataCfg->rx_cnt) = (uint8_t) tmp;
+ 817              	, [r4, #16]
+ 818 0186 8854     		cmp	r2, r3
+ 819 0188 00E0     		bne	.L146
+ 820              	.L180:
+ 635:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					} else {
+ 636:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 						*(uint16_t *)((uint32_t)dataCfg->rx_data + dataCfg->rx_cnt) = (uint16_t) tmp;
+ 821              	c 1 598 0
+ 822 018a 8852     		ldr	r3, [r5, #12]
+ 823              		tst	r3, #2
+ 637:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					}
+ 638:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 639:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				// Increase counter
+ 640:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				if (sspdat[sspnum].dataword == 0){
+ 824              	q	.L154
+ 825 018c 0C23     		ldr	r1, [r4, #4]
+ 826 018e 08FB03F3 		ldr	r3, [r4, #16]
+ 827 0192 144A     		cmp	r1, r3
+ 828 0194 9B58     		bne	.L136
+ 829 0196 E268     	.L154:
+ 830 0198 0BB9     		.loc 1 649 0
+ 641:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					dataCfg->rx_cnt++;
+ 831              	, [r4, #12]
+ 832 019a 531C     		ldr	r3, [r4, #16]
+ 833 019c 00E0     		cmp	r2, r3
+ 834              		bne	.L156
+ 642:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				} else {
+ 643:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 					dataCfg->rx_cnt += 2;
+ 835              		r3, [r4, #4]
+ 836 019e 931C     		cmp	r3, r2
+ 837              		beq	.L158
+ 838 01a0 E360     	.L156:
+ 839              		.loc 1 651 0
+ 840              		movs	r3, #15
+ 841              		str	r3, [r5, #20]
+ 842 01a2 EB68     		b	.L176
+ 843              	.L158:
+ 844 01a4 13F0040F 		.loc 1 654 0
+ 845 01a8 03D0     		mov	r3, #256
+ 846 01aa E268     		str	r3, [r4, #20]
+ 847 01ac 2369     	.L176:
+ 848 01ae 9A42     		movs	r0, #0
+ 849 01b0 DDD1     	.LVL74:
+ 850              	.L118:
+ 851              		.loc 1 660 0
+ 852 01b2 EB68     		pop	{r4, r5, r6, r7, r8, r9, sl, pc}
+ 853 01b4 13F0020F 	.L182:
+ 854 01b8 03D0     		.align	2
+ 855 01ba 6168     	.L181:
+ 856 01bc 2369     		.word	.LANCHOR0
+ 857 01be 9942     		.word	SSP_IntHandler
+ 858 01c0 A9D1     	.LFE42:
+ 644:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 				}
+ 645:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			}
+ 646:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		}
+ 647:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 648:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		// If there more data to sent or receive
+ 649:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		if ((dataCfg->rx_cnt != dataCfg->length) || (dataCfg->tx_cnt != dataCfg->length)){
+ 860              	atus,"ax",%progbits
+ 861 01c2 E268     		.align	2
+ 862 01c4 2369     		.global	SSP_GetStatus
+ 863 01c6 9A42     		.thumb
+ 864 01c8 02D1     		.thumb_func
+ 866 01cc 9342     	SSP_GetStatus:
+ 867 01ce 02D0     	.LFB43:
+ 868              		.loc 1 675 0
+ 650:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Enable all interrupt
+ 651:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			SSPx->IMSC = SSP_IMSC_BITMASK;
+ 869              	 0, pretend = 0, frame = 0
+ 870 01d0 0F23     		@ frame_needed = 0, uses_anonymous_args = 0
+ 871 01d2 6B61     		@ link register save eliminated.
+ 872 01d4 02E0     	.LVL75:
+ 873              		.loc 1 679 0
+ 652:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		} else {
+ 653:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			// Save status
+ 654:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 			dataCfg->status = SSP_STAT_DONE;
+ 874              	r3, [r0, #12]
+ 875 01d6 4FF48073 		.loc 1 675 0
+ 876 01da 6361     		@ lr needed for prologue
+ 877              		.loc 1 679 0
+ 878 01dc 0020     		tst	r1, r3
+ 879              		.loc 1 680 0
+ 880              		ite	eq
+ 655:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		}
+ 656:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		return (0);
+ 657:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 658:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 659:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	return (-1);
+ 660:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 881              	r0, #0
+ 882 01de BDE8F087 		movne	r0, #1
+ 883              	.LVL76:
+ 884 01e2 C046     		bx	lr
+ 885              	.LFE43:
+ 887 01e8 00000000 		.section	.text.SSP_IntConfig,"ax",%progbits
+ 888              		.align	2
+ 889              		.global	SSP_IntConfig
+ 890              		.thumb
+ 891              		.thumb_func
+ 893              	SSP_IntConfig:
+ 894              	.LFB44:
+ 895              		.loc 1 698 0
+ 896              		@ args = 0, pretend = 0, frame = 0
+ 897              		@ frame_needed = 0, uses_anonymous_args = 0
+ 661:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 662:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 663:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		Checks whether the specified SSP status flag is set or not
+ 664:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP0 or SSP1
+ 665:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	FlagType	Type of flag to check status, should be one
+ 666:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 							of following:
+ 667:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  *							- SSP_STAT_TXFIFO_EMPTY: TX FIFO is empty
+ 668:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  *							- SSP_STAT_TXFIFO_NOTFULL: TX FIFO is not full
+ 669:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  *							- SSP_STAT_RXFIFO_NOTEMPTY: RX FIFO is not empty
+ 670:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  *							- SSP_STAT_RXFIFO_FULL: RX FIFO is full
+ 671:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  *							- SSP_STAT_BUSY: SSP peripheral is busy
+ 672:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return		New State of specified SSP status flag
+ 673:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 674:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** FlagStatus SSP_GetStatus(LPC_SSP_TypeDef* SSPx, uint32_t FlagType)
+ 675:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 898              	save eliminated.
+ 899              	.LVL77:
+ 900              		.loc 1 702 0
+ 901              		cmp	r2, #1
+ 902              		.loc 1 698 0
+ 676:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 677:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSP_STAT(FlagType));
+ 678:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 679:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	return ((SSPx->SR & FlagType) ? SET : RESET);
+ 903              	 needed for prologue
+ 904 0000 C368     		.loc 1 702 0
+ 905              		bne	.L186
+ 906              		.loc 1 704 0
+ 907              		ldr	r3, [r0, #20]
+ 908 0002 1942     		orr	r3, r1, r3
+ 680:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 909              	90
+ 910 0004 0CBF     	.L186:
+ 911 0006 0020     		.loc 1 708 0
+ 912 0008 0120     		ldr	r3, [r0, #20]
+ 913              		and	r3, r3, #15
+ 914 000a 7047     		bic	r3, r3, r1
+ 915              	.L190:
+ 916              		str	r3, [r0, #20]
+ 917              		.loc 1 710 0
+ 918              		bx	lr
+ 919              	.LFE44:
+ 921              		.section	.text.SSP_GetRawIntStatus,"ax",%progbits
+ 922              		.align	2
+ 923              		.global	SSP_GetRawIntStatus
+ 924              		.thumb
+ 681:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 682:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 683:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 684:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 685:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		Enable or disable specified interrupt type in SSP peripheral
+ 686:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP0 or SSP1
+ 687:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	IntType	Interrupt type in SSP peripheral, should be:
+ 688:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTCFG_ROR: Receive Overrun interrupt
+ 689:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTCFG_RT: Receive Time out interrupt
+ 690:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTCFG_RX: RX FIFO is at least half full interrupt
+ 691:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTCFG_TX: TX FIFO is at least half empty interrupt
+ 692:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	NewState New State of specified interrupt type, should be:
+ 693:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- ENABLE: Enable this interrupt type
+ 694:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- DISABLE: Disable this interrupt type
+ 695:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return		None
+ 696:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 697:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_IntConfig(LPC_SSP_TypeDef *SSPx, uint32_t IntType, FunctionalState NewState)
+ 698:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 925              	ype	SSP_GetRawIntStatus, %function
+ 926              	SSP_GetRawIntStatus:
+ 927              	.LFB45:
+ 928              		.loc 1 727 0
+ 929              		@ args = 0, pretend = 0, frame = 0
+ 699:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 700:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSP_INTCFG(IntType));
+ 701:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 702:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if (NewState == ENABLE)
+ 930              	ame_needed = 0, uses_anonymous_args = 0
+ 931 0000 012A     		@ link register save eliminated.
+ 932              	.LVL78:
+ 933              		.loc 1 731 0
+ 934              		ldr	r3, [r0, #24]
+ 935 0002 03D1     		.loc 1 727 0
+ 703:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 704:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->IMSC |= IntType;
+ 936              	needed for prologue
+ 937 0004 4369     		.loc 1 731 0
+ 938 0006 41EA0303 		tst	r1, r3
+ 939 000a 04E0     		.loc 1 732 0
+ 940              		ite	eq
+ 705:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 706:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	else
+ 707:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 708:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->IMSC &= (~IntType) & SSP_IMSC_BITMASK;
+ 941              	q	r0, #0
+ 942 000c 4369     		movne	r0, #1
+ 943 000e 03F00F03 	.LVL79:
+ 944 0012 23EA0103 		bx	lr
+ 945              	.LFE45:
+ 709:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 710:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 947              	ion	.text.SSP_GetIntStatus,"ax",%progbits
+ 948 0018 7047     		.align	2
+ 949              		.global	SSP_GetIntStatus
+ 950              		.thumb
+ 951 001a C046     		.thumb_func
+ 953              	SSP_GetIntStatus:
+ 954              	.LFB46:
+ 955              		.loc 1 749 0
+ 956              		@ args = 0, pretend = 0, frame = 0
+ 957              		@ frame_needed = 0, uses_anonymous_args = 0
+ 958              		@ link register save eliminated.
+ 711:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 712:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 713:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 714:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief	Check whether the specified Raw interrupt status flag is
+ 715:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 			set or not
+ 716:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP0 or SSP1
+ 717:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	RawIntType	Raw Interrupt Type, should be:
+ 718:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTSTAT_RAW_ROR: Receive Overrun interrupt
+ 719:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTSTAT_RAW_RT: Receive Time out interrupt
+ 720:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTSTAT_RAW_RX: RX FIFO is at least half full interrupt
+ 721:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTSTAT_RAW_TX: TX FIFO is at least half empty interrupt
+ 722:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return	New State of specified Raw interrupt status flag in SSP peripheral
+ 723:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * Note: Enabling/Disabling specified interrupt in SSP peripheral does not
+ 724:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 		effect to Raw Interrupt Status flag.
+ 725:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 726:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** IntStatus SSP_GetRawIntStatus(LPC_SSP_TypeDef *SSPx, uint32_t RawIntType)
+ 727:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 959              	c 1 753 0
+ 960              		ldr	r3, [r0, #28]
+ 961              		.loc 1 749 0
+ 962              		@ lr needed for prologue
+ 963              		.loc 1 753 0
+ 728:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 729:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSP_INTSTAT_RAW(RawIntType));
+ 730:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 731:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	return ((SSPx->RIS & RawIntType) ? SET : RESET);
+ 964              	r1, r3
+ 965 0000 8369     		.loc 1 754 0
+ 966              		ite	eq
+ 967              		moveq	r0, #0
+ 968              		movne	r0, #1
+ 969 0002 1942     	.LVL81:
+ 732:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 970              	
+ 971 0004 0CBF     	.LFE46:
+ 973 0008 0120     		.section	.text.SSP_ClearIntPending,"ax",%progbits
+ 974              		.align	2
+ 975 000a 7047     		.global	SSP_ClearIntPending
+ 976              		.thumb
+ 977              		.thumb_func
+ 979              	SSP_ClearIntPending:
+ 980              	.LFB47:
+ 981              		.loc 1 769 0
+ 982              		@ args = 0, pretend = 0, frame = 0
+ 983              		@ frame_needed = 0, uses_anonymous_args = 0
+ 984              		@ link register save eliminated.
+ 985              	.LVL82:
+ 733:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 734:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 735:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 736:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief	Check whether the specified interrupt status flag is
+ 737:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 			set or not
+ 738:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP0 or SSP1
+ 739:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	IntType	Raw Interrupt Type, should be:
+ 740:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTSTAT_ROR: Receive Overrun interrupt
+ 741:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTSTAT_RT: Receive Time out interrupt
+ 742:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTSTAT_RX: RX FIFO is at least half full interrupt
+ 743:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 				- SSP_INTSTAT_TX: TX FIFO is at least half empty interrupt
+ 744:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return	New State of specified interrupt status flag in SSP peripheral
+ 745:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * Note: Enabling/Disabling specified interrupt in SSP peripheral effects
+ 746:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 			to Interrupt Status flag.
+ 747:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 748:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** IntStatus SSP_GetIntStatus (LPC_SSP_TypeDef *SSPx, uint32_t IntType)
+ 749:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 986              	r prologue
+ 987              		.loc 1 773 0
+ 988              		str	r1, [r0, #32]
+ 989              		.loc 1 774 0
+ 990              		bx	lr
+ 750:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 751:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSP_INTSTAT(IntType));
+ 752:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 753:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	return ((SSPx->MIS & IntType) ? SET :RESET);
+ 991              	7:
+ 993              		.section	.text.SSP_DMACmd,"ax",%progbits
+ 994              		.align	2
+ 995              		.global	SSP_DMACmd
+ 996 0002 1942     		.thumb
+ 754:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 997              	b_func
+ 999 0006 0020     	SSP_DMACmd:
+ 1000 0008 0120     	.LFB48:
+ 1001              		.loc 1 789 0
+ 1002 000a 7047     		@ args = 0, pretend = 0, frame = 0
+ 1003              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1004              		@ link register save eliminated.
+ 1005              	.LVL83:
+ 1006              		.loc 1 794 0
+ 1007              		cmp	r2, #1
+ 1008              		.loc 1 789 0
+ 1009              		@ lr needed for prologue
+ 1010              		.loc 1 794 0
+ 1011              		bne	.L198
+ 1012              		.loc 1 796 0
+ 755:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 756:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 757:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 758:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 759:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief				Clear specified interrupt pending in SSP peripheral
+ 760:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP0 or SSP1
+ 761:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	IntType	Interrupt pending to clear, should be:
+ 762:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						- SSP_INTCLR_ROR: clears the "frame was received when
+ 763:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						RxFIFO was full" interrupt.
+ 764:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						- SSP_INTCLR_RT: clears the "Rx FIFO was not empty and
+ 765:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						has not been read for a timeout period" interrupt.
+ 766:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return		None
+ 767:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 768:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_ClearIntPending(LPC_SSP_TypeDef *SSPx, uint32_t IntType)
+ 769:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 1013              	6]
+ 1014              		orr	r3, r1, r3
+ 1015              		b	.L202
+ 1016              	.L198:
+ 1017              		.loc 1 800 0
+ 1018              		ldr	r3, [r0, #36]
+ 770:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 771:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSP_INTCLR(IntType));
+ 772:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 773:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	SSPx->ICR = IntType;
+ 1019              	3, r3, #3
+ 1020 0000 0162     		bic	r3, r3, r1
+ 774:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 1021              	202:
+ 1022 0002 7047     		str	r3, [r0, #36]
+ 1023              		.loc 1 802 0
+ 1024              		bx	lr
+ 1025              	.LFE48:
+ 1027              		.section	.text.SSP0_StdIntHandler,"ax",%progbits
+ 1028              		.align	2
+ 1029              		.global	SSP0_StdIntHandler
+ 1030              		.thumb
+ 1031              		.thumb_func
+ 775:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 776:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /*********************************************************************//**
+ 777:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief				Enable/Disable DMA function for SSP peripheral
+ 778:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	SSPx	SSP peripheral selected, should be SSP0 or SSP1
+ 779:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	DMAMode	Type of DMA, should be:
+ 780:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						- SSP_DMA_TX: DMA for the transmit FIFO
+ 781:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						- SSP_DMA_RX: DMA for the Receive FIFO
+ 782:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in]	NewState	New State of DMA function on SSP peripheral,
+ 783:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						should be:
+ 784:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						- ENALBE: Enable this function
+ 785:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * 						- DISABLE: Disable this function
+ 786:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return		None
+ 787:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  **********************************************************************/
+ 788:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP_DMACmd(LPC_SSP_TypeDef *SSPx, uint32_t DMAMode, FunctionalState NewState)
+ 789:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 1033              	andler:
+ 1034              	.LFB49:
+ 1035              		.loc 1 810 0
+ 1036              		@ args = 0, pretend = 0, frame = 0
+ 1037              		@ frame_needed = 0, uses_anonymous_args = 0
+ 790:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSPx(SSPx));
+ 791:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_SSP_DMA(DMAMode));
+ 792:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	CHECK_PARAM(PARAM_FUNCTIONALSTATE(NewState));
+ 793:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 794:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	if (NewState == ENABLE)
+ 1038              	 1 812 0
+ 1039 0000 012A     		ldr	r3, .L205
+ 1040              		.loc 1 810 0
+ 1041              		push	{r4, lr}
+ 1042              	.LCFI2:
+ 1043 0002 03D1     		.loc 1 812 0
+ 795:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 796:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->DMACR |= DMAMode;
+ 1044              	3, [r3, #8]
+ 1045 0004 436A     		ldr	r0, .L205+4
+ 1046 0006 41EA0303 		blx	r3
+ 1047 000a 04E0     		.loc 1 813 0
+ 1048              		pop	{r4, pc}
+ 797:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 798:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	else
+ 799:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	{
+ 800:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 		SSPx->DMACR &= (~DMAMode) & SSP_DMA_BITMASK;
+ 1049              	:
+ 1050 000c 436A     		.align	2
+ 1051 000e 03F00303 	.L205:
+ 1052 0012 23EA0103 		.word	.LANCHOR0
+ 1053              		.word	1074298880
+ 1054 0016 4362     	.LFE49:
+ 801:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	}
+ 802:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 1055              		SSP0_StdIntHandler, .-SSP0_StdIntHandler
+ 1056 0018 7047     		.section	.text.SSP1_StdIntHandler,"ax",%progbits
+ 1057              		.align	2
+ 1058              		.global	SSP1_StdIntHandler
+ 1059 001a C046     		.thumb
+ 1060              		.thumb_func
+ 1062              	SSP1_StdIntHandler:
+ 1063              	.LFB50:
+ 1064              		.loc 1 821 0
+ 1065              		@ args = 0, pretend = 0, frame = 0
+ 1066              		@ frame_needed = 0, uses_anonymous_args = 0
+ 803:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 804:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /**
+ 805:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		Standard SSP0 Interrupt handler
+ 806:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in] 	None
+ 807:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return		None
+ 808:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  */
+ 809:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP0_StdIntHandler(void)
+ 810:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 1067              	0
+ 1068              		ldr	r3, .L209
+ 1069              		.loc 1 821 0
+ 811:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	// Call relevant handler
+ 812:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	sspdat[0].inthandler(LPC_SSP0);
+ 1070              	sh	{r4, lr}
+ 1071 0000 024B     	.LCFI3:
+ 1072              		.loc 1 823 0
+ 1073 0002 10B5     		ldr	r3, [r3, #20]
+ 1074              		ldr	r0, .L209+4
+ 1075              		blx	r3
+ 1076 0004 9B68     		.loc 1 824 0
+ 1077 0006 0248     		pop	{r4, pc}
+ 1078 0008 9847     	.L210:
+ 813:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 1079              	
+ 1080 000a 10BD     	.L209:
+ 1081              		.word	.LANCHOR0
+ 1082              		.word	1073938432
+ 1083              	.LFE50:
+ 1085 0010 00800840 		.section	.text.SSP_DeInit,"ax",%progbits
+ 1086              		.align	2
+ 1087              		.global	SSP_DeInit
+ 1088              		.thumb
+ 1089              		.thumb_func
+ 1091              	SSP_DeInit:
+ 1092              	.LFB34:
+ 1093              		.loc 1 277 0
+ 1094              		@ args = 0, pretend = 0, frame = 0
+ 1095              		@ frame_needed = 0, uses_anonymous_args = 0
+ 814:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 
+ 815:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** /**
+ 816:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @brief		Standard SSP1 Interrupt handler
+ 817:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @param[in] 	None
+ 818:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  * @return		None
+ 819:Libraries/NXP/Drivers/source/lpc17xx_ssp.c ****  */
+ 820:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** void SSP1_StdIntHandler(void)
+ 821:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** {
+ 1096              	280 0
+ 1097              		ldr	r3, .L218
+ 1098              		.loc 1 277 0
+ 822:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	// Call relevant handler
+ 823:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** 	sspdat[1].inthandler(LPC_SSP1);
+ 1099              	sh	{r4, lr}
+ 1100 0000 024B     	.LCFI4:
+ 1101              		.loc 1 280 0
+ 1102 0002 10B5     		cmp	r0, r3
+ 1103              		bne	.L212
+ 1104              		.loc 1 282 0
+ 1105 0004 5B69     		mov	r0, #2097152
+ 1106 0006 0248     	.LVL85:
+ 1107 0008 9847     		b	.L217
+ 824:Libraries/NXP/Drivers/source/lpc17xx_ssp.c **** }
+ 1108              	L212:
+ 1109 000a 10BD     		.loc 1 283 0
+ 1110              		ldr	r3, .L218+4
+ 1111              		cmp	r0, r3
+ 1112              		bne	.L216
+ 1113 000c 00000000 		.loc 1 285 0
+ 1114 0010 00000340 		mov	r0, #1024
+ 1115              	.LVL87:
+ 1116              	.L217:
+ 1117              		movs	r1, #0
+ 1118              		bl	CLKPWR_ConfigPPWR
+ 1119              	.LVL88:
+ 1120              	.L216:
+ 1121              		.loc 1 287 0
+ 1122              		pop	{r4, pc}
+ 1123              	.L219:
+ 1124              		.align	2
+ 1125              	.L218:
+ 1126              		.word	1074298880
+ 1127              		.word	1073938432
+ 1128              	.LFE34:
+ 1130 0000 074B     		.section	.text.SSP_SetClock,"ax",%progbits
+ 1131              		.align	2
+ 1132 0002 10B5     		.global	SSP_SetClock
+ 1133              		.thumb
+ 1134              		.thumb_func
+ 1136 0006 02D1     	SSP_SetClock:
+ 1137              	.LFB33:
+ 1138 0008 4FF40010 		.loc 1 228 0
+ 1139              		@ args = 0, pretend = 0, frame = 0
+ 1140 000c 04E0     		@ frame_needed = 0, uses_anonymous_args = 0
+ 1141              	.LVL89:
+ 1142              		.loc 1 235 0
+ 1143              		ldr	r3, .L237
+ 1144 000e 054B     		.loc 1 228 0
+ 1145 0010 9842     		push	{r4, r5, r6, lr}
+ 1146 0012 04D1     	.LCFI5:
+ 1147              		.loc 1 235 0
+ 1148 0014 4FF48060 		cmp	r0, r3
+ 1149              		.loc 1 228 0
+ 1150              		mov	r4, r0
+ 1151 0018 0021     		mov	r5, r1
+ 1152 001a FFF7FEFF 		.loc 1 235 0
+ 1153              		bne	.L221
+ 1154              	.LVL90:
+ 1155              		.loc 1 236 0
+ 1156 001e 10BD     		movs	r0, #42
+ 1157              		b	.L235
+ 1158              	.LVL91:
+ 1159              	.L221:
+ 1160 0020 00800840 		.loc 1 237 0
+ 1161 0024 00000340 		ldr	r3, .L237+4
+ 1162              		cmp	r0, r3
+ 1163              		bne	.L232
+ 1164              	.LVL92:
+ 1165              		.loc 1 238 0
+ 1166              		movs	r0, #20
+ 1167              	.LVL93:
+ 1168              	.L235:
+ 1169              		bl	CLKPWR_GetPCLK
+ 1170              		mov	lr, #2
+ 1171              	.LVL94:
+ 1172              		movs	r2, #0
+ 1173              	.LVL95:
+ 1174              		mov	r3, #-1
+ 1175              	.LVL96:
+ 1176              		.loc 1 249 0
+ 1177 0000 184B     		b	.L236
+ 1178              	.LVL97:
+ 1179 0002 70B5     	.L227:
+ 1180              		.loc 1 251 0
+ 1181              		adds	r1, r2, #1
+ 1182 0004 9842     	.LVL98:
+ 1183              		mul	r3, lr, r1
+ 1184 0006 0446     	.LVL99:
+ 1185 0008 0D46     		udiv	r3, r0, r3
+ 1186              	.LVL100:
+ 1187 000a 01D1     		.loc 1 252 0
+ 1188              		cmp	r3, r5
+ 1189              		bls	.L231
+ 1190 000c 2A20     		.loc 1 255 0
+ 1191 000e 03E0     		cmp	r1, #255
+ 1192              		itee	ls
+ 1193              		movls	r2, r1
+ 1194              		.loc 1 258 0
+ 1195 0010 154B     		addhi	lr, lr, #2
+ 1196 0012 9842     		movhi	r2, #0
+ 1197 0014 24D1     	.LVL101:
+ 1198              	.L236:
+ 1199              		.loc 1 249 0
+ 1200 0016 1420     		cmp	r3, r5
+ 1201              		bhi	.L227
+ 1202              	.LVL102:
+ 1203 0018 FFF7FEFF 	.L231:
+ 1204 001c 4FF0020E 		.loc 1 264 0
+ 1205              		ldr	r3, [r4, #0]
+ 1206 0020 0022     	.LVL103:
+ 1207              		.loc 1 265 0
+ 1208 0022 4FF0FF33 		and	r2, r2, #255
+ 1209              	.LVL104:
+ 1210              		.loc 1 264 0
+ 1211 0026 0CE0     		and	r3, r3, #255
+ 1212              		str	r3, [r4, #0]
+ 1213              		.loc 1 265 0
+ 1214              		ldr	r3, [r4, #0]
+ 1215 0028 511C     		orr	r3, r3, r2, lsl #8
+ 1216              		str	r3, [r4, #0]
+ 1217 002a 0EFB01F3 		.loc 1 266 0
+ 1218              		and	r3, lr, #255
+ 1219 002e B0FBF3F3 		str	r3, [r4, #16]
+ 1220              	.LVL105:
+ 1221              	.L232:
+ 1222 0032 AB42     		.loc 1 267 0
+ 1223 0034 07D9     		pop	{r4, r5, r6, pc}
+ 1224              	.L238:
+ 1225 0036 FF29     		.align	2
+ 1226 0038 92BF     	.L237:
+ 1227 003a 0A46     		.word	1074298880
+ 1228              		.word	1073938432
+ 1229 003c 0EF1020E 	.LFE33:
+ 1231              		.section	.text.SSP_Init,"ax",%progbits
+ 1232              		.align	2
+ 1233              		.global	SSP_Init
+ 1234 0042 AB42     		.thumb
+ 1235 0044 F0D8     		.thumb_func
+ 1237              	SSP_Init:
+ 1238              	.LFB35:
+ 1239 0046 2368     		.loc 1 301 0
+ 1240              		@ args = 0, pretend = 0, frame = 0
+ 1241              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1242 0048 02F0FF02 	.LVL106:
+ 1243              		.loc 1 306 0
+ 1244              		ldr	r3, .L251
+ 1245 004c 03F0FF03 		.loc 1 301 0
+ 1246 0050 2360     		push	{r4, r5, r6, lr}
+ 1247              	.LCFI6:
+ 1248 0052 2368     		.loc 1 306 0
+ 1249 0054 43EA0223 		cmp	r0, r3
+ 1250 0058 2360     		.loc 1 301 0
+ 1251              		mov	r5, r0
+ 1252 005a 0EF0FF03 		mov	r4, r1
+ 1253 005e 2361     		.loc 1 306 0
+ 1254              		bne	.L240
+ 1255              	.LVL107:
+ 1256              		.loc 1 308 0
+ 1257 0060 70BD     		mov	r0, #2097152
+ 1258              		b	.L249
+ 1259 0062 C046     	.LVL108:
+ 1260              	.L240:
+ 1261 0064 00800840 		.loc 1 309 0
+ 1262 0068 00000340 		ldr	r3, .L251+4
+ 1263              		cmp	r0, r3
+ 1264              		bne	.L248
+ 1265              	.LVL109:
+ 1266              		.loc 1 311 0
+ 1267              		mov	r0, #1024
+ 1268              	.LVL110:
+ 1269              	.L249:
+ 1270              		movs	r1, #1
+ 1271              		bl	CLKPWR_ConfigPPWR
+ 1272              		.loc 1 319 0
+ 1273              		ldr	r2, [r4, #4]
+ 1274              		ldr	r3, [r4, #8]
+ 1275              		.loc 1 324 0
+ 1276              		mov	r0, r5
+ 1277              		.loc 1 319 0
+ 1278 0000 1A4B     		orrs	r3, r3, r2
+ 1279              		ldr	r2, [r4, #16]
+ 1280 0002 70B5     		orrs	r3, r3, r2
+ 1281              		ldr	r2, [r4, #0]
+ 1282              		orrs	r3, r3, r2
+ 1283 0004 9842     		lsls	r3, r3, #16
+ 1284              	.LVL111:
+ 1285 0006 0546     		lsrs	r3, r3, #16
+ 1286 0008 0C46     		.loc 1 323 0
+ 1287              		str	r3, [r5, #0]
+ 1288 000a 02D1     		.loc 1 324 0
+ 1289              		bl	SSP_getNum
+ 1290              	.LVL112:
+ 1291 000c 4FF40010 		.loc 1 325 0
+ 1292 0010 04E0     		ldr	r3, [r4, #0]
+ 1293              		ldr	r1, .L251+8
+ 1294              		cmp	r3, #7
+ 1295              		bls	.L245
+ 1296 0012 174B     		.loc 1 326 0
+ 1297 0014 9842     		movs	r3, #12
+ 1298 0016 27D1     		mul	r3, r0, r3
+ 1299              	.LVL113:
+ 1300              		movs	r2, #1
+ 1301 0018 4FF48060 		b	.L250
+ 1302              	.LVL114:
+ 1303              	.L245:
+ 1304 001c 0121     		.loc 1 328 0
+ 1305 001e FFF7FEFF 		movs	r3, #12
+ 1306              		mul	r3, r0, r3
+ 1307 0022 6268     	.LVL115:
+ 1308 0024 A368     		movs	r2, #0
+ 1309              	.L250:
+ 1310 0026 2846     		str	r2, [r3, r1]
+ 1311              		.loc 1 331 0
+ 1312 0028 1343     		ldr	r3, [r4, #12]
+ 1313 002a 2269     		.loc 1 336 0
+ 1314 002c 1343     		mov	r0, r5
+ 1315 002e 2268     	.LVL116:
+ 1316 0030 1343     		.loc 1 331 0
+ 1317 0032 1B04     		and	r3, r3, #15
+ 1318              	.LVL117:
+ 1319 0034 1B0C     		.loc 1 333 0
+ 1320              		str	r3, [r5, #4]
+ 1321 0036 2B60     		.loc 1 336 0
+ 1322              		ldr	r1, [r4, #20]
+ 1323 0038 FFF7FEFF 		bl	SSP_SetClock
+ 1324              	.LVL118:
+ 1325              	.LVL119:
+ 1326 003c 2368     	.L248:
+ 1327 003e 0D49     		.loc 1 337 0
+ 1328 0040 072B     		pop	{r4, r5, r6, pc}
+ 1329 0042 04D9     	.L252:
+ 1330              		.align	2
+ 1331 0044 0C23     	.L251:
+ 1332 0046 00FB03F3 		.word	1074298880
+ 1333              		.word	1073938432
+ 1334 004a 0122     		.word	.LANCHOR0
+ 1335 004c 03E0     	.LFE35:
+ 1337              		.section	.bss.sspdat,"aw",%nobits
+ 1338              		.align	2
+ 1339 004e 0C23     		.set	.LANCHOR0,. + 0
+ 1342 0054 0022     	sspdat:
+ 1343              		.space	24
+ 1344 0056 5A50     		.section	.debug_frame,"",%progbits
+ 1345              	.Lframe0:
+ 1346 0058 E368     		.4byte	.LECIE0-.LSCIE0
+ 1347              	.LSCIE0:
+ 1348 005a 2846     		.4byte	0xffffffff
+ 1349              		.byte	0x1
+ 1350              		.ascii	"\000"
+ 1351 005c 03F00F03 		.uleb128 0x1
+ 1352              		.sleb128 -4
+ 1353              		.byte	0xe
+ 1354 0060 6B60     		.byte	0xc
+ 1355              		.uleb128 0xd
+ 1356 0062 6169     		.uleb128 0x0
+ 1357 0064 FFF7FEFF 		.align	2
+ 1358              	.LECIE0:
+ 1359              	.LSFDE0:
+ 1360              		.4byte	.LEFDE0-.LASFDE0
+ 1361              	.LASFDE0:
+ 1362 0068 70BD     		.4byte	.Lframe0
+ 1363              		.4byte	.LFB31
+ 1364 006a C046     		.4byte	.LFE31-.LFB31
+ 1365              		.align	2
+ 1366 006c 00800840 	.LEFDE0:
+ 1367 0070 00000340 	.LSFDE2:
+ 1368 0074 00000000 		.4byte	.LEFDE2-.LASFDE2
+ 1369              	.LASFDE2:
+ 1370              		.4byte	.Lframe0
+ 1371              		.4byte	.LFB36
+ 1372              		.4byte	.LFE36-.LFB36
+ 1373              		.align	2
+ 1374              	.LEFDE2:
+ 1375              	.LSFDE4:
+ 1376              		.4byte	.LEFDE4-.LASFDE4
+ 1377 0000 00000000 	.LASFDE4:
+ 1377      00000000 
+ 1377      00000000 
+ 1377      00000000 
+ 1377      00000000 
+ 1634              		.4byte	.LVL11
+DEFINED SYMBOLS
+                            *ABS*:00000000 lpc17xx_ssp.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:24     .text.SSP_getNum:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:27     .text.SSP_getNum:00000000 SSP_getNum
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:60     .text.SSP_getNum:00000018 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:70     .text.SSP_ConfigStructInit:00000000 SSP_ConfigStructInit
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:67     .text.SSP_ConfigStructInit:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:102    .text.SSP_ConfigStructInit:00000014 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:111    .text.SSP_Cmd:00000000 SSP_Cmd
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:108    .text.SSP_Cmd:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:143    .text.SSP_LoopBackCmd:00000000 SSP_LoopBackCmd
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:140    .text.SSP_LoopBackCmd:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:175    .text.SSP_SlaveOutputCmd:00000000 SSP_SlaveOutputCmd
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:172    .text.SSP_SlaveOutputCmd:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:207    .text.SSP_SendData:00000000 SSP_SendData
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:204    .text.SSP_SendData:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:227    .text.SSP_ReceiveData:00000000 SSP_ReceiveData
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:224    .text.SSP_ReceiveData:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:250    .text.SSP_IntHandler:00000000 SSP_IntHandler
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:247    .text.SSP_IntHandler:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:510    .text.SSP_IntHandler:0000014c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:519    .text.SSP_ReadWrite:00000000 SSP_ReadWrite
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:516    .text.SSP_ReadWrite:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:886    .text.SSP_ReadWrite:000001e4 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:896    .text.SSP_GetStatus:00000000 SSP_GetStatus
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:893    .text.SSP_GetStatus:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:923    .text.SSP_IntConfig:00000000 SSP_IntConfig
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:920    .text.SSP_IntConfig:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:957    .text.SSP_GetRawIntStatus:00000000 SSP_GetRawIntStatus
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:954    .text.SSP_GetRawIntStatus:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:984    .text.SSP_GetIntStatus:00000000 SSP_GetIntStatus
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:981    .text.SSP_GetIntStatus:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1011   .text.SSP_ClearIntPending:00000000 SSP_ClearIntPending
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1008   .text.SSP_ClearIntPending:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1031   .text.SSP_DMACmd:00000000 SSP_DMACmd
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1028   .text.SSP_DMACmd:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1065   .text.SSP0_StdIntHandler:00000000 SSP0_StdIntHandler
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1062   .text.SSP0_StdIntHandler:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1084   .text.SSP0_StdIntHandler:0000000c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1094   .text.SSP1_StdIntHandler:00000000 SSP1_StdIntHandler
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1091   .text.SSP1_StdIntHandler:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1113   .text.SSP1_StdIntHandler:0000000c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1123   .text.SSP_DeInit:00000000 SSP_DeInit
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1120   .text.SSP_DeInit:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1160   .text.SSP_DeInit:00000020 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1170   .text.SSP_SetClock:00000000 SSP_SetClock
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1167   .text.SSP_SetClock:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1261   .text.SSP_SetClock:00000064 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1271   .text.SSP_Init:00000000 SSP_Init
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1268   .text.SSP_Init:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1366   .text.SSP_Init:0000006c $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1376   .bss.sspdat:00000000 sspdat
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1380   .debug_frame:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccOyaaaa.s:1638   .debug_loc:00000000 $d
+
+UNDEFINED SYMBOLS
+CLKPWR_ConfigPPWR
+CLKPWR_GetPCLK

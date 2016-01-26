@@ -1,0 +1,288 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"lpc17xx_nvic.c"
+  21              	.Ltext0:
+  22              		.section	.text.NVIC_DeInit,"ax",%progbits
+  23              		.align	2
+  24              		.global	NVIC_DeInit
+  25              		.thumb
+  26              		.thumb_func
+  28              	NVIC_DeInit:
+  29              	.LFB31:
+  30              		.file 1 "Libraries/NXP/Drivers/source/lpc17xx_nvic.c"
+   1:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /**
+   2:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @file	: lpc17xx_nvic.c
+   3:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @brief	: Contains all expansion functions support for
+   4:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * 				NVIC firmware library on LPC17xx. The main
+   5:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * 				NVIC functions are defined in core_cm3.h
+   6:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @version	: 1.0
+   7:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @date	: 18. Mar. 2009
+   8:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @author	: HieuNguyen
+   9:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  **************************************************************************
+  10:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * Software that is described herein is for illustrative purposes only
+  11:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * which provides customers with programming information regarding the
+  12:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * products. This software is supplied "AS IS" without any warranties.
+  13:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * NXP Semiconductors assumes no responsibility or liability for the
+  14:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * use of the software, conveys no license or title under any patent,
+  15:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * copyright, or mask work right to the product. NXP Semiconductors
+  16:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * reserves the right to make changes in the software without
+  17:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * notification. NXP Semiconductors also make no representation or
+  18:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * warranty that such application will be suitable for the specified
+  19:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * use without further testing or modification.
+  20:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  **********************************************************************/
+  21:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  22:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /* Peripheral group ----------------------------------------------------------- */
+  23:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /** @addtogroup NVIC
+  24:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @{
+  25:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  */
+  26:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  27:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /* Includes ------------------------------------------------------------------- */
+  28:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** #include "lpc17xx_nvic.h"
+  29:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  30:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  31:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /* Private Macros ------------------------------------------------------------- */
+  32:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /** @addtogroup NVIC_Private_Macros
+  33:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @{
+  34:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  */
+  35:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  36:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /* Vector table offset bit mask */
+  37:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** #define NVIC_VTOR_MASK              0x3FFFFF80
+  38:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  39:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /**
+  40:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @}
+  41:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  */
+  42:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  43:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  44:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /* Public Functions ----------------------------------------------------------- */
+  45:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /** @addtogroup NVIC_Public_Functions
+  46:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @{
+  47:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  */
+  48:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  49:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  50:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /*****************************************************************************//**
+  51:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @brief		De-initializes the NVIC peripheral registers to their default
+  52:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * 				reset values.
+  53:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @param		None
+  54:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @return      None
+  55:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  *
+  56:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * These following NVIC peripheral registers will be de-initialized:
+  57:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - Disable Interrupt (32 IRQ interrupt sources that matched with LPC17xx)
+  58:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - Clear all Pending Interrupts (32 IRQ interrupt source that matched with LPC17xx)
+  59:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - Clear all Interrupt Priorities (32 IRQ interrupt source that matched with LPC17xx)
+  60:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  *******************************************************************************/
+  61:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** void NVIC_DeInit(void)
+  62:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** {
+  31              	end = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              		.loc 1 66 0
+  63:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	uint8_t tmp;
+  64:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  65:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	/* Disable all interrupts */
+  66:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	NVIC->ICER[0] = 0xFFFFFFFF;
+  35              		r3, .L5
+  36 0000 0A4B     		mov	r1, #-1
+  37 0002 4FF0FF31 		.loc 1 67 0
+  67:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	NVIC->ICER[1] = 0x00000001;
+  38              	vs	r2, #1
+  39 0006 0122     		.loc 1 66 0
+  40              		str	r1, [r3, #128]
+  41 0008 C3F88010 		.loc 1 62 0
+  42              		@ lr needed for prologue
+  43              		.loc 1 67 0
+  44              		str	r2, [r3, #132]
+  45 000c C3F88420 		.loc 1 69 0
+  68:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	/* Clear all pending interrupts */
+  69:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	NVIC->ICPR[0] = 0xFFFFFFFF;
+  46              	 [r3, #384]
+  47 0010 C3F88011 		.loc 1 70 0
+  70:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	NVIC->ICPR[1] = 0x00000001;
+  48              	tr	r2, [r3, #388]
+  49 0014 C3F88421 		adds	r1, r1, r2
+  50 0018 8918     	.L2:
+  51              		.loc 1 74 0
+  71:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  72:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	/* Clear all interrupt priority */
+  73:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	for (tmp = 0; tmp < 32; tmp++) {
+  74:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 		NVIC->IP[tmp] = 0x00;
+  52              		r3, .L5
+  53 001a 044B     		movs	r2, #0
+  54 001c 0022     		adds	r3, r1, r3
+  55 001e CB18     		adds	r1, r1, #1
+  56 0020 0131     		.loc 1 73 0
+  57              		cmp	r1, #32
+  58 0022 2029     		.loc 1 74 0
+  59              		strb	r2, [r3, #768]
+  60 0024 83F80023 		.loc 1 73 0
+  61              		bne	.L2
+  62 0028 F7D1     		.loc 1 76 0
+  75:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	}
+  76:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** }
+  63              	
+  64 002a 7047     		.align	2
+  65              	.L5:
+  66              		.word	-536813312
+  67              	.LFE31:
+  69              		.section	.text.NVIC_SCBDeInit,"ax",%progbits
+  70              		.align	2
+  71              		.global	NVIC_SCBDeInit
+  72              		.thumb
+  73              		.thumb_func
+  75              	NVIC_SCBDeInit:
+  76              	.LFB32:
+  77              		.loc 1 97 0
+  78              		@ args = 0, pretend = 0, frame = 0
+  77:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+  78:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /*****************************************************************************//**
+  79:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @brief			De-initializes the SCB peripheral registers to their default
+  80:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  *                  reset values.
+  81:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @param			none
+  82:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @return 			none
+  83:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  *
+  84:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * These following SCB NVIC peripheral registers will be de-initialized:
+  85:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - Interrupt Control State register
+  86:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - Interrupt Vector Table Offset register
+  87:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - Application Interrupt/Reset Control register
+  88:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - System Control register
+  89:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - Configuration Control register
+  90:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - System Handlers Priority Registers
+  91:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - System Handler Control and State Register
+  92:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - Configurable Fault Status Register
+  93:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - Hard Fault Status Register
+  94:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * - Debug Fault Status Register
+  95:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  *******************************************************************************/
+  96:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** void NVIC_SCBDeInit(void)
+  97:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** {
+  79              	 = 0, uses_anonymous_args = 0
+  80              		@ link register save eliminated.
+  81              		.loc 1 100 0
+  82              		ldr	r1, .L11
+  98:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	uint8_t tmp;
+  99:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+ 100:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	SCB->ICSR = 0x0A000000;
+  83              		r3, #167772160
+  84 0000 0B49     		str	r3, [r1, #4]
+  85 0002 4FF02063 		.loc 1 102 0
+  86 0006 4B60     		ldr	r3, .L11+4
+ 101:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	SCB->VTOR = 0x00000000;
+ 102:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	SCB->AIRCR = 0x05FA0000;
+  87              	c 1 101 0
+  88 0008 0A4B     		movs	r2, #0
+  89              		str	r2, [r1, #8]
+  90 000a 0022     		.loc 1 97 0
+  91 000c 8A60     		@ lr needed for prologue
+  92              		.loc 1 102 0
+  93              		str	r3, [r1, #12]
+  94              		.loc 1 103 0
+  95 000e CB60     		str	r2, [r1, #16]
+ 103:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	SCB->SCR = 0x00000000;
+  96              	04 0
+  97 0010 0A61     		str	r2, [r1, #20]
+ 104:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	SCB->CCR = 0x00000000;
+  98              	8:
+  99 0012 4A61     		.loc 1 107 0
+ 100              		ldr	r1, .L11
+ 105:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+ 106:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	for (tmp = 0; tmp < 32; tmp++) {
+ 107:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 		SCB->SHP[tmp] = 0x00;
+ 101              	vs	r0, #0
+ 102 0014 0649     		adds	r3, r2, r1
+ 103 0016 0020     		adds	r2, r2, #1
+ 104 0018 5318     		.loc 1 106 0
+ 105 001a 0132     		cmp	r2, #32
+ 106              		.loc 1 107 0
+ 107 001c 202A     		strb	r0, [r3, #24]
+ 108              		.loc 1 106 0
+ 109 001e 1876     		bne	.L8
+ 110              		.loc 1 111 0
+ 111 0020 F8D1     		mov	r3, #-1
+ 108:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	}
+ 109:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+ 110:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	SCB->SHCSR = 0x00000000;
+ 111:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	SCB->CFSR = 0xFFFFFFFF;
+ 112              	 0
+ 113 0022 4FF0FF33 		str	r0, [r1, #36]
+ 114              		.loc 1 111 0
+ 115 0026 4862     		str	r3, [r1, #40]
+ 116              		.loc 1 112 0
+ 117 0028 8B62     		str	r3, [r1, #44]
+ 112:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	SCB->HFSR = 0xFFFFFFFF;
+ 118              	1 113 0
+ 119 002a CB62     		str	r3, [r1, #48]
+ 113:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	SCB->DFSR = 0xFFFFFFFF;
+ 120              	loc 1 114 0
+ 121 002c 0B63     		bx	lr
+ 114:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** }
+ 122              	12:
+ 123 002e 7047     		.align	2
+ 124              	.L11:
+ 125              		.word	-536810240
+ 126              		.word	100270080
+ 127 0030 00ED00E0 	.LFE32:
+ 129              		.section	.text.NVIC_SetVTOR,"ax",%progbits
+ 130              		.align	2
+ 131              		.global	NVIC_SetVTOR
+ 132              		.thumb
+ 133              		.thumb_func
+ 135              	NVIC_SetVTOR:
+ 136              	.LFB33:
+ 137              		.loc 1 123 0
+ 138              		@ args = 0, pretend = 0, frame = 0
+ 115:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+ 116:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 
+ 117:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** /*****************************************************************************//**
+ 118:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @brief		Set Vector Table Offset value
+ 119:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @param		offset Offset value
+ 120:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  * @return      None
+ 121:Libraries/NXP/Drivers/source/lpc17xx_nvic.c ****  *******************************************************************************/
+ 122:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** void NVIC_SetVTOR(uint32_t offset)
+ 123:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** {
+ 139              	 0, uses_anonymous_args = 0
+ 140              		@ link register save eliminated.
+ 141              	.LVL0:
+ 142              		.loc 1 124 0
+ 143              		bic	r0, r0, #-1073741824
+ 124:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** 	SCB->VTOR  = (offset & NVIC_VTOR_MASK);
+ 144              	:
+ 145 0000 20F04040 		ldr	r3, .L15
+ 146              		bic	r0, r0, #127
+ 147 0004 024B     		.loc 1 123 0
+ 148 0006 20F07F00 		@ lr needed for prologue
+ 149              		.loc 1 124 0
+ 150              		str	r0, [r3, #8]
+ 151              		.loc 1 125 0
+ 152 000a 9860     		bx	lr
+ 125:Libraries/NXP/Drivers/source/lpc17xx_nvic.c **** }
+ 153              	lign	2
+ 154 000c 7047     	.L15:
+ 155              		.word	-536810240
+ 156 000e C046     	.LFE33:
+ 158 0010 00ED00E0 		.section	.debug_frame,"",%progbits
+ 159              	.Lframe0:
+ 160              		.4byte	.LECIE0-.LSCIE0
+ 201              	.LLST3:
+DEFINED SYMBOLS
+                            *ABS*:00000000 lpc17xx_nvic.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4icaaa.s:28     .text.NVIC_DeInit:00000000 NVIC_DeInit
+C:\Users\KVIN~1\AppData\Local\Temp/cc4icaaa.s:25     .text.NVIC_DeInit:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4icaaa.s:68     .text.NVIC_DeInit:0000002c $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4icaaa.s:77     .text.NVIC_SCBDeInit:00000000 NVIC_SCBDeInit
+C:\Users\KVIN~1\AppData\Local\Temp/cc4icaaa.s:74     .text.NVIC_SCBDeInit:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4icaaa.s:127    .text.NVIC_SCBDeInit:00000030 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4icaaa.s:137    .text.NVIC_SetVTOR:00000000 NVIC_SetVTOR
+C:\Users\KVIN~1\AppData\Local\Temp/cc4icaaa.s:134    .text.NVIC_SetVTOR:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc4icaaa.s:158    .text.NVIC_SetVTOR:00000010 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc4icaaa.s:205    .debug_loc:00000000 $d
+
+NO UNDEFINED SYMBOLS

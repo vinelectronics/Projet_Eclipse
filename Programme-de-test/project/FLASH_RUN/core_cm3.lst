@@ -1,0 +1,1288 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"core_cm3.c"
+  21              	.Ltext0:
+  22              		.section	.text.__get_PSP,"ax",%progbits
+  23              		.align	2
+  24              		.global	__get_PSP
+  25              		.thumb
+  26              		.thumb_func
+  28              	__get_PSP:
+  29              	.LFB2:
+  30              		.file 1 "Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c"
+   1:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**************************************************************************//**
+   2:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @file     core_cm3.c
+   3:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief    CMSIS Cortex-M3 Core Peripheral Access Layer Source File
+   4:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @version  V1.30
+   5:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @date     30. October 2009
+   6:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+   7:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @note
+   8:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Copyright (C) 2009 ARM Limited. All rights reserved.
+   9:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  10:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @par
+  11:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * ARM Limited (ARM) is supplying this software for use with Cortex-M 
+  12:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * processor based microcontrollers.  This file can be freely distributed 
+  13:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * within development tools that are supporting such ARM based processors. 
+  14:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  15:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @par
+  16:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
+  17:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
+  18:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
+  19:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * ARM SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
+  20:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+  21:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  22:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  ******************************************************************************/
+  23:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  24:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #include <stdint.h>
+  25:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  26:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /* define compiler specific symbols */
+  27:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #if defined ( __CC_ARM   )
+  28:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   #define __ASM            __asm                                      /*!< asm keyword for ARM Comp
+  29:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   #define __INLINE         __inline                                   /*!< inline keyword for ARM C
+  30:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  31:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #elif defined ( __ICCARM__ )
+  32:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   #define __ASM           __asm                                       /*!< asm keyword for IAR Comp
+  33:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   #define __INLINE        inline                                      /*!< inline keyword for IAR C
+  34:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  35:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #elif defined   (  __GNUC__  )
+  36:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   #define __ASM            __asm                                      /*!< asm keyword for GNU Comp
+  37:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   #define __INLINE         inline                                     /*!< inline keyword for GNU C
+  38:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  39:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #elif defined   (  __TASKING__  )
+  40:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   #define __ASM            __asm                                      /*!< asm keyword for TASKING 
+  41:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   #define __INLINE         inline                                     /*!< inline keyword for TASKI
+  42:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  43:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #endif
+  44:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  45:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  46:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /* ###################  Compiler specific Intrinsics  ########################### */
+  47:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  48:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #if defined ( __CC_ARM   ) /*------------------RealView Compiler -----------------*/
+  49:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /* ARM armcc specific functions */
+  50:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  51:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+  52:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Process Stack Pointer
+  53:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  54:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return ProcessStackPointer
+  55:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  56:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the actual process stack pointer
+  57:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+  58:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM uint32_t __get_PSP(void)
+  59:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+  60:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   mrs r0, psp
+  61:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+  62:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+  63:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  64:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+  65:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Process Stack Pointer
+  66:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  67:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  topOfProcStack  Process Stack Pointer
+  68:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  69:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Assign the value ProcessStackPointer to the MSP 
+  70:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * (process stack pointer) Cortex processor register
+  71:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+  72:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM void __set_PSP(uint32_t topOfProcStack)
+  73:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+  74:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   msr psp, r0
+  75:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+  76:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+  77:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  78:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+  79:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Main Stack Pointer
+  80:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  81:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return Main Stack Pointer
+  82:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  83:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the current value of the MSP (main stack pointer)
+  84:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Cortex processor register
+  85:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+  86:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM uint32_t __get_MSP(void)
+  87:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+  88:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   mrs r0, msp
+  89:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+  90:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+  91:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+  92:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+  93:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Main Stack Pointer
+  94:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  95:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  topOfMainStack  Main Stack Pointer
+  96:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+  97:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Assign the value mainStackPointer to the MSP 
+  98:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * (main stack pointer) Cortex processor register
+  99:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 100:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM void __set_MSP(uint32_t mainStackPointer)
+ 101:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 102:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   msr msp, r0
+ 103:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 104:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 105:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 106:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 107:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Reverse byte order in unsigned short value
+ 108:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 109:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param   value  value to reverse
+ 110:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return         reversed value
+ 111:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 112:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Reverse byte order in unsigned short value
+ 113:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 114:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM uint32_t __REV16(uint16_t value)
+ 115:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 116:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   rev16 r0, r0
+ 117:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 118:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 119:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 120:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 121:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Reverse byte order in signed short value with sign extension to integer
+ 122:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 123:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param   value  value to reverse
+ 124:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return         reversed value
+ 125:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 126:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Reverse byte order in signed short value with sign extension to integer
+ 127:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 128:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM int32_t __REVSH(int16_t value)
+ 129:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 130:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   revsh r0, r0
+ 131:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 132:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 133:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 134:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 135:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #if (__ARMCC_VERSION < 400000)
+ 136:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 137:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 138:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Remove the exclusive lock created by ldrex
+ 139:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 140:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Removes the exclusive lock which is created by ldrex.
+ 141:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 142:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM void __CLREX(void)
+ 143:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 144:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   clrex
+ 145:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 146:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 147:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 148:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Base Priority value
+ 149:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 150:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return BasePriority
+ 151:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 152:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the content of the base priority register
+ 153:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 154:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM uint32_t  __get_BASEPRI(void)
+ 155:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 156:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   mrs r0, basepri
+ 157:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 158:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 159:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 160:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 161:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Base Priority value
+ 162:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 163:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  basePri  BasePriority
+ 164:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 165:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Set the base priority register
+ 166:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 167:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM void __set_BASEPRI(uint32_t basePri)
+ 168:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 169:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   msr basepri, r0
+ 170:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 171:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 172:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 173:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 174:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Priority Mask value
+ 175:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 176:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return PriMask
+ 177:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 178:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return state of the priority mask bit from the priority mask register
+ 179:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 180:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM uint32_t __get_PRIMASK(void)
+ 181:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 182:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   mrs r0, primask
+ 183:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 184:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 185:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 186:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 187:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Priority Mask value
+ 188:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 189:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  priMask  PriMask
+ 190:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 191:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Set the priority mask bit in the priority mask register
+ 192:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 193:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM void __set_PRIMASK(uint32_t priMask)
+ 194:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 195:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   msr primask, r0
+ 196:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 197:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 198:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 199:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 200:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Fault Mask value
+ 201:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 202:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return FaultMask
+ 203:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 204:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the content of the fault mask register
+ 205:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 206:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM uint32_t  __get_FAULTMASK(void)
+ 207:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 208:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   mrs r0, faultmask
+ 209:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 210:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 211:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 212:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 213:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Fault Mask value
+ 214:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 215:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  faultMask  faultMask value
+ 216:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 217:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Set the fault mask register
+ 218:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 219:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM void __set_FAULTMASK(uint32_t faultMask)
+ 220:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 221:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   msr faultmask, r0
+ 222:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 223:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 224:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 225:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 226:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Control Register value
+ 227:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * 
+ 228:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return Control value
+ 229:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 230:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the content of the control register
+ 231:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 232:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM uint32_t __get_CONTROL(void)
+ 233:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 234:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   mrs r0, control
+ 235:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 236:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 237:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 238:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 239:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Control Register value
+ 240:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 241:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  control  Control value
+ 242:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 243:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Set the control register
+ 244:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 245:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** __ASM void __set_CONTROL(uint32_t control)
+ 246:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 247:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   msr control, r0
+ 248:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   bx lr
+ 249:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 250:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 251:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #endif /* __ARMCC_VERSION  */ 
+ 252:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 253:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 254:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 255:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #elif (defined (__ICCARM__)) /*------------------ ICC Compiler -------------------*/
+ 256:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /* IAR iccarm specific functions */
+ 257:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #pragma diag_suppress=Pe940
+ 258:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 259:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 260:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Process Stack Pointer
+ 261:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 262:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return ProcessStackPointer
+ 263:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 264:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the actual process stack pointer
+ 265:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 266:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __get_PSP(void)
+ 267:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 268:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("mrs r0, psp");
+ 269:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 270:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 271:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 272:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 273:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Process Stack Pointer
+ 274:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 275:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  topOfProcStack  Process Stack Pointer
+ 276:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 277:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Assign the value ProcessStackPointer to the MSP 
+ 278:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * (process stack pointer) Cortex processor register
+ 279:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 280:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** void __set_PSP(uint32_t topOfProcStack)
+ 281:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 282:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("msr psp, r0");
+ 283:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 284:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 285:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 286:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 287:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Main Stack Pointer
+ 288:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 289:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return Main Stack Pointer
+ 290:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 291:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the current value of the MSP (main stack pointer)
+ 292:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Cortex processor register
+ 293:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 294:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __get_MSP(void)
+ 295:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 296:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("mrs r0, msp");
+ 297:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 298:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 299:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 300:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 301:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Main Stack Pointer
+ 302:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 303:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  topOfMainStack  Main Stack Pointer
+ 304:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 305:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Assign the value mainStackPointer to the MSP 
+ 306:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * (main stack pointer) Cortex processor register
+ 307:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 308:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** void __set_MSP(uint32_t topOfMainStack)
+ 309:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 310:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("msr msp, r0");
+ 311:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 312:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 313:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 314:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 315:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Reverse byte order in unsigned short value
+ 316:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 317:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to reverse
+ 318:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        reversed value
+ 319:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 320:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Reverse byte order in unsigned short value
+ 321:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 322:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __REV16(uint16_t value)
+ 323:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 324:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("rev16 r0, r0");
+ 325:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 326:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 327:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 328:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 329:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Reverse bit order of value
+ 330:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 331:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to reverse
+ 332:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        reversed value
+ 333:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 334:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Reverse bit order of value
+ 335:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 336:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __RBIT(uint32_t value)
+ 337:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 338:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("rbit r0, r0");
+ 339:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 340:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 341:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 342:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 343:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  LDR Exclusive (8 bit)
+ 344:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 345:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 346:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        value of (*address)
+ 347:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 348:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive LDR command for 8 bit values)
+ 349:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 350:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint8_t __LDREXB(uint8_t *addr)
+ 351:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 352:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("ldrexb r0, [r0]");
+ 353:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr"); 
+ 354:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 355:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 356:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 357:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  LDR Exclusive (16 bit)
+ 358:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 359:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 360:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        value of (*address)
+ 361:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 362:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive LDR command for 16 bit values
+ 363:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 364:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint16_t __LDREXH(uint16_t *addr)
+ 365:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 366:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("ldrexh r0, [r0]");
+ 367:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 368:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 369:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 370:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 371:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  LDR Exclusive (32 bit)
+ 372:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 373:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 374:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        value of (*address)
+ 375:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 376:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive LDR command for 32 bit values
+ 377:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 378:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __LDREXW(uint32_t *addr)
+ 379:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 380:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("ldrex r0, [r0]");
+ 381:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 382:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 383:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 384:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 385:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  STR Exclusive (8 bit)
+ 386:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 387:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to store
+ 388:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 389:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        successful / failed
+ 390:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 391:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive STR command for 8 bit values
+ 392:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 393:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __STREXB(uint8_t value, uint8_t *addr)
+ 394:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 395:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("strexb r0, r0, [r1]");
+ 396:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 397:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 398:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 399:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 400:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  STR Exclusive (16 bit)
+ 401:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 402:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to store
+ 403:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 404:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        successful / failed
+ 405:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 406:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive STR command for 16 bit values
+ 407:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 408:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __STREXH(uint16_t value, uint16_t *addr)
+ 409:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 410:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("strexh r0, r0, [r1]");
+ 411:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 412:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 413:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 414:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 415:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  STR Exclusive (32 bit)
+ 416:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 417:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to store
+ 418:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 419:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        successful / failed
+ 420:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 421:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive STR command for 32 bit values
+ 422:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 423:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __STREXW(uint32_t value, uint32_t *addr)
+ 424:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 425:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("strex r0, r0, [r1]");
+ 426:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM("bx lr");
+ 427:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 428:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 429:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #pragma diag_default=Pe940
+ 430:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 431:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 432:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** #elif (defined (__GNUC__)) /*------------------ GNU Compiler ---------------------*/
+ 433:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /* GNU gcc specific functions */
+ 434:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 435:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 436:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Process Stack Pointer
+ 437:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 438:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return ProcessStackPointer
+ 439:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 440:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the actual process stack pointer
+ 441:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 442:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __get_PSP(void) __attribute__( ( naked ) );
+ 443:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __get_PSP(void)
+ 444:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+  31              	n: prologue and epilogue provided by programmer.
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 447 0
+ 445:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   uint32_t result=0;
+ 446:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 447:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MRS %0, psp\n\t" 
+  35              	 r0, psp
+  36 0000 EFF30980 		MOV r0, r0 
+  37 0004 0046     		BX  lr     
+  38 0006 7047     		
+  39              	.LVL0:
+  40              	.LVL1:
+  41              		.loc 1 451 0
+ 448:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****                   "MOV r0, %0 \n\t"
+ 449:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****                   "BX  lr     \n\t"  : "=r" (result) );
+ 450:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   return(result);
+ 451:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+  42              	
+  43              	.LFE2:
+  45              		.section	.text.__set_PSP,"ax",%progbits
+  46              		.align	2
+  47              		.global	__set_PSP
+  48              		.thumb
+  49              		.thumb_func
+  51              	__set_PSP:
+  52              	.LFB3:
+  53              		.loc 1 463 0
+ 452:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 453:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 454:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Process Stack Pointer
+ 455:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 456:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  topOfProcStack  Process Stack Pointer
+ 457:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 458:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Assign the value ProcessStackPointer to the MSP 
+ 459:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * (process stack pointer) Cortex processor register
+ 460:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 461:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** void __set_PSP(uint32_t topOfProcStack) __attribute__( ( naked ) );
+ 462:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** void __set_PSP(uint32_t topOfProcStack)
+ 463:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+  54              	nction: prologue and epilogue provided by programmer.
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 0, uses_anonymous_args = 0
+  57              	.LVL2:
+  58              		.loc 1 464 0
+ 464:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MSR psp, %0\n\t"
+  59              	psp, r0
+  60 0000 80F30988 		BX  lr     
+  61 0004 7047     		
+  62              		.loc 1 466 0
+ 465:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****                   "BX  lr     \n\t" : : "r" (topOfProcStack) );
+ 466:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+  63              	umb
+  64              	.LFE3:
+  66              		.section	.text.__get_MSP,"ax",%progbits
+  67 0006 C046     		.align	2
+  68              		.global	__get_MSP
+  69              		.thumb
+  70              		.thumb_func
+  72              	__get_MSP:
+  73              	.LFB4:
+  74              		.loc 1 478 0
+ 467:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 468:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 469:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Main Stack Pointer
+ 470:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 471:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return Main Stack Pointer
+ 472:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 473:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the current value of the MSP (main stack pointer)
+ 474:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Cortex processor register
+ 475:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 476:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __get_MSP(void) __attribute__( ( naked ) );
+ 477:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __get_MSP(void)
+ 478:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+  75              	ction: prologue and epilogue provided by programmer.
+  76              		@ args = 0, pretend = 0, frame = 0
+  77              		@ frame_needed = 0, uses_anonymous_args = 0
+  78              		.loc 1 481 0
+ 479:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   uint32_t result=0;
+ 480:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 481:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MRS %0, msp\n\t" 
+  79              	 r0, msp
+  80 0000 EFF30880 		MOV r0, r0 
+  81 0004 0046     		BX  lr     
+  82 0006 7047     		
+  83              	.LVL3:
+  84              	.LVL4:
+  85              		.loc 1 485 0
+ 482:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****                   "MOV r0, %0 \n\t"
+ 483:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****                   "BX  lr     \n\t"  : "=r" (result) );
+ 484:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   return(result);
+ 485:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+  86              	
+  87              	.LFE4:
+  89              		.section	.text.__set_MSP,"ax",%progbits
+  90              		.align	2
+  91              		.global	__set_MSP
+  92              		.thumb
+  93              		.thumb_func
+  95              	__set_MSP:
+  96              	.LFB5:
+  97              		.loc 1 497 0
+ 486:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 487:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 488:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Main Stack Pointer
+ 489:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 490:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  topOfMainStack  Main Stack Pointer
+ 491:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 492:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Assign the value mainStackPointer to the MSP 
+ 493:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * (main stack pointer) Cortex processor register
+ 494:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 495:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** void __set_MSP(uint32_t topOfMainStack) __attribute__( ( naked ) );
+ 496:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** void __set_MSP(uint32_t topOfMainStack)
+ 497:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+  98              	nction: prologue and epilogue provided by programmer.
+  99              		@ args = 0, pretend = 0, frame = 0
+ 100              		@ frame_needed = 0, uses_anonymous_args = 0
+ 101              	.LVL5:
+ 102              		.loc 1 498 0
+ 498:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MSR msp, %0\n\t"
+ 103              	msp, r0
+ 104 0000 80F30888 		BX  lr     
+ 105 0004 7047     		
+ 106              		.loc 1 500 0
+ 499:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****                   "BX  lr     \n\t" : : "r" (topOfMainStack) );
+ 500:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 107              	umb
+ 108              	.LFE5:
+ 110              		.section	.text.__get_BASEPRI,"ax",%progbits
+ 111 0006 C046     		.align	2
+ 112              		.global	__get_BASEPRI
+ 113              		.thumb
+ 114              		.thumb_func
+ 116              	__get_BASEPRI:
+ 117              	.LFB6:
+ 118              		.loc 1 510 0
+ 501:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 502:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 503:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Base Priority value
+ 504:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 505:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return BasePriority
+ 506:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 507:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the content of the base priority register
+ 508:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 509:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __get_BASEPRI(void)
+ 510:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 119              	 pretend = 0, frame = 0
+ 120              		@ frame_needed = 0, uses_anonymous_args = 0
+ 121              		@ link register save eliminated.
+ 122              		@ lr needed for prologue
+ 123              		.loc 1 513 0
+ 511:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   uint32_t result=0;
+ 512:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 513:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MRS %0, basepri_max" : "=r" (result) );
+ 124              	r0, basepri_max
+ 125 0000 EFF31280 	.LVL6:
+ 126              	.LVL7:
+ 127              		.loc 1 515 0
+ 514:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   return(result);
+ 515:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 128              	umb
+ 129              		bx	lr
+ 130 0004 7047     	.LFE6:
+ 132              		.section	.text.__set_BASEPRI,"ax",%progbits
+ 133 0006 C046     		.align	2
+ 134              		.global	__set_BASEPRI
+ 135              		.thumb
+ 136              		.thumb_func
+ 138              	__set_BASEPRI:
+ 139              	.LFB7:
+ 140              		.loc 1 525 0
+ 516:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 517:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 518:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Base Priority value
+ 519:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 520:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  basePri  BasePriority
+ 521:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 522:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Set the base priority register
+ 523:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 524:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** void __set_BASEPRI(uint32_t value)
+ 525:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 141              	pretend = 0, frame = 0
+ 142              		@ frame_needed = 0, uses_anonymous_args = 0
+ 143              		@ link register save eliminated.
+ 144              	.LVL8:
+ 145              		@ lr needed for prologue
+ 146              		.loc 1 526 0
+ 526:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MSR basepri, %0" : : "r" (value) );
+ 147              	asepri, r0
+ 148 0000 80F31188 		.loc 1 527 0
+ 527:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 149              	thumb
+ 150              		bx	lr
+ 151 0004 7047     	.LFE7:
+ 153              		.section	.text.__get_PRIMASK,"ax",%progbits
+ 154 0006 C046     		.align	2
+ 155              		.global	__get_PRIMASK
+ 156              		.thumb
+ 157              		.thumb_func
+ 159              	__get_PRIMASK:
+ 160              	.LFB8:
+ 161              		.loc 1 537 0
+ 528:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 529:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 530:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Priority Mask value
+ 531:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 532:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return PriMask
+ 533:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 534:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return state of the priority mask bit from the priority mask register
+ 535:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 536:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __get_PRIMASK(void)
+ 537:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 162              	pretend = 0, frame = 0
+ 163              		@ frame_needed = 0, uses_anonymous_args = 0
+ 164              		@ link register save eliminated.
+ 165              		@ lr needed for prologue
+ 166              		.loc 1 540 0
+ 538:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   uint32_t result=0;
+ 539:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 540:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MRS %0, primask" : "=r" (result) );
+ 167              	r0, primask
+ 168 0000 EFF31080 	.LVL9:
+ 169              	.LVL10:
+ 170              		.loc 1 542 0
+ 541:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   return(result);
+ 542:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 171              	umb
+ 172              		bx	lr
+ 173 0004 7047     	.LFE8:
+ 175              		.section	.text.__set_PRIMASK,"ax",%progbits
+ 176 0006 C046     		.align	2
+ 177              		.global	__set_PRIMASK
+ 178              		.thumb
+ 179              		.thumb_func
+ 181              	__set_PRIMASK:
+ 182              	.LFB9:
+ 183              		.loc 1 552 0
+ 543:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 544:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 545:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Priority Mask value
+ 546:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 547:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  priMask  PriMask
+ 548:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 549:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Set the priority mask bit in the priority mask register
+ 550:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 551:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** void __set_PRIMASK(uint32_t priMask)
+ 552:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 184              	pretend = 0, frame = 0
+ 185              		@ frame_needed = 0, uses_anonymous_args = 0
+ 186              		@ link register save eliminated.
+ 187              	.LVL11:
+ 188              		@ lr needed for prologue
+ 189              		.loc 1 553 0
+ 553:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MSR primask, %0" : : "r" (priMask) );
+ 190              	rimask, r0
+ 191 0000 80F31088 		.loc 1 554 0
+ 554:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 192              	thumb
+ 193              		bx	lr
+ 194 0004 7047     	.LFE9:
+ 196              		.section	.text.__get_FAULTMASK,"ax",%progbits
+ 197 0006 C046     		.align	2
+ 198              		.global	__get_FAULTMASK
+ 199              		.thumb
+ 200              		.thumb_func
+ 202              	__get_FAULTMASK:
+ 203              	.LFB10:
+ 204              		.loc 1 564 0
+ 555:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 556:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 557:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Fault Mask value
+ 558:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 559:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return FaultMask
+ 560:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 561:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the content of the fault mask register
+ 562:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 563:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __get_FAULTMASK(void)
+ 564:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 205              	pretend = 0, frame = 0
+ 206              		@ frame_needed = 0, uses_anonymous_args = 0
+ 207              		@ link register save eliminated.
+ 208              		@ lr needed for prologue
+ 209              		.loc 1 567 0
+ 565:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   uint32_t result=0;
+ 566:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 567:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MRS %0, faultmask" : "=r" (result) );
+ 210              	r0, faultmask
+ 211 0000 EFF31380 	.LVL12:
+ 212              	.LVL13:
+ 213              		.loc 1 569 0
+ 568:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   return(result);
+ 569:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 214              	umb
+ 215              		bx	lr
+ 216 0004 7047     	.LFE10:
+ 218              		.section	.text.__set_FAULTMASK,"ax",%progbits
+ 219 0006 C046     		.align	2
+ 220              		.global	__set_FAULTMASK
+ 221              		.thumb
+ 222              		.thumb_func
+ 224              	__set_FAULTMASK:
+ 225              	.LFB11:
+ 226              		.loc 1 579 0
+ 570:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 571:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 572:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Fault Mask value
+ 573:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 574:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  faultMask  faultMask value
+ 575:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 576:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Set the fault mask register
+ 577:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 578:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** void __set_FAULTMASK(uint32_t faultMask)
+ 579:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 227              	pretend = 0, frame = 0
+ 228              		@ frame_needed = 0, uses_anonymous_args = 0
+ 229              		@ link register save eliminated.
+ 230              	.LVL14:
+ 231              		@ lr needed for prologue
+ 232              		.loc 1 580 0
+ 580:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MSR faultmask, %0" : : "r" (faultMask) );
+ 233              	aultmask, r0
+ 234 0000 80F31388 		.loc 1 581 0
+ 581:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 235              	thumb
+ 236              		bx	lr
+ 237 0004 7047     	.LFE11:
+ 239              		.section	.text.__get_CONTROL,"ax",%progbits
+ 240 0006 C046     		.align	2
+ 241              		.global	__get_CONTROL
+ 242              		.thumb
+ 243              		.thumb_func
+ 245              	__get_CONTROL:
+ 246              	.LFB12:
+ 247              		.loc 1 591 0
+ 582:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 583:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 584:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Return the Control Register value
+ 585:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** * 
+ 586:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** *  @return Control value
+ 587:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 588:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Return the content of the control register
+ 589:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 590:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __get_CONTROL(void)
+ 591:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 248              	pretend = 0, frame = 0
+ 249              		@ frame_needed = 0, uses_anonymous_args = 0
+ 250              		@ link register save eliminated.
+ 251              		@ lr needed for prologue
+ 252              		.loc 1 594 0
+ 592:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   uint32_t result=0;
+ 593:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 594:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MRS %0, control" : "=r" (result) );
+ 253              	r0, control
+ 254 0000 EFF31480 	.LVL15:
+ 255              	.LVL16:
+ 256              		.loc 1 596 0
+ 595:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   return(result);
+ 596:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 257              	umb
+ 258              		bx	lr
+ 259 0004 7047     	.LFE12:
+ 261              		.section	.text.__set_CONTROL,"ax",%progbits
+ 262 0006 C046     		.align	2
+ 263              		.global	__set_CONTROL
+ 264              		.thumb
+ 265              		.thumb_func
+ 267              	__set_CONTROL:
+ 268              	.LFB13:
+ 269              		.loc 1 606 0
+ 597:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 598:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 599:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Set the Control Register value
+ 600:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 601:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  control  Control value
+ 602:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 603:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Set the control register
+ 604:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 605:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** void __set_CONTROL(uint32_t control)
+ 606:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 270              	pretend = 0, frame = 0
+ 271              		@ frame_needed = 0, uses_anonymous_args = 0
+ 272              		@ link register save eliminated.
+ 273              	.LVL17:
+ 274              		@ lr needed for prologue
+ 275              		.loc 1 607 0
+ 607:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("MSR control, %0" : : "r" (control) );
+ 276              	ontrol, r0
+ 277 0000 80F31488 		.loc 1 608 0
+ 608:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 278              	thumb
+ 279              		bx	lr
+ 280 0004 7047     	.LFE13:
+ 282              		.section	.text.__REV,"ax",%progbits
+ 283 0006 C046     		.align	2
+ 284              		.global	__REV
+ 285              		.thumb
+ 286              		.thumb_func
+ 288              	__REV:
+ 289              	.LFB14:
+ 290              		.loc 1 620 0
+ 609:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 610:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 611:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 612:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Reverse byte order in integer value
+ 613:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 614:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to reverse
+ 615:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        reversed value
+ 616:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 617:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Reverse byte order in integer value
+ 618:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 619:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __REV(uint32_t value)
+ 620:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 291              	pretend = 0, frame = 0
+ 292              		@ frame_needed = 0, uses_anonymous_args = 0
+ 293              		@ link register save eliminated.
+ 294              	.LVL18:
+ 295              		@ lr needed for prologue
+ 296              		.loc 1 623 0
+ 621:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   uint32_t result=0;
+ 622:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 623:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("rev %0, %1" : "=r" (result) : "r" (value) );
+ 297              	0, r0
+ 298 0000 00BA     	.LVL19:
+ 299              	.LVL20:
+ 300              		.loc 1 625 0
+ 624:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   return(result);
+ 625:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 301              	umb
+ 302              		bx	lr
+ 303 0002 7047     	.LFE14:
+ 305              		.section	.text.__REV16,"ax",%progbits
+ 306              		.align	2
+ 307              		.global	__REV16
+ 308              		.thumb
+ 309              		.thumb_func
+ 311              	__REV16:
+ 312              	.LFB15:
+ 313              		.loc 1 636 0
+ 626:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 627:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 628:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Reverse byte order in unsigned short value
+ 629:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 630:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to reverse
+ 631:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        reversed value
+ 632:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 633:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Reverse byte order in unsigned short value
+ 634:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 635:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __REV16(uint16_t value)
+ 636:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 314              	pretend = 0, frame = 0
+ 315              		@ frame_needed = 0, uses_anonymous_args = 0
+ 316              		@ link register save eliminated.
+ 317              	.LVL21:
+ 318              		@ lr needed for prologue
+ 319              		.loc 1 639 0
+ 637:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   uint32_t result=0;
+ 638:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 639:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("rev16 %0, %1" : "=r" (result) : "r" (value) );
+ 320              	 r0, r0
+ 321 0000 40BA     	.LVL22:
+ 322              	.LVL23:
+ 323              		.loc 1 641 0
+ 640:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   return(result);
+ 641:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 324              	umb
+ 325              		bx	lr
+ 326 0002 7047     	.LFE15:
+ 328              		.section	.text.__REVSH,"ax",%progbits
+ 329              		.align	2
+ 330              		.global	__REVSH
+ 331              		.thumb
+ 332              		.thumb_func
+ 334              	__REVSH:
+ 335              	.LFB16:
+ 336              		.loc 1 652 0
+ 642:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 643:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 644:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Reverse byte order in signed short value with sign extension to integer
+ 645:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 646:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to reverse
+ 647:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        reversed value
+ 648:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 649:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Reverse byte order in signed short value with sign extension to integer
+ 650:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 651:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** int32_t __REVSH(int16_t value)
+ 652:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 337              	pretend = 0, frame = 0
+ 338              		@ frame_needed = 0, uses_anonymous_args = 0
+ 339              		@ link register save eliminated.
+ 340              	.LVL24:
+ 341              		@ lr needed for prologue
+ 342              		.loc 1 655 0
+ 653:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   uint32_t result=0;
+ 654:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 655:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   __ASM volatile ("revsh %0, %1" : "=r" (result) : "r" (value) );
+ 343              	 r0, r0
+ 344 0000 C0BA     	.LVL25:
+ 345              	.LVL26:
+ 346              		.loc 1 657 0
+ 656:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   return(result);
+ 657:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 347              	umb
+ 348              		bx	lr
+ 349 0002 7047     	.LFE16:
+ 351              		.section	.text.__RBIT,"ax",%progbits
+ 352              		.align	2
+ 353              		.global	__RBIT
+ 354              		.thumb
+ 355              		.thumb_func
+ 357              	__RBIT:
+ 358              	.LFB17:
+ 359              		.loc 1 668 0
+ 658:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 659:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 660:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  Reverse bit order of value
+ 661:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 662:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to reverse
+ 663:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        reversed value
+ 664:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 665:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Reverse bit order of value
+ 666:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 667:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __RBIT(uint32_t value)
+ 668:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 360              	pretend = 0, frame = 0
+ 361              		@ frame_needed = 0, uses_anonymous_args = 0
+ 362              		@ link register save eliminated.
+ 363              	.LVL27:
+ 364              		@ lr needed for prologue
+ 365              		.loc 1 671 0
+ 669:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   uint32_t result=0;
+ 670:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 671:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    __ASM volatile ("rbit %0, %1" : "=r" (result) : "r" (value) );
+ 366              	r0, r0
+ 367 0000 90FAA0F0 	.LVL28:
+ 368              	.LVL29:
+ 369              		.loc 1 673 0
+ 672:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    return(result);
+ 673:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 370              	umb
+ 371              		bx	lr
+ 372 0004 7047     	.LFE17:
+ 374              		.section	.text.__LDREXB,"ax",%progbits
+ 375 0006 C046     		.align	2
+ 376              		.global	__LDREXB
+ 377              		.thumb
+ 378              		.thumb_func
+ 380              	__LDREXB:
+ 381              	.LFB18:
+ 382              		.loc 1 684 0
+ 674:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 675:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 676:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  LDR Exclusive (8 bit)
+ 677:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 678:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 679:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        value of (*address)
+ 680:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 681:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive LDR command for 8 bit value
+ 682:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 683:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint8_t __LDREXB(uint8_t *addr)
+ 684:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 383              	pretend = 0, frame = 0
+ 384              		@ frame_needed = 0, uses_anonymous_args = 0
+ 385              		@ link register save eliminated.
+ 386              	.LVL30:
+ 387              		@ lr needed for prologue
+ 388              		.loc 1 687 0
+ 685:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****     uint8_t result=0;
+ 686:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 687:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    __ASM volatile ("ldrexb %0, [%1]" : "=r" (result) : "r" (addr) );
+ 389              	b r0, [r0]
+ 390 0000 D0E84F0F 	.LVL31:
+ 391              		.loc 1 689 0
+ 688:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    return(result);
+ 689:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 392              	humb
+ 393              		uxtb	r0, r0
+ 394 0004 C0B2     		bx	lr
+ 395 0006 7047     	.LFE18:
+ 397              		.section	.text.__LDREXH,"ax",%progbits
+ 398              		.align	2
+ 399              		.global	__LDREXH
+ 400              		.thumb
+ 401              		.thumb_func
+ 403              	__LDREXH:
+ 404              	.LFB19:
+ 405              		.loc 1 700 0
+ 690:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 691:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 692:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  LDR Exclusive (16 bit)
+ 693:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 694:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 695:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        value of (*address)
+ 696:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 697:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive LDR command for 16 bit values
+ 698:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 699:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint16_t __LDREXH(uint16_t *addr)
+ 700:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 406              	retend = 0, frame = 0
+ 407              		@ frame_needed = 0, uses_anonymous_args = 0
+ 408              		@ link register save eliminated.
+ 409              	.LVL32:
+ 410              		@ lr needed for prologue
+ 411              		.loc 1 703 0
+ 701:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****     uint16_t result=0;
+ 702:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 703:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    __ASM volatile ("ldrexh %0, [%1]" : "=r" (result) : "r" (addr) );
+ 412              	h r0, [r0]
+ 413 0000 D0E85F0F 	.LVL33:
+ 414              		.loc 1 705 0
+ 704:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    return(result);
+ 705:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 415              	humb
+ 416              		uxth	r0, r0
+ 417 0004 80B2     		bx	lr
+ 418 0006 7047     	.LFE19:
+ 420              		.section	.text.__LDREXW,"ax",%progbits
+ 421              		.align	2
+ 422              		.global	__LDREXW
+ 423              		.thumb
+ 424              		.thumb_func
+ 426              	__LDREXW:
+ 427              	.LFB20:
+ 428              		.loc 1 716 0
+ 706:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 707:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 708:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  LDR Exclusive (32 bit)
+ 709:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 710:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 711:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        value of (*address)
+ 712:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 713:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive LDR command for 32 bit values
+ 714:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 715:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __LDREXW(uint32_t *addr)
+ 716:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 429              	retend = 0, frame = 0
+ 430              		@ frame_needed = 0, uses_anonymous_args = 0
+ 431              		@ link register save eliminated.
+ 432              	.LVL34:
+ 433              		@ lr needed for prologue
+ 434              		.loc 1 719 0
+ 717:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****     uint32_t result=0;
+ 718:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 719:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    __ASM volatile ("ldrex %0, [%1]" : "=r" (result) : "r" (addr) );
+ 435              	 r0, [r0]
+ 436 0000 50E8000F 	.LVL35:
+ 437              	.LVL36:
+ 438              		.loc 1 721 0
+ 720:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    return(result);
+ 721:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 439              	umb
+ 440              		bx	lr
+ 441 0004 7047     	.LFE20:
+ 443              		.section	.text.__STREXB,"ax",%progbits
+ 444 0006 C046     		.align	2
+ 445              		.global	__STREXB
+ 446              		.thumb
+ 447              		.thumb_func
+ 449              	__STREXB:
+ 450              	.LFB21:
+ 451              		.loc 1 733 0
+ 722:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 723:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 724:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  STR Exclusive (8 bit)
+ 725:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 726:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to store
+ 727:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 728:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        successful / failed
+ 729:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 730:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive STR command for 8 bit values
+ 731:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 732:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __STREXB(uint8_t value, uint8_t *addr)
+ 733:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 452              	pretend = 0, frame = 0
+ 453              		@ frame_needed = 0, uses_anonymous_args = 0
+ 454              		@ link register save eliminated.
+ 455              	.LVL37:
+ 456              		@ lr needed for prologue
+ 457              		.loc 1 736 0
+ 734:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    uint32_t result=0;
+ 735:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 736:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    __ASM volatile ("strexb %0, %2, [%1]" : "=r" (result) : "r" (addr), "r" (value) );
+ 458              	b r1, r0, [r1]
+ 459 0000 C1E8410F 	.LVL38:
+ 460              		.loc 1 738 0
+ 737:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    return(result);
+ 738:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 461              	humb
+ 462              		mov	r0, r1
+ 463 0004 0846     	.LVL39:
+ 464              		bx	lr
+ 465 0006 7047     	.LFE21:
+ 467              		.section	.text.__STREXH,"ax",%progbits
+ 468              		.align	2
+ 469              		.global	__STREXH
+ 470              		.thumb
+ 471              		.thumb_func
+ 473              	__STREXH:
+ 474              	.LFB22:
+ 475              		.loc 1 750 0
+ 739:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 740:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 741:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  STR Exclusive (16 bit)
+ 742:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 743:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to store
+ 744:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 745:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        successful / failed
+ 746:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 747:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive STR command for 16 bit values
+ 748:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 749:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __STREXH(uint16_t value, uint16_t *addr)
+ 750:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 476              	etend = 0, frame = 0
+ 477              		@ frame_needed = 0, uses_anonymous_args = 0
+ 478              		@ link register save eliminated.
+ 479              	.LVL40:
+ 480              		@ lr needed for prologue
+ 481              		.loc 1 753 0
+ 751:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    uint32_t result=0;
+ 752:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 753:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    __ASM volatile ("strexh %0, %2, [%1]" : "=r" (result) : "r" (addr), "r" (value) );
+ 482              	h r1, r0, [r1]
+ 483 0000 C1E8510F 	.LVL41:
+ 484              		.loc 1 755 0
+ 754:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    return(result);
+ 755:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 485              	humb
+ 486              		mov	r0, r1
+ 487 0004 0846     	.LVL42:
+ 488              		bx	lr
+ 489 0006 7047     	.LFE22:
+ 491              		.section	.text.__STREXW,"ax",%progbits
+ 492              		.align	2
+ 493              		.global	__STREXW
+ 494              		.thumb
+ 495              		.thumb_func
+ 497              	__STREXW:
+ 498              	.LFB23:
+ 499              		.loc 1 767 0
+ 756:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** 
+ 757:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** /**
+ 758:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @brief  STR Exclusive (32 bit)
+ 759:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 760:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  value  value to store
+ 761:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @param  *addr  address pointer
+ 762:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * @return        successful / failed
+ 763:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  *
+ 764:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  * Exclusive STR command for 32 bit values
+ 765:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****  */
+ 766:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** uint32_t __STREXW(uint32_t value, uint32_t *addr)
+ 767:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** {
+ 500              	etend = 0, frame = 0
+ 501              		@ frame_needed = 0, uses_anonymous_args = 0
+ 502              		@ link register save eliminated.
+ 503              	.LVL43:
+ 504              		@ lr needed for prologue
+ 505              		.loc 1 770 0
+ 768:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    uint32_t result=0;
+ 769:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****   
+ 770:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    __ASM volatile ("strex %0, %2, [%1]" : "=r" (result) : "r" (addr), "r" (value) );
+ 506              	 r1, r0, [r1]
+ 507 0000 41E80001 	.LVL44:
+ 508              		.loc 1 772 0
+ 771:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c ****    return(result);
+ 772:Libraries/NXP/Core/CM3/CoreSupport/core_cm3.c **** }
+ 509              	humb
+ 510              		mov	r0, r1
+ 511 0004 0846     	.LVL45:
+ 512              		bx	lr
+ 513 0006 7047     	.LFE23:
+ 515              		.section	.debug_frame,"",%progbits
+ 708              		.section	.debug_loc,"",%progbits
+DEFINED SYMBOLS
+                            *ABS*:00000000 core_cm3.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:28     .text.__get_PSP:00000000 __get_PSP
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:25     .text.__get_PSP:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:52     .text.__set_PSP:00000000 __set_PSP
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:49     .text.__set_PSP:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:73     .text.__get_MSP:00000000 __get_MSP
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:70     .text.__get_MSP:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:96     .text.__set_MSP:00000000 __set_MSP
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:93     .text.__set_MSP:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:117    .text.__get_BASEPRI:00000000 __get_BASEPRI
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:114    .text.__get_BASEPRI:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:139    .text.__set_BASEPRI:00000000 __set_BASEPRI
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:136    .text.__set_BASEPRI:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:160    .text.__get_PRIMASK:00000000 __get_PRIMASK
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:157    .text.__get_PRIMASK:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:182    .text.__set_PRIMASK:00000000 __set_PRIMASK
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:179    .text.__set_PRIMASK:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:203    .text.__get_FAULTMASK:00000000 __get_FAULTMASK
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:200    .text.__get_FAULTMASK:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:225    .text.__set_FAULTMASK:00000000 __set_FAULTMASK
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:222    .text.__set_FAULTMASK:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:246    .text.__get_CONTROL:00000000 __get_CONTROL
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:243    .text.__get_CONTROL:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:268    .text.__set_CONTROL:00000000 __set_CONTROL
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:265    .text.__set_CONTROL:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:289    .text.__REV:00000000 __REV
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:286    .text.__REV:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:312    .text.__REV16:00000000 __REV16
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:309    .text.__REV16:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:335    .text.__REVSH:00000000 __REVSH
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:332    .text.__REVSH:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:358    .text.__RBIT:00000000 __RBIT
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:355    .text.__RBIT:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:381    .text.__LDREXB:00000000 __LDREXB
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:378    .text.__LDREXB:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:404    .text.__LDREXH:00000000 __LDREXH
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:401    .text.__LDREXH:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:427    .text.__LDREXW:00000000 __LDREXW
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:424    .text.__LDREXW:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:450    .text.__STREXB:00000000 __STREXB
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:447    .text.__STREXB:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:474    .text.__STREXH:00000000 __STREXH
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:471    .text.__STREXH:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:498    .text.__STREXW:00000000 __STREXW
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:495    .text.__STREXW:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:518    .debug_frame:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccmCcaaa.s:712    .debug_loc:00000000 $d
+
+NO UNDEFINED SYMBOLS

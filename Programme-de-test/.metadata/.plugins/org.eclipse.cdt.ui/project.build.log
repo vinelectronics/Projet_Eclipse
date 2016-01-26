@@ -1,0 +1,38 @@
+
+**** Build of configuration Default for project project ****
+
+cs-make all 
+COMSPEC detected  C:\WINDOWS\system32\cmd.exe
+SHELL is C:/WINDOWS/system32/cmd.exe, REMOVE_CMD is cs-rm
+--------  begin, mode: FLASH_RUN  --------
+arm-none-eabi-gcc (Sourcery G++ Lite 2008q1-126) 4.2.3
+Copyright (C) 2007 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Size after build:
+arm-none-eabi-size -A  FLASH_RUN/project.elf
+FLASH_RUN/project.elf  :
+section             size        addr
+.text              27604           0
+.ARM.exidx             8       27604
+.text.align            4       27612
+.data                 16   268435456
+.bss                8976   268435472
+.heap               4096   268444448
+.stack               768   268467456
+.debug_aranges      2840           0
+.debug_pubnames     5265           0
+.debug_info        48725           0
+.debug_abbrev      10128           0
+.debug_line        16114           0
+.debug_frame        7112           0
+.debug_str         13435           0
+.debug_loc         30128           0
+.ARM.attributes       47           0
+.debug_ranges        432           0
+.comment             946           0
+Total             176644
+
+
+--------  end  --------

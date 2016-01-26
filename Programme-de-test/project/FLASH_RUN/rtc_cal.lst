@@ -1,0 +1,340 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"rtc_cal.c"
+  21              	.Ltext0:
+  22              		.section	.text.rtc_cal_gettime,"ax",%progbits
+  23              		.align	2
+  24              		.global	rtc_cal_gettime
+  25              		.thumb
+  26              		.thumb_func
+  28              	rtc_cal_gettime:
+  29              	.LFB34:
+  30              		.file 1 "rtc_cal.c"
+   1:rtc_cal.c     **** /* Martin Thomas, 7/2010, 3BSD license */
+   2:rtc_cal.c     **** 
+   3:rtc_cal.c     **** #include "lpc17xx_rtc.h"
+   4:rtc_cal.c     **** #include "rtc_cal.h"
+   5:rtc_cal.c     **** 
+   6:rtc_cal.c     **** /* # of bits used in the Calibration value */
+   7:rtc_cal.c     **** #define CALIBRATION_VALUE_SIZE	17
+   8:rtc_cal.c     **** /* If the actual frequency is within +/- of this value,
+   9:rtc_cal.c     **** 	calibration should be disabled because of overflow */
+  10:rtc_cal.c     **** #define MAX_DELTA_FREQUENCY_VALUE	(RTC_IDEAL_FREQ / ((1 << CALIBRATION_VALUE_SIZE) - 1))
+  11:rtc_cal.c     **** 
+  12:rtc_cal.c     **** /*****************************************************************************
+  13:rtc_cal.c     **** ** Function name:		rtc_cal_config
+  14:rtc_cal.c     **** **
+  15:rtc_cal.c     **** ** Descriptions:		Function calculates the required calibration value and
+  16:rtc_cal.c     **** **						direction values for the calibration register.
+  17:rtc_cal.c     **** **						If the actual_rtc_frequency is within 
+  18:rtc_cal.c     **** **						+/- (32.768kHz / (2^17 - 1)) == +/- 0.250 Hz, then disable
+  19:rtc_cal.c     **** **						the auto calibration due to RTCAL overflow.
+  20:rtc_cal.c     **** **						Else, save the proper RTC calibration value and direction.
+  21:rtc_cal.c     **** **
+  22:rtc_cal.c     **** ** parameters:			The actual RTC oscillating frequency should be passed
+  23:rtc_cal.c     **** **						in mHz (milli Hz).
+  24:rtc_cal.c     **** ** 						
+  25:rtc_cal.c     **** ** Returned value:		None
+  26:rtc_cal.c     **** **
+  27:rtc_cal.c     **** *******************************************************************************/
+  28:rtc_cal.c     **** /* This code is from NXP's example-code for application note AN10849.
+  29:rtc_cal.c     ****  * Copyright(C) 2008(?), NXP Semiconductor, 2009(?).05.28 version 1.00 preliminary version"
+  30:rtc_cal.c     ****  * For further information please read the AppNote available from nxp.com.
+  31:rtc_cal.c     ****  * Adapted for the NXP driver-library and this project by Martin Thomas 7/2010 */
+  32:rtc_cal.c     **** 
+  33:rtc_cal.c     **** void rtc_cal_config(uint32_t actual_rtc_frequency)
+  34:rtc_cal.c     **** {
+  35:rtc_cal.c     **** 	uint32_t calibration_value;
+  36:rtc_cal.c     **** 	int32_t rtc_frequency_delta;
+  37:rtc_cal.c     **** 
+  38:rtc_cal.c     **** 	rtc_frequency_delta = (RTC_IDEAL_FREQ - actual_rtc_frequency);
+  39:rtc_cal.c     **** 
+  40:rtc_cal.c     **** 	RTC_CalibCounterCmd(LPC_RTC, DISABLE);
+  41:rtc_cal.c     **** 
+  42:rtc_cal.c     **** 	/* Check for valid RTC frequency */
+  43:rtc_cal.c     **** 	/* Disable calibration if the correction value is +/- .250Hz offset
+  44:rtc_cal.c     **** 	 It would otherwise cause an overflow in RTCCAL */
+  45:rtc_cal.c     **** 	if ((rtc_frequency_delta <= MAX_DELTA_FREQUENCY_VALUE)
+  46:rtc_cal.c     **** 	    && (rtc_frequency_delta >= -MAX_DELTA_FREQUENCY_VALUE)) {
+  47:rtc_cal.c     **** 
+  48:rtc_cal.c     **** 		RTC_CalibCounterCmd(LPC_RTC, DISABLE);
+  49:rtc_cal.c     **** 
+  50:rtc_cal.c     **** 		/* Determine the calibration direction CALDIR and CALVAL*/
+  51:rtc_cal.c     **** 	} else if (rtc_frequency_delta > MAX_DELTA_FREQUENCY_VALUE) {
+  52:rtc_cal.c     **** 
+  53:rtc_cal.c     **** 		/* Forward direction */
+  54:rtc_cal.c     **** 		calibration_value = RTC_IDEAL_FREQ / (RTC_IDEAL_FREQ - actual_rtc_frequency);
+  55:rtc_cal.c     **** 		RTC_CalibConfig(LPC_RTC, calibration_value, RTC_CALIB_DIR_FORWARD);
+  56:rtc_cal.c     **** 		RTC_CalibCounterCmd(LPC_RTC, ENABLE);
+  57:rtc_cal.c     **** 
+  58:rtc_cal.c     **** 	} else {
+  59:rtc_cal.c     **** 
+  60:rtc_cal.c     **** 		/* Backward direction */
+  61:rtc_cal.c     **** 		calibration_value = RTC_IDEAL_FREQ / (actual_rtc_frequency - RTC_IDEAL_FREQ);
+  62:rtc_cal.c     **** 		RTC_CalibConfig(LPC_RTC, calibration_value, RTC_CALIB_DIR_BACKWARD);
+  63:rtc_cal.c     **** 		RTC_CalibCounterCmd(LPC_RTC, ENABLE);
+  64:rtc_cal.c     **** 
+  65:rtc_cal.c     **** 	}
+  66:rtc_cal.c     **** 
+  67:rtc_cal.c     **** 	return;
+  68:rtc_cal.c     **** }
+  69:rtc_cal.c     **** 
+  70:rtc_cal.c     **** void rtc_cal_init(RTC_TIME_Type *pFullTime)
+  71:rtc_cal.c     **** {
+  72:rtc_cal.c     **** 	RTC_Init(LPC_RTC);
+  73:rtc_cal.c     **** 	LPC_RTC->RTC_AUX = RTC_AUX_RTC_OSCF;
+  74:rtc_cal.c     **** 	rtc_cal_config(RTC_ACTUAL_FREQ);
+  75:rtc_cal.c     **** 	RTC_SetFullTime(LPC_RTC, pFullTime);
+  76:rtc_cal.c     **** 	RTC_Cmd(LPC_RTC, ENABLE);
+  77:rtc_cal.c     **** }
+  78:rtc_cal.c     **** 
+  79:rtc_cal.c     **** void rtc_cal_settime(RTC_TIME_Type *pFullTime)
+  80:rtc_cal.c     **** {
+  81:rtc_cal.c     **** 	RTC_Cmd(LPC_RTC, DISABLE);
+  82:rtc_cal.c     **** 	RTC_SetFullTime(LPC_RTC, pFullTime);
+  83:rtc_cal.c     **** 	RTC_Cmd(LPC_RTC, ENABLE);
+  84:rtc_cal.c     **** }
+  85:rtc_cal.c     **** 
+  86:rtc_cal.c     **** uint8_t rtc_cal_gettime(RTC_TIME_Type *pFullTime)
+  87:rtc_cal.c     **** {
+  31              	end = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              	.LVL0:
+  34              		push	{r4, lr}
+  35 0000 10B5     	.LCFI0:
+  36              	.LVL1:
+  37              	.L9:
+  38              		.loc 1 92 0
+  88:rtc_cal.c     **** 	uint32_t ct0, ct1;
+  89:rtc_cal.c     **** 
+  90:rtc_cal.c     **** 	// adapted from ChaN's FatFs LPC23xx example:
+  91:rtc_cal.c     **** 	do {
+  92:rtc_cal.c     **** 		ct0 = LPC_RTC->CTIME0;
+  39              	 .L10
+  40 0002 104C     		ldr	r2, [r4, #20]
+  41 0004 6269     		.loc 1 93 0
+  93:rtc_cal.c     **** 		ct1 = LPC_RTC->CTIME1;
+  42              	r	r1, [r4, #24]
+  43 0006 A169     		.loc 1 94 0
+  94:rtc_cal.c     **** 	} while (ct0 != LPC_RTC->CTIME0 || ct1 != LPC_RTC->CTIME1);
+  44              	dr	r3, [r4, #20]
+  45 0008 6369     		cmp	r2, r3
+  46 000a 9A42     		bne	.L9
+  47 000c F9D1     		ldr	r3, [r4, #24]
+  48 000e A369     		cmp	r1, r3
+  49 0010 9942     		bne	.L9
+  50 0012 F6D1     		.loc 1 96 0
+  95:rtc_cal.c     **** 
+  96:rtc_cal.c     **** 	pFullTime->SEC   = ct0 & 63;;
+  51              	, r2, #63
+  52 0014 02F03F03 		str	r3, [r0, #0]
+  53 0018 0360     		.loc 1 97 0
+  97:rtc_cal.c     **** 	pFullTime->MIN   = (ct0 >> 8) & 63;;
+  54              	fx	r3, r2, #8, #6
+  55 001a C2F30523 		str	r3, [r0, #4]
+  56 001e 4360     		.loc 1 98 0
+  98:rtc_cal.c     **** 	pFullTime->HOUR  = (ct0 >> 16) & 31;
+  57              	fx	r3, r2, #16, #5
+  58 0020 C2F30443 		str	r3, [r0, #8]
+  59 0024 8360     		.loc 1 99 0
+  99:rtc_cal.c     **** 	pFullTime->DOM   = ct1 & 31;
+  60              	d	r3, r1, #31
+  61 0026 01F01F03 		str	r3, [r0, #12]
+  62 002a C360     		.loc 1 100 0
+ 100:rtc_cal.c     **** 	pFullTime->MONTH = (ct1 >> 8) & 15;;
+  63              	fx	r3, r1, #8, #4
+  64 002c C1F30323 		str	r3, [r0, #24]
+  65 0030 8361     		.loc 1 101 0
+ 101:rtc_cal.c     **** 	pFullTime->YEAR  = (ct1 >> 16) & 4095;
+  66              	fx	r3, r1, #16, #12
+  67 0032 C1F30B43 		str	r3, [r0, #28]
+  68 0036 C361     		.loc 1 103 0
+ 102:rtc_cal.c     **** 
+ 103:rtc_cal.c     **** 	return (LPC_RTC->RTC_AUX & RTC_AUX_RTC_OSCF) ? 1 : 0;
+  69              	rb	r0, [r4, #92]	@ zero_extendqisi2
+  70 0038 94F85C00 	.LVL2:
+  71              		.loc 1 104 0
+ 104:rtc_cal.c     **** }
+  72              	fx	r0, r0, #4, #1
+  73 003c C0F30010 		pop	{r4, pc}
+  74 0040 10BD     	.L11:
+  75              		.align	2
+  76 0042 C046     	.L10:
+  77              		.word	1073889280
+  78 0044 00400240 	.LFE34:
+  80              		.section	.text.rtc_cal_settime,"ax",%progbits
+  81              		.align	2
+  82              		.global	rtc_cal_settime
+  83              		.thumb
+  84              		.thumb_func
+  86              	rtc_cal_settime:
+  87              	.LFB33:
+  88              		.loc 1 80 0
+  89              		@ args = 0, pretend = 0, frame = 0
+  90              		@ frame_needed = 0, uses_anonymous_args = 0
+  91              	.LVL3:
+  92              		push	{r4, r5, r6, lr}
+  93 0000 70B5     	.LCFI1:
+  94              		.loc 1 81 0
+  95              		ldr	r4, .L14
+  96 0002 074C     		.loc 1 80 0
+  97              		mov	r5, r0
+  98 0004 0546     		.loc 1 81 0
+  99              		movs	r1, #0
+ 100 0006 0021     		mov	r0, r4
+ 101 0008 2046     	.LVL4:
+ 102              		bl	RTC_Cmd
+ 103 000a FFF7FEFF 		.loc 1 82 0
+ 104              		mov	r0, r4
+ 105 000e 2046     		mov	r1, r5
+ 106 0010 2946     		bl	RTC_SetFullTime
+ 107 0012 FFF7FEFF 		.loc 1 83 0
+ 108              		mov	r0, r4
+ 109 0016 2046     		movs	r1, #1
+ 110 0018 0121     		bl	RTC_Cmd
+ 111 001a FFF7FEFF 		.loc 1 84 0
+ 112              		pop	{r4, r5, r6, pc}
+ 113 001e 70BD     	.L15:
+ 114              		.align	2
+ 115              	.L14:
+ 116              		.word	1073889280
+ 117 0020 00400240 	.LFE33:
+ 119              		.section	.text.rtc_cal_config,"ax",%progbits
+ 120              		.align	2
+ 121              		.global	rtc_cal_config
+ 122              		.thumb
+ 123              		.thumb_func
+ 125              	rtc_cal_config:
+ 126              	.LFB31:
+ 127              		.loc 1 34 0
+ 128              		@ args = 0, pretend = 0, frame = 0
+ 129              		@ frame_needed = 0, uses_anonymous_args = 0
+ 130              	.LVL5:
+ 131              		push	{r4, r5, r6, lr}
+ 132 0000 70B5     	.LCFI2:
+ 133              		.loc 1 40 0
+ 134              		movs	r1, #0
+ 135 0002 0021     		.loc 1 38 0
+ 136              		rsb	r4, r0, #32768000
+ 137 0004 C0F1FA74 		.loc 1 34 0
+ 138              		mov	r5, r0
+ 139 0008 0546     		.loc 1 40 0
+ 140              		ldr	r0, .L25
+ 141 000a 1148     	.LVL6:
+ 142              		bl	RTC_CalibCounterCmd
+ 143 000c FFF7FEFF 		.loc 1 45 0
+ 144              		add	r3, r4, #250
+ 145 0010 04F1FA03 		cmp	r3, #500
+ 146 0014 B3F5FA7F 		bhi	.L17
+ 147 0018 02D8     		.loc 1 48 0
+ 148              		ldr	r0, .L25
+ 149 001a 0D48     		movs	r1, #0
+ 150 001c 0021     		b	.L23
+ 151 001e 14E0     	.L17:
+ 152              		.loc 1 51 0
+ 153              		cmp	r4, #250
+ 154 0020 FA2C     		ble	.L20
+ 155 0022 06DD     		.loc 1 55 0
+ 156              		mov	r1, #32768000
+ 157 0024 4FF0FA71 		ldr	r0, .L25
+ 158 0028 0948     		udiv	r1, r1, r4
+ 159 002a B1FBF4F1 		movs	r2, #0
+ 160 002e 0022     		b	.L24
+ 161 0030 07E0     	.L20:
+ 162              		.loc 1 62 0
+ 163              		sub	r3, r5, #32768000
+ 164 0032 A5F1FA73 		mov	r1, #32768000
+ 165 0036 4FF0FA71 		ldr	r0, .L25
+ 166 003a 0548     		udiv	r1, r1, r3
+ 167 003c B1FBF3F1 		movs	r2, #1
+ 168 0040 0122     	.L24:
+ 169              		bl	RTC_CalibConfig
+ 170 0042 FFF7FEFF 		.loc 1 63 0
+ 171              		ldr	r0, .L25
+ 172 0046 0248     		movs	r1, #1
+ 173 0048 0121     	.L23:
+ 174              		bl	RTC_CalibCounterCmd
+ 175 004a FFF7FEFF 		.loc 1 68 0
+ 176              		pop	{r4, r5, r6, pc}
+ 177 004e 70BD     	.L26:
+ 178              		.align	2
+ 179              	.L25:
+ 180              		.word	1073889280
+ 181 0050 00400240 	.LFE31:
+ 183              		.section	.text.rtc_cal_init,"ax",%progbits
+ 184              		.align	2
+ 185              		.global	rtc_cal_init
+ 186              		.thumb
+ 187              		.thumb_func
+ 189              	rtc_cal_init:
+ 190              	.LFB32:
+ 191              		.loc 1 71 0
+ 192              		@ args = 0, pretend = 0, frame = 0
+ 193              		@ frame_needed = 0, uses_anonymous_args = 0
+ 194              	.LVL7:
+ 195              		push	{r4, r5, r6, lr}
+ 196 0000 70B5     	.LCFI3:
+ 197              		.loc 1 72 0
+ 198              		ldr	r4, .L29
+ 199 0002 0A4C     		.loc 1 71 0
+ 200              		mov	r5, r0
+ 201 0004 0546     		.loc 1 72 0
+ 202              		mov	r0, r4
+ 203 0006 2046     	.LVL8:
+ 204              		bl	RTC_Init
+ 205 0008 FFF7FEFF 		.loc 1 73 0
+ 206              		movs	r3, #16
+ 207 000c 1023     		strb	r3, [r4, #92]
+ 208 000e 84F85C30 		.loc 1 74 0
+ 209              		mov	r0, #32768000
+ 210 0012 4FF0FA70 		bl	rtc_cal_config
+ 211 0016 FFF7FEFF 		.loc 1 75 0
+ 212              		mov	r0, r4
+ 213 001a 2046     		mov	r1, r5
+ 214 001c 2946     		bl	RTC_SetFullTime
+ 215 001e FFF7FEFF 		.loc 1 76 0
+ 216              		mov	r0, r4
+ 217 0022 2046     		movs	r1, #1
+ 218 0024 0121     		bl	RTC_Cmd
+ 219 0026 FFF7FEFF 		.loc 1 77 0
+ 220              		pop	{r4, r5, r6, pc}
+ 221 002a 70BD     	.L30:
+ 222              		.align	2
+ 223              	.L29:
+ 224              		.word	1073889280
+ 225 002c 00400240 	.LFE32:
+ 227              		.section	.debug_frame,"",%progbits
+ 320              		.section	.debug_loc,"",%progbits
+DEFINED SYMBOLS
+                            *ABS*:00000000 rtc_cal.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:28     .text.rtc_cal_gettime:00000000 rtc_cal_gettime
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:25     .text.rtc_cal_gettime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:78     .text.rtc_cal_gettime:00000044 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:87     .text.rtc_cal_settime:00000000 rtc_cal_settime
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:84     .text.rtc_cal_settime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:117    .text.rtc_cal_settime:00000020 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:126    .text.rtc_cal_config:00000000 rtc_cal_config
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:123    .text.rtc_cal_config:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:181    .text.rtc_cal_config:00000050 $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:190    .text.rtc_cal_init:00000000 rtc_cal_init
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:187    .text.rtc_cal_init:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:225    .text.rtc_cal_init:0000002c $d
+C:\Users\KVIN~1\AppData\Local\Temp/cc42baaa.s:324    .debug_loc:00000000 $d
+
+UNDEFINED SYMBOLS
+RTC_Cmd
+RTC_SetFullTime
+RTC_CalibCounterCmd
+RTC_CalibConfig
+RTC_Init

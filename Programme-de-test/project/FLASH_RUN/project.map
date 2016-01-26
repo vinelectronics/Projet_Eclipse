@@ -1,0 +1,2070 @@
+Archive member included because of file (symbol)
+
+c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+                              FLASH_RUN/comm.o (memcpy)
+
+Allocating common symbols
+Common symbol       size              file
+
+Fatfs               0x468             FLASH_RUN/ff_test_term.o
+TDBufNonVol         0x4               FLASH_RUN/usbhost_lpc17xx.o
+File1               0x224             FLASH_RUN/ff_test_term.o
+xfunc_in            0x4               FLASH_RUN/monitor.o
+Finfo               0x20              FLASH_RUN/ff_test_term.o
+acc_dirs            0x2               FLASH_RUN/ff_test_term.o
+inquiryResult       0x24              FLASH_RUN/diskio.o
+xfunc_out           0x4               FLASH_RUN/monitor.o
+acc_files           0x2               FLASH_RUN/ff_test_term.o
+FATBuffer           0x4               FLASH_RUN/usbhost_lpc17xx.o
+MS_BlkSize          0x4               FLASH_RUN/usbhost_ms.o
+Timer               0x4               FLASH_RUN/ff_test_term.o
+Hcca                0x4               FLASH_RUN/usbhost_lpc17xx.o
+Buff                0x1000            FLASH_RUN/ff_test_term.o
+SysTickCnt          0x4               FLASH_RUN/main.o
+File2               0x224             FLASH_RUN/ff_test_term.o
+blkSize             0x4               FLASH_RUN/diskio.o
+Lfname              0x100             FLASH_RUN/ff_test_term.o
+Dir                 0x24              FLASH_RUN/ff_test_term.o
+acc_size            0x4               FLASH_RUN/ff_test_term.o
+TDTail              0x4               FLASH_RUN/usbhost_lpc17xx.o
+EDBulkOut           0x4               FLASH_RUN/usbhost_lpc17xx.o
+UserBuffer          0x4               FLASH_RUN/usbhost_lpc17xx.o
+gUSBConnected       0x4               FLASH_RUN/usbhost_lpc17xx.o
+TDBuffer            0x4               FLASH_RUN/usbhost_lpc17xx.o
+Line                0x400             FLASH_RUN/ff_test_term.o
+EDBulkIn            0x4               FLASH_RUN/usbhost_lpc17xx.o
+EDCtrl              0x4               FLASH_RUN/usbhost_lpc17xx.o
+TDHead              0x4               FLASH_RUN/usbhost_lpc17xx.o
+numBlks             0x4               FLASH_RUN/diskio.o
+
+Discarded input sections
+
+ .data          0x00000000        0x0 FLASH_RUN/startup_LPC17xx.o
+ .bss           0x00000000        0x0 FLASH_RUN/startup_LPC17xx.o
+ .ARM.extab.cs3.reset
+                0x00000000        0x0 FLASH_RUN/startup_LPC17xx.o
+ .text          0x00000000        0x0 FLASH_RUN/main.o
+ .data          0x00000000        0x0 FLASH_RUN/main.o
+ .bss           0x00000000        0x0 FLASH_RUN/main.o
+ .text          0x00000000        0x0 FLASH_RUN/comm.o
+ .data          0x00000000        0x0 FLASH_RUN/comm.o
+ .bss           0x00000000        0x0 FLASH_RUN/comm.o
+ .text.comm_test
+                0x00000000        0x0 FLASH_RUN/comm.o
+ .text          0x00000000        0x0 FLASH_RUN/monitor.o
+ .data          0x00000000        0x0 FLASH_RUN/monitor.o
+ .bss           0x00000000        0x0 FLASH_RUN/monitor.o
+ .text          0x00000000        0x0 FLASH_RUN/ff_test_term.o
+ .data          0x00000000        0x0 FLASH_RUN/ff_test_term.o
+ .bss           0x00000000        0x0 FLASH_RUN/ff_test_term.o
+ .text          0x00000000        0x0 FLASH_RUN/rtc_cal.o
+ .data          0x00000000        0x0 FLASH_RUN/rtc_cal.o
+ .bss           0x00000000        0x0 FLASH_RUN/rtc_cal.o
+ .text          0x00000000        0x0 FLASH_RUN/ff.o
+ .data          0x00000000        0x0 FLASH_RUN/ff.o
+ .bss           0x00000000        0x0 FLASH_RUN/ff.o
+ .text.f_gets   0x00000000        0x0 FLASH_RUN/ff.o
+ .text.f_putc   0x00000000        0x0 FLASH_RUN/ff.o
+ .text.f_puts   0x00000000        0x0 FLASH_RUN/ff.o
+ .text.f_printf
+                0x00000000        0x0 FLASH_RUN/ff.o
+ .text.f_stat   0x00000000        0x0 FLASH_RUN/ff.o
+ .text          0x00000000        0x0 FLASH_RUN/ccsbcs.o
+ .data          0x00000000        0x0 FLASH_RUN/ccsbcs.o
+ .bss           0x00000000        0x0 FLASH_RUN/ccsbcs.o
+ .text          0x00000000        0x0 FLASH_RUN/diskio.o
+ .data          0x00000000        0x0 FLASH_RUN/diskio.o
+ .bss           0x00000000        0x0 FLASH_RUN/diskio.o
+ .text          0x00000000        0x0 FLASH_RUN/spi_sd_lpc17xx.o
+ .data          0x00000000        0x0 FLASH_RUN/spi_sd_lpc17xx.o
+ .bss           0x00000000        0x0 FLASH_RUN/spi_sd_lpc17xx.o
+ .text          0x00000000        0x0 FLASH_RUN/fattime.o
+ .data          0x00000000        0x0 FLASH_RUN/fattime.o
+ .bss           0x00000000        0x0 FLASH_RUN/fattime.o
+ .text          0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .data          0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .bss           0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__get_PSP
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__set_PSP
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__get_MSP
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__set_MSP
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__get_BASEPRI
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__set_BASEPRI
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__get_PRIMASK
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__set_PRIMASK
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__get_FAULTMASK
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__set_FAULTMASK
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__get_CONTROL
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__set_CONTROL
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__REV    0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__REV16  0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__REVSH  0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__RBIT   0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__LDREXB
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__LDREXH
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__LDREXW
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__STREXB
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__STREXH
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text.__STREXW
+                0x00000000        0x0 FLASH_RUN/core_cm3.o
+ .text          0x00000000        0x0 FLASH_RUN/system_LPC17xx.o
+ .data          0x00000000        0x0 FLASH_RUN/system_LPC17xx.o
+ .bss           0x00000000        0x0 FLASH_RUN/system_LPC17xx.o
+ .text.SystemCoreClockUpdate
+                0x00000000        0x0 FLASH_RUN/system_LPC17xx.o
+ .text          0x00000000        0x0 FLASH_RUN/lpc17xx_nvic.o
+ .data          0x00000000        0x0 FLASH_RUN/lpc17xx_nvic.o
+ .bss           0x00000000        0x0 FLASH_RUN/lpc17xx_nvic.o
+ .text          0x00000000        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .data          0x00000000        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .bss           0x00000000        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .text.__WFI    0x00000000        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .text.CLKPWR_Sleep
+                0x00000000        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .text.CLKPWR_DeepSleep
+                0x00000000        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .text.CLKPWR_PowerDown
+                0x00000000        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .text.CLKPWR_DeepPowerDown
+                0x00000000        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .text          0x00000000        0x0 FLASH_RUN/lpc17xx_pinsel.o
+ .data          0x00000000        0x0 FLASH_RUN/lpc17xx_pinsel.o
+ .bss           0x00000000        0x0 FLASH_RUN/lpc17xx_pinsel.o
+ .text.PINSEL_ConfigTraceFunc
+                0x00000000        0x0 FLASH_RUN/lpc17xx_pinsel.o
+ .text.PINSEL_SetI2C0Pins
+                0x00000000        0x0 FLASH_RUN/lpc17xx_pinsel.o
+ .text          0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .data          0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .bss           0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_HalfWordGetPointer
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_ByteGetPointer
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.GPIO_ReadValue
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_SetDir
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_ReadValue
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_SetMask
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_HalfWordSetDir
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_HalfWordSetMask
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_HalfWordSetValue
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_HalfWordClearValue
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_HalfWordReadValue
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_ByteSetDir
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_ByteSetMask
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_ByteSetValue
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_ByteClearValue
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text.FIO_ByteReadValue
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .text          0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .data          0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .bss           0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_ForceBreak
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_IrDAInvtInputCmd
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_IrDACmd
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_IrDAPulseDivConfig
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_GetLineStatus
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_ABCmd
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_FullModemForcePinState
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_FullModemConfigMode
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_FullModemGetStatus
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_RS485Config
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_RS485ReceiverCmd
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_RS485Send
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_RS485SendData
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_RS485SendSlvAddr
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART1_StdIntHandler
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART2_StdIntHandler
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART3_StdIntHandler
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text.UART_DeInit
+                0x00000000        0x0 FLASH_RUN/lpc17xx_uart.o
+ .text          0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .data          0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .bss           0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_LoopBackCmd
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_SlaveOutputCmd
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_SendData
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_ReceiveData
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_IntHandler
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_ReadWrite
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_GetStatus
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_IntConfig
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_GetRawIntStatus
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_GetIntStatus
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_ClearIntPending
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_DMACmd
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP0_StdIntHandler
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP1_StdIntHandler
+                0x00000000        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .text          0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .data          0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .bss           0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .text.GPDMA_Setup
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .text.GPDMA_ChannelCmd
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .text.GPDMA_IntHandler
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .text.GPDMA_Init
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .data.pGPDMACh
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .rodata.GPDMA_LUTPerAddr
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .rodata.GPDMA_LUTPerWid
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .bss._apfnGPDMACbs
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .rodata.GPDMA_LUTPerBurst
+                0x00000000        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .text          0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .data          0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .bss           0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_ResetClockTickCounter
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_CntIncrIntConfig
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_AlarmIntConfig
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_SetTime
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_GetTime
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_GetFullTime
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_SetAlarmTime
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_GetAlarmTime
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_SetFullAlarmTime
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_GetFullAlarmTime
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_GetIntPending
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_ClearIntPending
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_WriteGPREG
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_ReadGPREG
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text.RTC_DeInit
+                0x00000000        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .text          0x00000000        0x0 FLASH_RUN/usbhost_lpc17xx.o
+ .data          0x00000000        0x0 FLASH_RUN/usbhost_lpc17xx.o
+ .bss           0x00000000        0x0 FLASH_RUN/usbhost_lpc17xx.o
+ .text.ReadLE32U
+                0x00000000        0x0 FLASH_RUN/usbhost_lpc17xx.o
+ .text.ReadBE16U
+                0x00000000        0x0 FLASH_RUN/usbhost_lpc17xx.o
+ .text          0x00000000        0x0 FLASH_RUN/usbhost_ms.o
+ .data          0x00000000        0x0 FLASH_RUN/usbhost_ms.o
+ .bss           0x00000000        0x0 FLASH_RUN/usbhost_ms.o
+ .data          0x00000000        0x0 c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+ .bss           0x00000000        0x0 c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+rom              0x00000000         0x00040000         xr
+ram              0x10000000         0x00008000         xrw
+ahbb0            0x2007c000         0x00004000         rw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD FLASH_RUN/startup_LPC17xx.o
+LOAD FLASH_RUN/main.o
+LOAD FLASH_RUN/comm.o
+LOAD FLASH_RUN/monitor.o
+LOAD FLASH_RUN/ff_test_term.o
+LOAD FLASH_RUN/rtc_cal.o
+LOAD FLASH_RUN/ff.o
+LOAD FLASH_RUN/ccsbcs.o
+LOAD FLASH_RUN/diskio.o
+LOAD FLASH_RUN/spi_sd_lpc17xx.o
+LOAD FLASH_RUN/fattime.o
+LOAD FLASH_RUN/core_cm3.o
+LOAD FLASH_RUN/system_LPC17xx.o
+LOAD FLASH_RUN/lpc17xx_nvic.o
+LOAD FLASH_RUN/lpc17xx_clkpwr.o
+LOAD FLASH_RUN/lpc17xx_pinsel.o
+LOAD FLASH_RUN/lpc17xx_gpio.o
+LOAD FLASH_RUN/lpc17xx_uart.o
+LOAD FLASH_RUN/lpc17xx_ssp.o
+LOAD FLASH_RUN/lpc17xx_gpdma.o
+LOAD FLASH_RUN/lpc17xx_rtc.o
+LOAD FLASH_RUN/usbhost_lpc17xx.o
+LOAD FLASH_RUN/usbhost_ms.o
+LOAD c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libm.a
+LOAD c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/thumb2\libgcc.a
+LOAD c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libstdc++.a
+START GROUP
+LOAD c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/thumb2\libgcc.a
+LOAD c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a
+END GROUP
+                0x10008000                PROVIDE (__cs3_stack, (__cs3_region_start_ram + __cs3_region_size_ram))
+                0x00005ce0                PROVIDE (__cs3_stack_size, ((__cs3_region_start_ram + __cs3_region_size_ram) - _end))
+                0x10002320                PROVIDE (__cs3_heap_start, _end)
+                0x10008000                PROVIDE (__cs3_heap_end, (__cs3_region_start_ram + __cs3_region_size_ram))
+
+.text           0x00000000     0x6bd4
+                0x00000000                __cs3_region_start_rom = .
+ *(.cs3.region-head.rom)
+                0x00000000                __cs3_interrupt_vector = __cs3_interrupt_vector_cortex_m
+ *(.cs3.interrupt_vector)
+ .cs3.interrupt_vector
+                0x00000000       0xc4 FLASH_RUN/startup_LPC17xx.o
+                0x00000000                __cs3_interrupt_vector_cortex_m
+                0x00000001                ASSERT ((. != __cs3_interrupt_vector_cortex_m), No interrupt vector)
+ *(.rom)
+ *(.rom.b)
+                0x000000c4                __cs3_reset = __cs3_reset_cortex_m
+ *(.cs3.reset)
+ .cs3.reset     0x000000c4       0x60 FLASH_RUN/startup_LPC17xx.o
+                0x0000011a                HardFault_Handler
+                0x00000118                NMI_Handler
+                0x00000120                UsageFault_Handler
+                0x0000011c                MemManage_Handler
+                0x0000011e                BusFault_Handler
+                0x000000c4                __cs3_reset_cortex_m
+                0x00000001                ASSERT ((. != __cs3_reset), No reset code)
+ *(.text .text.* .gnu.linkonce.t.*)
+ .text          0x00000124        0xa FLASH_RUN/startup_LPC17xx.o
+                0x0000012c                TIMER2_IRQHandler
+                0x00000126                DebugMon_Handler
+                0x0000012c                RIT_IRQHandler
+                0x0000012c                I2C0_IRQHandler
+                0x0000012c                PWM1_IRQHandler
+                0x00000128                PendSV_Handler
+                0x0000012c                I2C1_IRQHandler
+                0x0000012c                EINT2_IRQHandler
+                0x0000012c                UART1_IRQHandler
+                0x0000012c                EINT3_IRQHandler
+                0x0000012c                TIMER3_IRQHandler
+                0x0000012c                PLL0_IRQHandler
+                0x0000012c                CAN_IRQHandler
+                0x0000012c                PLL1_IRQHandler
+                0x0000012c                SSP0_IRQHandler
+                0x0000012c                I2S_IRQHandler
+                0x0000012c                I2C2_IRQHandler
+                0x0000012c                RTC_IRQHandler
+                0x0000012c                TIMER0_IRQHandler
+                0x0000012c                SPI_IRQHandler
+                0x0000012c                EINT1_IRQHandler
+                0x0000012c                TIMER1_IRQHandler
+                0x0000012c                UART2_IRQHandler
+                0x0000012c                Default_Handler
+                0x0000012c                ADC_IRQHandler
+                0x0000012c                SSP1_IRQHandler
+                0x0000012c                BOD_IRQHandler
+                0x0000012c                WDT_IRQHandler
+                0x00000124                SVC_Handler
+                0x0000012c                QEI_IRQHandler
+                0x0000012c                EINT0_IRQHandler
+                0x0000012c                DMA_IRQHandler
+                0x0000012c                UART3_IRQHandler
+                0x0000012c                MCPWM_IRQHandler
+                0x0000012c                ENET_IRQHandler
+ *fill*         0x0000012e        0x2 00
+ .text.startup_delay
+                0x00000130       0x1c FLASH_RUN/main.o
+                0x00000130                startup_delay
+ .text.LED1_on  0x0000014c       0x10 FLASH_RUN/main.o
+ .text.c_entry  0x0000015c       0xfc FLASH_RUN/main.o
+                0x0000015c                c_entry
+ .text.main     0x00000258        0x8 FLASH_RUN/main.o
+                0x00000258                main
+ .text.SysTick_Handler
+                0x00000260       0x6c FLASH_RUN/main.o
+                0x00000260                SysTick_Handler
+ .text.UART_IntErr
+                0x000002cc        0x4 FLASH_RUN/comm.o
+ .text.comm_txbusy
+                0x000002d0       0x18 FLASH_RUN/comm.o
+                0x000002d0                comm_txbusy
+ .text.comm_init
+                0x000002e8       0xdc FLASH_RUN/comm.o
+                0x000002e8                comm_init
+ .text.comm_get
+                0x000003c4       0x68 FLASH_RUN/comm.o
+                0x000003c4                comm_get
+ .text.xcomm_get
+                0x0000042c        0x8 FLASH_RUN/comm.o
+                0x0000042c                xcomm_get
+ .text.UART_IntTransmit
+                0x00000434       0x88 FLASH_RUN/comm.o
+ .text.comm_put
+                0x000004bc       0x68 FLASH_RUN/comm.o
+                0x000004bc                comm_put
+ .text.xcomm_put
+                0x00000524        0x8 FLASH_RUN/comm.o
+                0x00000524                xcomm_put
+ .text.comm_puts
+                0x0000052c       0x14 FLASH_RUN/comm.o
+                0x0000052c                comm_puts
+ .text.UART_IntReceive
+                0x00000540       0x48 FLASH_RUN/comm.o
+ .text.UART0_IRQHandler
+                0x00000588        0x8 FLASH_RUN/comm.o
+                0x00000588                UART0_IRQHandler
+ .text.xputc    0x00000590       0x20 FLASH_RUN/monitor.o
+                0x00000590                xputc
+ .text.xputs    0x000005b0       0x14 FLASH_RUN/monitor.o
+                0x000005b0                xputs
+ .text.xatoi    0x000005c4       0xb4 FLASH_RUN/monitor.o
+                0x000005c4                xatoi
+ .text.get_line
+                0x00000678       0x58 FLASH_RUN/monitor.o
+                0x00000678                get_line
+ .text.xstrlen  0x000006d0       0x10 FLASH_RUN/monitor.o
+                0x000006d0                xstrlen
+ .text.xstrcpy  0x000006e0       0x10 FLASH_RUN/monitor.o
+                0x000006e0                xstrcpy
+ .text.xmemset  0x000006f0       0x10 FLASH_RUN/monitor.o
+                0x000006f0                xmemset
+ .text.xstrchr  0x00000700       0x14 FLASH_RUN/monitor.o
+                0x00000700                xstrchr
+ .text.xprintf  0x00000714      0x174 FLASH_RUN/monitor.o
+                0x00000714                xprintf
+ .text.put_dump
+                0x00000888       0x54 FLASH_RUN/monitor.o
+                0x00000888                put_dump
+ .text.ff_test_term_timer_callback
+                0x000008dc       0x10 FLASH_RUN/ff_test_term.o
+                0x000008dc                ff_test_term_timer_callback
+ .text.put_rc   0x000008ec       0x30 FLASH_RUN/ff_test_term.o
+ .text.scan_files
+                0x0000091c       0x98 FLASH_RUN/ff_test_term.o
+ .text.ff_test_term
+                0x000009b4      0xbd4 FLASH_RUN/ff_test_term.o
+                0x000009b4                ff_test_term
+ .text.rtc_cal_gettime
+                0x00001588       0x48 FLASH_RUN/rtc_cal.o
+                0x00001588                rtc_cal_gettime
+ .text.rtc_cal_settime
+                0x000015d0       0x24 FLASH_RUN/rtc_cal.o
+                0x000015d0                rtc_cal_settime
+ .text.rtc_cal_config
+                0x000015f4       0x54 FLASH_RUN/rtc_cal.o
+                0x000015f4                rtc_cal_config
+ .text.rtc_cal_init
+                0x00001648       0x30 FLASH_RUN/rtc_cal.o
+                0x00001648                rtc_cal_init
+ .text.mem_cpy  0x00001678       0x1c FLASH_RUN/ff.o
+ .text.mem_set  0x00001694       0x10 FLASH_RUN/ff.o
+ .text.chk_chr  0x000016a4       0x10 FLASH_RUN/ff.o
+ .text.clust2sect
+                0x000016b4       0x18 FLASH_RUN/ff.o
+                0x000016b4                clust2sect
+ .text.gen_numname
+                0x000016cc       0x80 FLASH_RUN/ff.o
+                0x000016cc                gen_numname
+ .text.sum_sfn  0x0000174c       0x20 FLASH_RUN/ff.o
+ .text.f_mount  0x0000176c       0x28 FLASH_RUN/ff.o
+                0x0000176c                f_mount
+ .text.f_chdrive
+                0x00001794       0x14 FLASH_RUN/ff.o
+                0x00001794                f_chdrive
+ .text.f_mkfs   0x000017a8      0x5b0 FLASH_RUN/ff.o
+                0x000017a8                f_mkfs
+ .text.validate
+                0x00001d58       0x24 FLASH_RUN/ff.o
+ .text.check_fs
+                0x00001d7c       0x88 FLASH_RUN/ff.o
+ .text.chk_mounted
+                0x00001e04      0x324 FLASH_RUN/ff.o
+ .text.move_window
+                0x00002128       0x6c FLASH_RUN/ff.o
+ .text.put_fat  0x00002194      0x10c FLASH_RUN/ff.o
+                0x00002194                put_fat
+ .text.get_fat  0x000022a0       0xcc FLASH_RUN/ff.o
+                0x000022a0                get_fat
+ .text.f_getfree
+                0x0000236c       0xec FLASH_RUN/ff.o
+                0x0000236c                f_getfree
+ .text.f_read   0x00002458      0x17c FLASH_RUN/ff.o
+                0x00002458                f_read
+ .text.dir_sdi  0x000025d4       0x88 FLASH_RUN/ff.o
+ .text.create_chain
+                0x0000265c       0x9c FLASH_RUN/ff.o
+ .text.f_lseek  0x000026f8      0x158 FLASH_RUN/ff.o
+                0x000026f8                f_lseek
+ .text.f_write  0x00002850      0x1b4 FLASH_RUN/ff.o
+                0x00002850                f_write
+ .text.dir_next
+                0x00002a04       0xec FLASH_RUN/ff.o
+ .text.dir_remove
+                0x00002af0       0x54 FLASH_RUN/ff.o
+ .text.dir_read
+                0x00002b44      0x104 FLASH_RUN/ff.o
+ .text.remove_chain
+                0x00002c48       0x60 FLASH_RUN/ff.o
+ .text.f_truncate
+                0x00002ca8       0x98 FLASH_RUN/ff.o
+                0x00002ca8                f_truncate
+ .text.sync     0x00002d40       0xbc FLASH_RUN/ff.o
+ .text.f_sync   0x00002dfc       0xac FLASH_RUN/ff.o
+                0x00002dfc                f_sync
+ .text.f_close  0x00002ea8       0x10 FLASH_RUN/ff.o
+                0x00002ea8                f_close
+ .text.get_fileinfo
+                0x00002eb8      0x100 FLASH_RUN/ff.o
+ .text.f_readdir
+                0x00002fb8       0x5c FLASH_RUN/ff.o
+                0x00002fb8                f_readdir
+ .text.dir_find
+                0x00003014      0x130 FLASH_RUN/ff.o
+ .text.follow_path
+                0x00003144      0x2bc FLASH_RUN/ff.o
+ .text.f_utime  0x00003400       0x6c FLASH_RUN/ff.o
+                0x00003400                f_utime
+ .text.f_chmod  0x0000346c       0x68 FLASH_RUN/ff.o
+                0x0000346c                f_chmod
+ .text.f_unlink
+                0x000034d4       0xe0 FLASH_RUN/ff.o
+                0x000034d4                f_unlink
+ .text.f_opendir
+                0x000035b4       0x70 FLASH_RUN/ff.o
+                0x000035b4                f_opendir
+ .text.f_chdir  0x00003624       0x70 FLASH_RUN/ff.o
+                0x00003624                f_chdir
+ .text.dir_register
+                0x00003694      0x1c0 FLASH_RUN/ff.o
+ .text.f_rename
+                0x00003854      0x130 FLASH_RUN/ff.o
+                0x00003854                f_rename
+ .text.f_mkdir  0x00003984      0x1c0 FLASH_RUN/ff.o
+                0x00003984                f_mkdir
+ .text.f_open   0x00003b44      0x160 FLASH_RUN/ff.o
+                0x00003b44                f_open
+ .text.ff_convert
+                0x00003ca4       0x40 FLASH_RUN/ccsbcs.o
+                0x00003ca4                ff_convert
+ .text.ff_wtoupper
+                0x00003ce4       0x28 FLASH_RUN/ccsbcs.o
+                0x00003ce4                ff_wtoupper
+ .text.disk_ioctl
+                0x00003d0c       0x58 FLASH_RUN/diskio.o
+                0x00003d0c                disk_ioctl
+ .text.disk_write
+                0x00003d64       0x40 FLASH_RUN/diskio.o
+                0x00003d64                disk_write
+ .text.disk_read
+                0x00003da4       0x40 FLASH_RUN/diskio.o
+                0x00003da4                disk_read
+ .text.disk_status
+                0x00003de4       0x1c FLASH_RUN/diskio.o
+                0x00003de4                disk_status
+ .text.disk_initialize
+                0x00003e00       0x50 FLASH_RUN/diskio.o
+                0x00003e00                disk_initialize
+ .text.disk_timerproc
+                0x00003e50        0x8 FLASH_RUN/diskio.o
+                0x00003e50                disk_timerproc
+ .text.spi_rw   0x00003e58       0x18 FLASH_RUN/spi_sd_lpc17xx.o
+ .text.rcvr_spi
+                0x00003e70        0xc FLASH_RUN/spi_sd_lpc17xx.o
+ .text.wait_ready
+                0x00003e7c       0x24 FLASH_RUN/spi_sd_lpc17xx.o
+ .text.rcvr_datablock
+                0x00003ea0       0xa0 FLASH_RUN/spi_sd_lpc17xx.o
+ .text.xmit_datablock
+                0x00003f40       0x94 FLASH_RUN/spi_sd_lpc17xx.o
+ .text.MMC_disk_status
+                0x00003fd4        0xc FLASH_RUN/spi_sd_lpc17xx.o
+                0x00003fd4                MMC_disk_status
+ .text.MMC_disk_timerproc
+                0x00003fe0       0x44 FLASH_RUN/spi_sd_lpc17xx.o
+                0x00003fe0                MMC_disk_timerproc
+ .text.de_select_card
+                0x00004024        0xc FLASH_RUN/spi_sd_lpc17xx.o
+ .text.release_spi
+                0x00004030        0xc FLASH_RUN/spi_sd_lpc17xx.o
+ .text.socket_power_off
+                0x0000403c       0x18 FLASH_RUN/spi_sd_lpc17xx.o
+ .text.select_card
+                0x00004054        0xc FLASH_RUN/spi_sd_lpc17xx.o
+ .text.send_cmd
+                0x00004060       0x84 FLASH_RUN/spi_sd_lpc17xx.o
+ .text.MMC_disk_write
+                0x000040e4       0xa4 FLASH_RUN/spi_sd_lpc17xx.o
+                0x000040e4                MMC_disk_write
+ .text.MMC_disk_read
+                0x00004188       0x80 FLASH_RUN/spi_sd_lpc17xx.o
+                0x00004188                MMC_disk_read
+ .text.spi_set_speed
+                0x00004208       0x20 FLASH_RUN/spi_sd_lpc17xx.o
+ .text.power_on
+                0x00004228      0x108 FLASH_RUN/spi_sd_lpc17xx.o
+ .text.spi_close
+                0x00004330       0x60 FLASH_RUN/spi_sd_lpc17xx.o
+                0x00004330                spi_close
+ .text.power_off
+                0x00004390       0x30 FLASH_RUN/spi_sd_lpc17xx.o
+ .text.MMC_disk_initialize
+                0x000043c0      0x118 FLASH_RUN/spi_sd_lpc17xx.o
+                0x000043c0                MMC_disk_initialize
+ .text.MMC_disk_ioctl
+                0x000044d8      0x1fc FLASH_RUN/spi_sd_lpc17xx.o
+                0x000044d8                MMC_disk_ioctl
+ .text.get_fattime
+                0x000046d4       0x38 FLASH_RUN/fattime.o
+                0x000046d4                get_fattime
+ .text.SystemInit
+                0x0000470c       0xdc FLASH_RUN/system_LPC17xx.o
+                0x0000470c                SystemInit
+ .text.NVIC_DeInit
+                0x000047e8       0x30 FLASH_RUN/lpc17xx_nvic.o
+                0x000047e8                NVIC_DeInit
+ .text.NVIC_SCBDeInit
+                0x00004818       0x38 FLASH_RUN/lpc17xx_nvic.o
+                0x00004818                NVIC_SCBDeInit
+ .text.NVIC_SetVTOR
+                0x00004850       0x14 FLASH_RUN/lpc17xx_nvic.o
+                0x00004850                NVIC_SetVTOR
+ .text.CLKPWR_SetPCLKDiv
+                0x00004864       0x58 FLASH_RUN/lpc17xx_clkpwr.o
+                0x00004864                CLKPWR_SetPCLKDiv
+ .text.CLKPWR_GetPCLKSEL
+                0x000048bc       0x24 FLASH_RUN/lpc17xx_clkpwr.o
+                0x000048bc                CLKPWR_GetPCLKSEL
+ .text.CLKPWR_GetPCLK
+                0x000048e0       0x24 FLASH_RUN/lpc17xx_clkpwr.o
+                0x000048e0                CLKPWR_GetPCLK
+ .text.CLKPWR_ConfigPPWR
+                0x00004904       0x34 FLASH_RUN/lpc17xx_clkpwr.o
+                0x00004904                CLKPWR_ConfigPPWR
+ .text.PINSEL_SetPinFunc
+                0x00004938       0x3c FLASH_RUN/lpc17xx_pinsel.o
+                0x00004938                PINSEL_SetPinFunc
+ .text.PINSEL_SetResistorMode
+                0x00004974       0x3c FLASH_RUN/lpc17xx_pinsel.o
+                0x00004974                PINSEL_SetResistorMode
+ .text.PINSEL_SetOpenDrainMode
+                0x000049b0       0x38 FLASH_RUN/lpc17xx_pinsel.o
+                0x000049b0                PINSEL_SetOpenDrainMode
+ .text.PINSEL_ConfigPin
+                0x000049e8       0x24 FLASH_RUN/lpc17xx_pinsel.o
+                0x000049e8                PINSEL_ConfigPin
+ .text.GPIO_GetPointer
+                0x00004a0c       0x3c FLASH_RUN/lpc17xx_gpio.o
+ .text.GPIO_SetDir
+                0x00004a48       0x24 FLASH_RUN/lpc17xx_gpio.o
+                0x00004a48                GPIO_SetDir
+ .text.GPIO_SetValue
+                0x00004a6c       0x10 FLASH_RUN/lpc17xx_gpio.o
+                0x00004a6c                GPIO_SetValue
+ .text.GPIO_ClearValue
+                0x00004a7c       0x10 FLASH_RUN/lpc17xx_gpio.o
+                0x00004a7c                GPIO_ClearValue
+ .text.FIO_SetValue
+                0x00004a8c        0x8 FLASH_RUN/lpc17xx_gpio.o
+                0x00004a8c                FIO_SetValue
+ .text.FIO_ClearValue
+                0x00004a94        0x8 FLASH_RUN/lpc17xx_gpio.o
+                0x00004a94                FIO_ClearValue
+ .text.getUartNum
+                0x00004a9c       0x2c FLASH_RUN/lpc17xx_uart.o
+                0x00004a9c                getUartNum
+ .text.UART_GenIntHandler
+                0x00004ac8       0xbc FLASH_RUN/lpc17xx_uart.o
+                0x00004ac8                UART_GenIntHandler
+ .text.UART_ConfigStructInit
+                0x00004b84       0x14 FLASH_RUN/lpc17xx_uart.o
+                0x00004b84                UART_ConfigStructInit
+ .text.UART_SendData
+                0x00004b98        0x4 FLASH_RUN/lpc17xx_uart.o
+                0x00004b98                UART_SendData
+ .text.UART_ReceiveData
+                0x00004b9c        0x8 FLASH_RUN/lpc17xx_uart.o
+                0x00004b9c                UART_ReceiveData
+ .text.UART_IntConfig
+                0x00004ba4       0x60 FLASH_RUN/lpc17xx_uart.o
+                0x00004ba4                UART_IntConfig
+ .text.UART_CheckBusy
+                0x00004c04        0xc FLASH_RUN/lpc17xx_uart.o
+                0x00004c04                UART_CheckBusy
+ .text.UART_FIFOConfig
+                0x00004c10       0x40 FLASH_RUN/lpc17xx_uart.o
+                0x00004c10                UART_FIFOConfig
+ .text.UART_FIFOConfigStructInit
+                0x00004c50       0x10 FLASH_RUN/lpc17xx_uart.o
+                0x00004c50                UART_FIFOConfigStructInit
+ .text.UART_TxCmd
+                0x00004c60       0x18 FLASH_RUN/lpc17xx_uart.o
+                0x00004c60                UART_TxCmd
+ .text.UART_Send
+                0x00004c78       0x84 FLASH_RUN/lpc17xx_uart.o
+                0x00004c78                UART_Send
+ .text.UART_Receive
+                0x00004cfc       0x58 FLASH_RUN/lpc17xx_uart.o
+                0x00004cfc                UART_Receive
+ .text.UART_SetupCbs
+                0x00004d54       0x4c FLASH_RUN/lpc17xx_uart.o
+                0x00004d54                UART_SetupCbs
+ .text.UART0_StdIntHandler
+                0x00004da0       0x10 FLASH_RUN/lpc17xx_uart.o
+                0x00004da0                UART0_StdIntHandler
+ .text.uart_set_divisors
+                0x00004db0      0x12c FLASH_RUN/lpc17xx_uart.o
+                0x00004db0                uart_set_divisors
+ .text.UART_Init
+                0x00004edc      0x130 FLASH_RUN/lpc17xx_uart.o
+                0x00004edc                UART_Init
+ .text.SSP_getNum
+                0x0000500c       0x20 FLASH_RUN/lpc17xx_ssp.o
+ .text.SSP_ConfigStructInit
+                0x0000502c       0x18 FLASH_RUN/lpc17xx_ssp.o
+                0x0000502c                SSP_ConfigStructInit
+ .text.SSP_Cmd  0x00005044       0x14 FLASH_RUN/lpc17xx_ssp.o
+                0x00005044                SSP_Cmd
+ .text.SSP_DeInit
+                0x00005058       0x28 FLASH_RUN/lpc17xx_ssp.o
+                0x00005058                SSP_DeInit
+ .text.SSP_SetClock
+                0x00005080       0x6c FLASH_RUN/lpc17xx_ssp.o
+                0x00005080                SSP_SetClock
+ .text.SSP_Init
+                0x000050ec       0x78 FLASH_RUN/lpc17xx_ssp.o
+                0x000050ec                SSP_Init
+ .text.RTC_Cmd  0x00005164       0x14 FLASH_RUN/lpc17xx_rtc.o
+                0x00005164                RTC_Cmd
+ .text.RTC_SetFullTime
+                0x00005178       0x50 FLASH_RUN/lpc17xx_rtc.o
+                0x00005178                RTC_SetFullTime
+ .text.RTC_CalibCounterCmd
+                0x000051c8       0x14 FLASH_RUN/lpc17xx_rtc.o
+                0x000051c8                RTC_CalibCounterCmd
+ .text.RTC_CalibConfig
+                0x000051dc       0x1c FLASH_RUN/lpc17xx_rtc.o
+                0x000051dc                RTC_CalibConfig
+ .text.RTC_Init
+                0x000051f8       0x20 FLASH_RUN/lpc17xx_rtc.o
+                0x000051f8                RTC_Init
+ .text.Host_DelayUS
+                0x00005218       0x1c FLASH_RUN/usbhost_lpc17xx.o
+                0x00005218                Host_DelayUS
+ .text.Host_DelayMS
+                0x00005234       0x20 FLASH_RUN/usbhost_lpc17xx.o
+                0x00005234                Host_DelayMS
+ .text.USB_IRQHandler
+                0x00005254       0xa0 FLASH_RUN/usbhost_lpc17xx.o
+                0x00005254                USB_IRQHandler
+ .text.Host_TDInit
+                0x000052f4        0xc FLASH_RUN/usbhost_lpc17xx.o
+                0x000052f4                Host_TDInit
+ .text.Host_EDInit
+                0x00005300        0xc FLASH_RUN/usbhost_lpc17xx.o
+                0x00005300                Host_EDInit
+ .text.Host_HCCAInit
+                0x0000530c       0x18 FLASH_RUN/usbhost_lpc17xx.o
+                0x0000530c                Host_HCCAInit
+ .text.Host_Init
+                0x00005324      0x158 FLASH_RUN/usbhost_lpc17xx.o
+                0x00005324                Host_Init
+ .text.Host_WDHWait
+                0x0000547c       0x14 FLASH_RUN/usbhost_lpc17xx.o
+                0x0000547c                Host_WDHWait
+ .text.Host_ProcessTD
+                0x00005490       0xb8 FLASH_RUN/usbhost_lpc17xx.o
+                0x00005490                Host_ProcessTD
+ .text.WriteLE32U
+                0x00005548       0x20 FLASH_RUN/usbhost_lpc17xx.o
+                0x00005548                WriteLE32U
+ .text.ReadLE16U
+                0x00005568       0x18 FLASH_RUN/usbhost_lpc17xx.o
+                0x00005568                ReadLE16U
+ .text.WriteLE16U
+                0x00005580       0x18 FLASH_RUN/usbhost_lpc17xx.o
+                0x00005580                WriteLE16U
+ .text.Host_FillSetup
+                0x00005598       0x50 FLASH_RUN/usbhost_lpc17xx.o
+                0x00005598                Host_FillSetup
+ .text.Host_CtrlSend
+                0x000055e8       0x50 FLASH_RUN/usbhost_lpc17xx.o
+                0x000055e8                Host_CtrlSend
+ .text.Host_CtrlRecv
+                0x00005638       0x50 FLASH_RUN/usbhost_lpc17xx.o
+                0x00005638                Host_CtrlRecv
+ .text.ReadBE32U
+                0x00005688       0x20 FLASH_RUN/usbhost_lpc17xx.o
+                0x00005688                ReadBE32U
+ .text.WriteBE32U
+                0x000056a8       0x20 FLASH_RUN/usbhost_lpc17xx.o
+                0x000056a8                WriteBE32U
+ .text.WriteBE16U
+                0x000056c8       0x18 FLASH_RUN/usbhost_lpc17xx.o
+                0x000056c8                WriteBE16U
+ .text.Host_EnumDev
+                0x000056e0       0xf0 FLASH_RUN/usbhost_lpc17xx.o
+                0x000056e0                Host_EnumDev
+ .text.Fill_MSCommand
+                0x000057d0       0xa8 FLASH_RUN/usbhost_ms.o
+                0x000057d0                Fill_MSCommand
+ .text.MS_BulkSend
+                0x00005878       0x88 FLASH_RUN/usbhost_ms.o
+                0x00005878                MS_BulkSend
+ .text.MS_BulkRecv
+                0x00005900       0x98 FLASH_RUN/usbhost_ms.o
+                0x00005900                MS_BulkRecv
+ .text.MS_Inquire
+                0x00005998       0x8c FLASH_RUN/usbhost_ms.o
+                0x00005998                MS_Inquire
+ .text.MS_TestUnitReady
+                0x00005a24       0x5c FLASH_RUN/usbhost_ms.o
+                0x00005a24                MS_TestUnitReady
+ .text.MS_GetSenseInfo
+                0x00005a80       0x70 FLASH_RUN/usbhost_ms.o
+                0x00005a80                MS_GetSenseInfo
+ .text.MS_ReadCapacity
+                0x00005af0       0x8c FLASH_RUN/usbhost_ms.o
+                0x00005af0                MS_ReadCapacity
+ .text.MS_GetMaxLUN
+                0x00005b7c       0x20 FLASH_RUN/usbhost_ms.o
+                0x00005b7c                MS_GetMaxLUN
+ .text.MS_Init  0x00005b9c       0x48 FLASH_RUN/usbhost_ms.o
+                0x00005b9c                MS_Init
+ .text.MS_ParseConfiguration
+                0x00005be4       0xbc FLASH_RUN/usbhost_ms.o
+                0x00005be4                MS_ParseConfiguration
+ .text          0x00005ca0       0x60 c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+                0x00005ca0                memcpy
+ *(.plt)
+ *(.gnu.warning)
+ *(.glue_7t)
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/startup_LPC17xx.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/main.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/comm.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/monitor.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/ff_test_term.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/rtc_cal.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/ff.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/ccsbcs.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/diskio.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/spi_sd_lpc17xx.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/fattime.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/core_cm3.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/system_LPC17xx.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/lpc17xx_nvic.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/lpc17xx_pinsel.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/lpc17xx_uart.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/usbhost_lpc17xx.o
+ .glue_7t       0x00005d00        0x0 FLASH_RUN/usbhost_ms.o
+ .glue_7t       0x00005d00        0x0 c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+ *(.glue_7)
+ .glue_7        0x00005d00        0x0 FLASH_RUN/startup_LPC17xx.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/main.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/comm.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/monitor.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/ff_test_term.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/rtc_cal.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/ff.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/ccsbcs.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/diskio.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/spi_sd_lpc17xx.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/fattime.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/core_cm3.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/system_LPC17xx.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/lpc17xx_nvic.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/lpc17xx_pinsel.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/lpc17xx_uart.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/usbhost_lpc17xx.o
+ .glue_7        0x00005d00        0x0 FLASH_RUN/usbhost_ms.o
+ .glue_7        0x00005d00        0x0 c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+ *(.vfp11_veneer)
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/startup_LPC17xx.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/main.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/comm.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/monitor.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/ff_test_term.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/rtc_cal.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/ff.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/ccsbcs.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/diskio.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/spi_sd_lpc17xx.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/fattime.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/core_cm3.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/system_LPC17xx.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/lpc17xx_nvic.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/lpc17xx_pinsel.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/lpc17xx_uart.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/usbhost_lpc17xx.o
+ .vfp11_veneer  0x00005d00        0x0 FLASH_RUN/usbhost_ms.o
+ .vfp11_veneer  0x00005d00        0x0 c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+ *(.rodata .rodata.* .gnu.linkonce.r.*)
+ .rodata.str1.1
+                0x00005d00       0x66 FLASH_RUN/main.o
+ *fill*         0x00005d66        0x2 00
+ .rodata.C.16.3368
+                0x00005d68       0x20 FLASH_RUN/main.o
+ .rodata.C.18.3238
+                0x00005d88        0x2 FLASH_RUN/comm.o
+ .rodata.str1.1
+                0x00005d8a        0xd FLASH_RUN/monitor.o
+ .rodata        0x00005d97       0xd1 FLASH_RUN/ff_test_term.o
+ .rodata.str1.1
+                0x00005e68      0x7a2 FLASH_RUN/ff_test_term.o
+                                0x7a6 (size before relaxing)
+ .rodata.ft.3244
+                0x0000660a        0x4 FLASH_RUN/ff_test_term.o
+ .rodata.cst.4013
+                0x0000660e       0x16 FLASH_RUN/ff.o
+ .rodata.excvt.2606
+                0x00006624       0x80 FLASH_RUN/ff.o
+ .rodata.str1.1
+                0x000066a4       0x38 FLASH_RUN/ff.o
+ .rodata.LfnOfs
+                0x000066dc        0xd FLASH_RUN/ff.o
+ *fill*         0x000066e9        0x1 00
+ .rodata.vst.4012
+                0x000066ea       0x16 FLASH_RUN/ff.o
+ .rodata.Tbl    0x00006700      0x100 FLASH_RUN/ccsbcs.o
+ .rodata.tbl_lower.1890
+                0x00006800      0x1e0 FLASH_RUN/ccsbcs.o
+ .rodata.tbl_upper.1891
+                0x000069e0      0x1e0 FLASH_RUN/ccsbcs.o
+ *(.ARM.extab* .gnu.linkonce.armextab.*)
+ *(.gcc_except_table)
+ *(.eh_frame_hdr)
+ *(.eh_frame)
+                0x00006bc0                . = ALIGN (0x4)
+ *(.init)
+                0x00006bc0                . = ALIGN (0x4)
+                0x00006bc0                __preinit_array_start = .
+ *(.preinit_array)
+                0x00006bc0                __preinit_array_end = .
+                0x00006bc0                . = ALIGN (0x4)
+                0x00006bc0                __init_array_start = .
+ *(SORT(.init_array.*))
+ *(.init_array)
+                0x00006bc0                __init_array_end = .
+                0x00006bc0                . = ALIGN (0x4)
+ *crtbegin.o(.ctors)
+ *(EXCLUDE_FILE(*crtend.o) .ctors)
+ *(SORT(.ctors.*))
+ *crtend.o(.ctors)
+                0x00006bc0                . = ALIGN (0x4)
+ *(.fini)
+                0x00006bc0                . = ALIGN (0x4)
+                0x00006bc0                __fini_array_start = .
+ *(.fini_array)
+ *(SORT(.fini_array.*))
+                0x00006bc0                __fini_array_end = .
+ *crtbegin.o(.dtors)
+ *(EXCLUDE_FILE(*crtend.o) .dtors)
+ *(SORT(.dtors.*))
+ *crtend.o(.dtors)
+                0x00006bc0                . = ALIGN (0x4)
+                0x00006bc0                __cs3_regions = .
+                0x00006bc0        0x4 LONG 0x0
+                0x00006bc4        0x4 LONG 0x6be0 __cs3_region_init_ram
+                0x00006bc8        0x4 LONG 0x10000000 __cs3_region_start_ram
+                0x00006bcc        0x4 LONG 0x10 __cs3_region_init_size_ram
+                0x00006bd0        0x4 LONG 0x2310 __cs3_region_zero_size_ram
+                0x00006bd4                __exidx_start = .
+
+.v4_bx          0x00006bd4        0x0
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/startup_LPC17xx.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/main.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/comm.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/monitor.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/ff_test_term.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/rtc_cal.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/ff.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/ccsbcs.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/diskio.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/spi_sd_lpc17xx.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/fattime.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/core_cm3.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/system_LPC17xx.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/lpc17xx_nvic.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/lpc17xx_clkpwr.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/lpc17xx_pinsel.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/lpc17xx_gpio.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/lpc17xx_uart.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/lpc17xx_ssp.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/lpc17xx_gpdma.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/lpc17xx_rtc.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/usbhost_lpc17xx.o
+ .v4_bx         0x00006bd4        0x0 FLASH_RUN/usbhost_ms.o
+ .v4_bx         0x00006bd4        0x0 c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+
+.ARM.exidx      0x00006bd4        0x8
+ *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+ .ARM.exidx.cs3.reset
+                0x00006bd4        0x8 FLASH_RUN/startup_LPC17xx.o
+                0x00006bdc                __exidx_end = .
+
+.text.align     0x00006bdc        0x4
+                0x00006be0                . = ALIGN (0x8)
+ *fill*         0x00006bdc        0x4 00
+                0x00006be0                _etext = .
+                0x00040000                __cs3_region_size_rom = 0x40000
+                0x00000001                __cs3_region_num = 0x1
+
+.data           0x10000000       0x10 load address 0x00006be0
+                0x10000000                __cs3_region_start_ram = .
+                0x10000000                _sdata = .
+ *(.cs3.region-head.ram)
+ *(.jcr)
+ *(.got.plt)
+ *(.got)
+ *(.shdata)
+ *(.data .data.* .gnu.linkonce.d.*)
+ .data.usb_status
+                0x10000000        0x4 FLASH_RUN/diskio.o
+                0x10000000                usb_status
+ .data.Stat     0x10000004        0x4 FLASH_RUN/spi_sd_lpc17xx.o
+ .data.SystemCoreClock
+                0x10000008        0x4 FLASH_RUN/system_LPC17xx.o
+                0x10000008                SystemCoreClock
+ *(.ram)
+                0x10000010                . = ALIGN (0x8)
+ *fill*         0x1000000c        0x4 00
+                0x10000010                _edata = .
+
+.bss            0x10000010     0x2310 load address 0x00006bf0
+                0x10000010                _sbss = .
+ *(.shbss)
+ *(.bss .bss.* .gnu.linkonce.b.*)
+ .bss.flip.3378
+                0x10000010        0x4 FLASH_RUN/main.o
+ .bss.div10.3380
+                0x10000014        0x4 FLASH_RUN/main.o
+ .bss.led_prescale.3379
+                0x10000018        0x4 FLASH_RUN/main.o
+ .bss.TxIntStat
+                0x1000001c        0x1 FLASH_RUN/comm.o
+ *fill*         0x1000001d        0x3 00
+ .bss.rb        0x10000020      0x210 FLASH_RUN/comm.o
+ .bss.Fsid      0x10000230        0x2 FLASH_RUN/ff.o
+ .bss.Drive     0x10000232        0x1 FLASH_RUN/ff.o
+ *fill*         0x10000233        0x1 00
+ .bss.LfnBuf    0x10000234      0x200 FLASH_RUN/ff.o
+ .bss.FatFs     0x10000434        0x8 FLASH_RUN/ff.o
+ .bss.Timer1    0x1000043c        0x4 FLASH_RUN/spi_sd_lpc17xx.o
+ .bss.Timer2    0x10000440        0x4 FLASH_RUN/spi_sd_lpc17xx.o
+ .bss.CardType  0x10000444        0x1 FLASH_RUN/spi_sd_lpc17xx.o
+ .bss.socket_powered
+                0x10000445        0x1 FLASH_RUN/spi_sd_lpc17xx.o
+ *fill*         0x10000446        0x2 00
+ .bss.pv.3566   0x10000448        0x4 FLASH_RUN/spi_sd_lpc17xx.o
+ .bss.pfnModemCbs
+                0x1000044c        0x4 FLASH_RUN/lpc17xx_uart.o
+                0x1000044c                pfnModemCbs
+ .bss.uartCbsDat
+                0x10000450       0x40 FLASH_RUN/lpc17xx_uart.o
+                0x10000450                uartCbsDat
+ .bss.sspdat    0x10000490       0x18 FLASH_RUN/lpc17xx_ssp.o
+ .bss.HOST_TDControlStatus
+                0x100004a8        0x1 FLASH_RUN/usbhost_lpc17xx.o
+                0x100004a8                HOST_TDControlStatus
+ *fill*         0x100004a9        0x3 00
+ .bss.HOST_RhscIntr
+                0x100004ac        0x4 FLASH_RUN/usbhost_lpc17xx.o
+                0x100004ac                HOST_RhscIntr
+ .bss.HOST_WdhIntr
+                0x100004b0        0x4 FLASH_RUN/usbhost_lpc17xx.o
+                0x100004b0                HOST_WdhIntr
+ *(COMMON)
+ COMMON         0x100004b4        0x4 FLASH_RUN/main.o
+                0x100004b4                SysTickCnt
+ COMMON         0x100004b8        0x8 FLASH_RUN/monitor.o
+                0x100004b8                xfunc_in
+                0x100004bc                xfunc_out
+ COMMON         0x100004c0     0x1e00 FLASH_RUN/ff_test_term.o
+                0x100004c0                Fatfs
+                0x10000928                File1
+                0x10000b4c                Finfo
+                0x10000b6c                acc_dirs
+                0x10000b6e                acc_files
+                0x10000b70                Timer
+                0x10000b74                Buff
+                0x10001b74                File2
+                0x10001d98                Lfname
+                0x10001e98                Dir
+                0x10001ebc                acc_size
+                0x10001ec0                Line
+ COMMON         0x100022c0       0x2c FLASH_RUN/diskio.o
+                0x100022c0                inquiryResult
+                0x100022e4                blkSize
+                0x100022e8                numBlks
+ COMMON         0x100022ec       0x2c FLASH_RUN/usbhost_lpc17xx.o
+                0x100022ec                TDBufNonVol
+                0x100022f0                FATBuffer
+                0x100022f4                Hcca
+                0x100022f8                TDTail
+                0x100022fc                EDBulkOut
+                0x10002300                UserBuffer
+                0x10002304                gUSBConnected
+                0x10002308                TDBuffer
+                0x1000230c                EDBulkIn
+                0x10002310                EDCtrl
+                0x10002314                TDHead
+ COMMON         0x10002318        0x4 FLASH_RUN/usbhost_ms.o
+                0x10002318                MS_BlkSize
+ *(.ram.b)
+                0x10002320                . = ALIGN (0x8)
+ *fill*         0x1000231c        0x4 00
+                0x10002320                _ebss = .
+                0x10002320                _end = .
+                0x10002320                __end = .
+
+.heap           0x10002320     0x1000
+ *(.heap)
+ .heap          0x10002320     0x1000 FLASH_RUN/startup_LPC17xx.o
+                0x10002320                __cs3_heap_start
+                0x10003320                __cs3_heap_end
+
+.stack          0x10007d00      0x300
+ *(.stack)
+ .stack         0x10007d00      0x300 FLASH_RUN/startup_LPC17xx.o
+                0x10007d00                __cs3_stack_mem
+
+.ahb_bank0
+ *(.ahb_sram_bank0 .ahb_sram_bank0.*)
+                0x00006be0                __cs3_region_init_ram = LOADADDR (.data)
+                0x00000010                __cs3_region_init_size_ram = (_edata - __cs3_region_start_ram)
+                0x00002310                __cs3_region_zero_size_ram = (_end - _edata)
+                0x00008000                __cs3_region_size_ram = 0x8000
+                0x00000001                __cs3_region_num = 0x1
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x00000000      0xb18
+ *(.debug_aranges)
+ .debug_aranges
+                0x00000000       0x28 FLASH_RUN/startup_LPC17xx.o
+ .debug_aranges
+                0x00000028       0x40 FLASH_RUN/main.o
+ .debug_aranges
+                0x00000068       0x78 FLASH_RUN/comm.o
+ .debug_aranges
+                0x000000e0       0x68 FLASH_RUN/monitor.o
+ .debug_aranges
+                0x00000148       0x38 FLASH_RUN/ff_test_term.o
+ .debug_aranges
+                0x00000180       0x38 FLASH_RUN/rtc_cal.o
+ .debug_aranges
+                0x000001b8      0x190 FLASH_RUN/ff.o
+ .debug_aranges
+                0x00000348       0x28 FLASH_RUN/ccsbcs.o
+ .debug_aranges
+                0x00000370       0x48 FLASH_RUN/diskio.o
+ .debug_aranges
+                0x000003b8       0xb8 FLASH_RUN/spi_sd_lpc17xx.o
+ .debug_aranges
+                0x00000470       0x20 FLASH_RUN/fattime.o
+ .debug_aranges
+                0x00000490       0xc8 FLASH_RUN/core_cm3.o
+ .debug_aranges
+                0x00000558       0x28 FLASH_RUN/system_LPC17xx.o
+ .debug_aranges
+                0x00000580       0x30 FLASH_RUN/lpc17xx_nvic.o
+ .debug_aranges
+                0x000005b0       0x60 FLASH_RUN/lpc17xx_clkpwr.o
+ .debug_aranges
+                0x00000610       0x48 FLASH_RUN/lpc17xx_pinsel.o
+ .debug_aranges
+                0x00000658       0xc8 FLASH_RUN/lpc17xx_gpio.o
+ .debug_aranges
+                0x00000720      0x128 FLASH_RUN/lpc17xx_uart.o
+ .debug_aranges
+                0x00000848       0xb8 FLASH_RUN/lpc17xx_ssp.o
+ .debug_aranges
+                0x00000900       0x38 FLASH_RUN/lpc17xx_gpdma.o
+ .debug_aranges
+                0x00000938       0xb8 FLASH_RUN/lpc17xx_rtc.o
+ .debug_aranges
+                0x000009f0       0xc0 FLASH_RUN/usbhost_lpc17xx.o
+ .debug_aranges
+                0x00000ab0       0x68 FLASH_RUN/usbhost_ms.o
+
+.debug_pubnames
+                0x00000000     0x1491
+ *(.debug_pubnames)
+ .debug_pubnames
+                0x00000000       0x5c FLASH_RUN/main.o
+ .debug_pubnames
+                0x0000005c       0x97 FLASH_RUN/comm.o
+ .debug_pubnames
+                0x000000f3       0xa1 FLASH_RUN/monitor.o
+ .debug_pubnames
+                0x00000194       0xc2 FLASH_RUN/ff_test_term.o
+ .debug_pubnames
+                0x00000256       0x5e FLASH_RUN/rtc_cal.o
+ .debug_pubnames
+                0x000002b4      0x16f FLASH_RUN/ff.o
+ .debug_pubnames
+                0x00000423       0x31 FLASH_RUN/ccsbcs.o
+ .debug_pubnames
+                0x00000454       0xae FLASH_RUN/diskio.o
+ .debug_pubnames
+                0x00000502       0x9b FLASH_RUN/spi_sd_lpc17xx.o
+ .debug_pubnames
+                0x0000059d       0x22 FLASH_RUN/fattime.o
+ .debug_pubnames
+                0x000005bf      0x159 FLASH_RUN/core_cm3.o
+ .debug_pubnames
+                0x00000718       0x4f FLASH_RUN/system_LPC17xx.o
+ .debug_pubnames
+                0x00000767       0x46 FLASH_RUN/lpc17xx_nvic.o
+ .debug_pubnames
+                0x000007ad       0xbb FLASH_RUN/lpc17xx_clkpwr.o
+ .debug_pubnames
+                0x00000868       0xa6 FLASH_RUN/lpc17xx_pinsel.o
+ .debug_pubnames
+                0x0000090e      0x196 FLASH_RUN/lpc17xx_gpio.o
+ .debug_pubnames
+                0x00000aa4      0x311 FLASH_RUN/lpc17xx_uart.o
+ .debug_pubnames
+                0x00000db5      0x17f FLASH_RUN/lpc17xx_ssp.o
+ .debug_pubnames
+                0x00000f34       0xa7 FLASH_RUN/lpc17xx_gpdma.o
+ .debug_pubnames
+                0x00000fdb      0x1ab FLASH_RUN/lpc17xx_rtc.o
+ .debug_pubnames
+                0x00001186      0x234 FLASH_RUN/usbhost_lpc17xx.o
+ .debug_pubnames
+                0x000013ba       0xd7 FLASH_RUN/usbhost_ms.o
+
+.debug_info     0x00000000     0xbe55
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x00000000       0x5a FLASH_RUN/startup_LPC17xx.o
+ .debug_info    0x0000005a      0x82c FLASH_RUN/main.o
+ .debug_info    0x00000886      0xccc FLASH_RUN/comm.o
+ .debug_info    0x00001552      0x411 FLASH_RUN/monitor.o
+ .debug_info    0x00001963      0x86f FLASH_RUN/ff_test_term.o
+ .debug_info    0x000021d2      0x581 FLASH_RUN/rtc_cal.o
+ .debug_info    0x00002753     0x2104 FLASH_RUN/ff.o
+ .debug_info    0x00004857      0x183 FLASH_RUN/ccsbcs.o
+ .debug_info    0x000049da      0x345 FLASH_RUN/diskio.o
+ .debug_info    0x00004d1f      0x96b FLASH_RUN/spi_sd_lpc17xx.o
+ .debug_info    0x0000568a      0x156 FLASH_RUN/fattime.o
+ .debug_info    0x000057e0      0x529 FLASH_RUN/core_cm3.o
+ .debug_info    0x00005d09      0x320 FLASH_RUN/system_LPC17xx.o
+ .debug_info    0x00006029      0x3c1 FLASH_RUN/lpc17xx_nvic.o
+ .debug_info    0x000063ea      0x604 FLASH_RUN/lpc17xx_clkpwr.o
+ .debug_info    0x000069ee      0x488 FLASH_RUN/lpc17xx_pinsel.o
+ .debug_info    0x00006e76      0xbb8 FLASH_RUN/lpc17xx_gpio.o
+ .debug_info    0x00007a2e     0x12c8 FLASH_RUN/lpc17xx_uart.o
+ .debug_info    0x00008cf6      0x834 FLASH_RUN/lpc17xx_ssp.o
+ .debug_info    0x0000952a      0x488 FLASH_RUN/lpc17xx_gpdma.o
+ .debug_info    0x000099b2      0x9b1 FLASH_RUN/lpc17xx_rtc.o
+ .debug_info    0x0000a363     0x163b FLASH_RUN/usbhost_lpc17xx.o
+ .debug_info    0x0000b99e      0x4b7 FLASH_RUN/usbhost_ms.o
+
+.debug_abbrev   0x00000000     0x2790
+ *(.debug_abbrev)
+ .debug_abbrev  0x00000000       0x12 FLASH_RUN/startup_LPC17xx.o
+ .debug_abbrev  0x00000012      0x2c3 FLASH_RUN/main.o
+ .debug_abbrev  0x000002d5      0x30f FLASH_RUN/comm.o
+ .debug_abbrev  0x000005e4      0x170 FLASH_RUN/monitor.o
+ .debug_abbrev  0x00000754      0x1f7 FLASH_RUN/ff_test_term.o
+ .debug_abbrev  0x0000094b      0x13f FLASH_RUN/rtc_cal.o
+ .debug_abbrev  0x00000a8a      0x321 FLASH_RUN/ff.o
+ .debug_abbrev  0x00000dab       0xac FLASH_RUN/ccsbcs.o
+ .debug_abbrev  0x00000e57      0x12a FLASH_RUN/diskio.o
+ .debug_abbrev  0x00000f81      0x387 FLASH_RUN/spi_sd_lpc17xx.o
+ .debug_abbrev  0x00001308       0xb6 FLASH_RUN/fattime.o
+ .debug_abbrev  0x000013be       0xce FLASH_RUN/core_cm3.o
+ .debug_abbrev  0x0000148c       0xbe FLASH_RUN/system_LPC17xx.o
+ .debug_abbrev  0x0000154a       0xe3 FLASH_RUN/lpc17xx_nvic.o
+ .debug_abbrev  0x0000162d      0x1bb FLASH_RUN/lpc17xx_clkpwr.o
+ .debug_abbrev  0x000017e8      0x175 FLASH_RUN/lpc17xx_pinsel.o
+ .debug_abbrev  0x0000195d      0x1a6 FLASH_RUN/lpc17xx_gpio.o
+ .debug_abbrev  0x00001b03      0x2d4 FLASH_RUN/lpc17xx_uart.o
+ .debug_abbrev  0x00001dd7      0x240 FLASH_RUN/lpc17xx_ssp.o
+ .debug_abbrev  0x00002017      0x1aa FLASH_RUN/lpc17xx_gpdma.o
+ .debug_abbrev  0x000021c1      0x1b2 FLASH_RUN/lpc17xx_rtc.o
+ .debug_abbrev  0x00002373      0x298 FLASH_RUN/usbhost_lpc17xx.o
+ .debug_abbrev  0x0000260b      0x185 FLASH_RUN/usbhost_ms.o
+
+.debug_line     0x00000000     0x3ef2
+ *(.debug_line)
+ .debug_line    0x00000000       0x75 FLASH_RUN/startup_LPC17xx.o
+ .debug_line    0x00000075      0x248 FLASH_RUN/main.o
+ .debug_line    0x000002bd      0x2c1 FLASH_RUN/comm.o
+ .debug_line    0x0000057e      0x1c0 FLASH_RUN/monitor.o
+ .debug_line    0x0000073e      0x2c7 FLASH_RUN/ff_test_term.o
+ .debug_line    0x00000a05      0x1b2 FLASH_RUN/rtc_cal.o
+ .debug_line    0x00000bb7      0xa65 FLASH_RUN/ff.o
+ .debug_line    0x0000161c       0x96 FLASH_RUN/ccsbcs.o
+ .debug_line    0x000016b2      0x146 FLASH_RUN/diskio.o
+ .debug_line    0x000017f8      0x442 FLASH_RUN/spi_sd_lpc17xx.o
+ .debug_line    0x00001c3a      0x132 FLASH_RUN/fattime.o
+ .debug_line    0x00001d6c      0x254 FLASH_RUN/core_cm3.o
+ .debug_line    0x00001fc0      0x16a FLASH_RUN/system_LPC17xx.o
+ .debug_line    0x0000212a      0x141 FLASH_RUN/lpc17xx_nvic.o
+ .debug_line    0x0000226b      0x258 FLASH_RUN/lpc17xx_clkpwr.o
+ .debug_line    0x000024c3      0x210 FLASH_RUN/lpc17xx_pinsel.o
+ .debug_line    0x000026d3      0x34a FLASH_RUN/lpc17xx_gpio.o
+ .debug_line    0x00002a1d      0x58c FLASH_RUN/lpc17xx_uart.o
+ .debug_line    0x00002fa9      0x3ef FLASH_RUN/lpc17xx_ssp.o
+ .debug_line    0x00003398      0x20b FLASH_RUN/lpc17xx_gpdma.o
+ .debug_line    0x000035a3      0x38a FLASH_RUN/lpc17xx_rtc.o
+ .debug_line    0x0000392d      0x3e5 FLASH_RUN/usbhost_lpc17xx.o
+ .debug_line    0x00003d12      0x1e0 FLASH_RUN/usbhost_ms.o
+
+.debug_frame    0x00000000     0x1bc8
+ *(.debug_frame)
+ .debug_frame   0x00000000       0x8c FLASH_RUN/main.o
+ .debug_frame   0x0000008c      0x138 FLASH_RUN/comm.o
+ .debug_frame   0x000001c4      0x108 FLASH_RUN/monitor.o
+ .debug_frame   0x000002cc       0x84 FLASH_RUN/ff_test_term.o
+ .debug_frame   0x00000350       0x7c FLASH_RUN/rtc_cal.o
+ .debug_frame   0x000003cc      0x5b4 FLASH_RUN/ff.o
+ .debug_frame   0x00000980       0x30 FLASH_RUN/ccsbcs.o
+ .debug_frame   0x000009b0       0xa0 FLASH_RUN/diskio.o
+ .debug_frame   0x00000a50      0x20c FLASH_RUN/spi_sd_lpc17xx.o
+ .debug_frame   0x00000c5c       0x28 FLASH_RUN/fattime.o
+ .debug_frame   0x00000c84      0x170 FLASH_RUN/core_cm3.o
+ .debug_frame   0x00000df4       0x30 FLASH_RUN/system_LPC17xx.o
+ .debug_frame   0x00000e24       0x40 FLASH_RUN/lpc17xx_nvic.o
+ .debug_frame   0x00000e64       0xd0 FLASH_RUN/lpc17xx_clkpwr.o
+ .debug_frame   0x00000f34       0x90 FLASH_RUN/lpc17xx_pinsel.o
+ .debug_frame   0x00000fc4      0x230 FLASH_RUN/lpc17xx_gpio.o
+ .debug_frame   0x000011f4      0x2e4 FLASH_RUN/lpc17xx_uart.o
+ .debug_frame   0x000014d8      0x1a0 FLASH_RUN/lpc17xx_ssp.o
+ .debug_frame   0x00001678       0x74 FLASH_RUN/lpc17xx_gpdma.o
+ .debug_frame   0x000016ec      0x160 FLASH_RUN/lpc17xx_rtc.o
+ .debug_frame   0x0000184c      0x1fc FLASH_RUN/usbhost_lpc17xx.o
+ .debug_frame   0x00001a48      0x158 FLASH_RUN/usbhost_ms.o
+ .debug_frame   0x00001ba0       0x28 c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+
+.debug_str      0x00000000     0x347b
+ *(.debug_str)
+ .debug_str     0x00000000      0x4b3 FLASH_RUN/main.o
+                                0x510 (size before relaxing)
+ .debug_str     0x000004b3      0x3dc FLASH_RUN/comm.o
+                                0x7e0 (size before relaxing)
+ .debug_str     0x0000088f       0x7c FLASH_RUN/monitor.o
+                                0x106 (size before relaxing)
+ .debug_str     0x0000090b      0x2ea FLASH_RUN/ff_test_term.o
+                                0x40c (size before relaxing)
+ .debug_str     0x00000bf5      0x1c3 FLASH_RUN/rtc_cal.o
+                                0x314 (size before relaxing)
+ .debug_str     0x00000db8      0x2ee FLASH_RUN/ff.o
+                                0x677 (size before relaxing)
+ .debug_str     0x000010a6       0x4c FLASH_RUN/ccsbcs.o
+                                0x10f (size before relaxing)
+ .debug_str     0x000010f2       0x73 FLASH_RUN/diskio.o
+                                0x1d8 (size before relaxing)
+ .debug_str     0x00001165      0x28b FLASH_RUN/spi_sd_lpc17xx.o
+                                0x457 (size before relaxing)
+ .debug_str     0x000013f0       0x31 FLASH_RUN/fattime.o
+                                0x123 (size before relaxing)
+ .debug_str     0x00001421      0x155 FLASH_RUN/core_cm3.o
+                                0x244 (size before relaxing)
+ .debug_str     0x00001576      0x12b FLASH_RUN/system_LPC17xx.o
+                                0x25e (size before relaxing)
+ .debug_str     0x000016a1       0x5b FLASH_RUN/lpc17xx_nvic.o
+                                0x1cf (size before relaxing)
+ .debug_str     0x000016fc       0xea FLASH_RUN/lpc17xx_clkpwr.o
+                                0x356 (size before relaxing)
+ .debug_str     0x000017e6      0x217 FLASH_RUN/lpc17xx_pinsel.o
+                                0x35f (size before relaxing)
+ .debug_str     0x000019fd      0x354 FLASH_RUN/lpc17xx_gpio.o
+                                0x43d (size before relaxing)
+ .debug_str     0x00001d51      0x7d1 FLASH_RUN/lpc17xx_uart.o
+                                0xbfd (size before relaxing)
+ .debug_str     0x00002522      0x291 FLASH_RUN/lpc17xx_ssp.o
+                                0x450 (size before relaxing)
+ .debug_str     0x000027b3      0x273 FLASH_RUN/lpc17xx_gpdma.o
+                                0x397 (size before relaxing)
+ .debug_str     0x00002a26      0x287 FLASH_RUN/lpc17xx_rtc.o
+                                0x54f (size before relaxing)
+ .debug_str     0x00002cad      0x64d FLASH_RUN/usbhost_lpc17xx.o
+                                0xc12 (size before relaxing)
+ .debug_str     0x000032fa      0x181 FLASH_RUN/usbhost_ms.o
+                                0x2d1 (size before relaxing)
+
+.debug_loc      0x00000000     0x75b0
+ *(.debug_loc)
+ .debug_loc     0x00000000       0xee FLASH_RUN/main.o
+ .debug_loc     0x000000ee      0x1af FLASH_RUN/comm.o
+ .debug_loc     0x0000029d      0x41e FLASH_RUN/monitor.o
+ .debug_loc     0x000006bb      0x3c3 FLASH_RUN/ff_test_term.o
+ .debug_loc     0x00000a7e       0xe9 FLASH_RUN/rtc_cal.o
+ .debug_loc     0x00000b67     0x3131 FLASH_RUN/ff.o
+ .debug_loc     0x00003c98       0xc2 FLASH_RUN/ccsbcs.o
+ .debug_loc     0x00003d5a      0x3c0 FLASH_RUN/diskio.o
+ .debug_loc     0x0000411a      0x778 FLASH_RUN/spi_sd_lpc17xx.o
+ .debug_loc     0x00004892       0x2b FLASH_RUN/fattime.o
+ .debug_loc     0x000048bd      0x1c8 FLASH_RUN/core_cm3.o
+ .debug_loc     0x00004a85       0x13 FLASH_RUN/lpc17xx_nvic.o
+ .debug_loc     0x00004a98      0x1aa FLASH_RUN/lpc17xx_clkpwr.o
+ .debug_loc     0x00004c42      0x1ce FLASH_RUN/lpc17xx_pinsel.o
+ .debug_loc     0x00004e10      0xa9d FLASH_RUN/lpc17xx_gpio.o
+ .debug_loc     0x000058ad      0xa38 FLASH_RUN/lpc17xx_uart.o
+ .debug_loc     0x000062e5      0x506 FLASH_RUN/lpc17xx_ssp.o
+ .debug_loc     0x000067eb      0x101 FLASH_RUN/lpc17xx_gpdma.o
+ .debug_loc     0x000068ec      0x1d7 FLASH_RUN/lpc17xx_rtc.o
+ .debug_loc     0x00006ac3      0x56b FLASH_RUN/usbhost_lpc17xx.o
+ .debug_loc     0x0000702e      0x582 FLASH_RUN/usbhost_ms.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+.note.gnu.arm.ident
+ *(.note.gnu.arm.ident)
+
+.ARM.attributes
+                0x00000000       0x2f
+ *(.ARM.attributes)
+ .ARM.attributes
+                0x00000000       0x21 FLASH_RUN/startup_LPC17xx.o
+ .ARM.attributes
+                0x00000021       0x31 FLASH_RUN/main.o
+ .ARM.attributes
+                0x00000052       0x31 FLASH_RUN/comm.o
+ .ARM.attributes
+                0x00000083       0x31 FLASH_RUN/monitor.o
+ .ARM.attributes
+                0x000000b4       0x31 FLASH_RUN/ff_test_term.o
+ .ARM.attributes
+                0x000000e5       0x31 FLASH_RUN/rtc_cal.o
+ .ARM.attributes
+                0x00000116       0x31 FLASH_RUN/ff.o
+ .ARM.attributes
+                0x00000147       0x31 FLASH_RUN/ccsbcs.o
+ .ARM.attributes
+                0x00000178       0x31 FLASH_RUN/diskio.o
+ .ARM.attributes
+                0x000001a9       0x31 FLASH_RUN/spi_sd_lpc17xx.o
+ .ARM.attributes
+                0x000001da       0x31 FLASH_RUN/fattime.o
+ .ARM.attributes
+                0x0000020b       0x31 FLASH_RUN/core_cm3.o
+ .ARM.attributes
+                0x0000023c       0x31 FLASH_RUN/system_LPC17xx.o
+ .ARM.attributes
+                0x0000026d       0x31 FLASH_RUN/lpc17xx_nvic.o
+ .ARM.attributes
+                0x0000029e       0x31 FLASH_RUN/lpc17xx_clkpwr.o
+ .ARM.attributes
+                0x000002cf       0x31 FLASH_RUN/lpc17xx_pinsel.o
+ .ARM.attributes
+                0x00000300       0x31 FLASH_RUN/lpc17xx_gpio.o
+ .ARM.attributes
+                0x00000331       0x31 FLASH_RUN/lpc17xx_uart.o
+ .ARM.attributes
+                0x00000362       0x31 FLASH_RUN/lpc17xx_ssp.o
+ .ARM.attributes
+                0x00000393       0x31 FLASH_RUN/lpc17xx_gpdma.o
+ .ARM.attributes
+                0x000003c4       0x31 FLASH_RUN/lpc17xx_rtc.o
+ .ARM.attributes
+                0x000003f5       0x31 FLASH_RUN/usbhost_lpc17xx.o
+ .ARM.attributes
+                0x00000426       0x31 FLASH_RUN/usbhost_ms.o
+ .ARM.attributes
+                0x00000457       0x27 c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+
+/DISCARD/
+ *(.note.GNU-stack)
+OUTPUT(FLASH_RUN/project.elf elf32-littlearm)
+
+.debug_ranges   0x00000000      0x1b0
+ .debug_ranges  0x00000000       0x20 FLASH_RUN/startup_LPC17xx.o
+ .debug_ranges  0x00000020       0x40 FLASH_RUN/main.o
+ .debug_ranges  0x00000060       0x18 FLASH_RUN/comm.o
+ .debug_ranges  0x00000078       0xd8 FLASH_RUN/ff.o
+ .debug_ranges  0x00000150       0x48 FLASH_RUN/spi_sd_lpc17xx.o
+ .debug_ranges  0x00000198       0x18 FLASH_RUN/usbhost_lpc17xx.o
+
+.comment        0x00000000      0x3b2
+ .comment       0x00000000       0x2b FLASH_RUN/main.o
+ .comment       0x0000002b       0x2b FLASH_RUN/comm.o
+ .comment       0x00000056       0x2b FLASH_RUN/monitor.o
+ .comment       0x00000081       0x2b FLASH_RUN/ff_test_term.o
+ .comment       0x000000ac       0x2b FLASH_RUN/rtc_cal.o
+ .comment       0x000000d7       0x2b FLASH_RUN/ff.o
+ .comment       0x00000102       0x2b FLASH_RUN/ccsbcs.o
+ .comment       0x0000012d       0x2b FLASH_RUN/diskio.o
+ .comment       0x00000158       0x2b FLASH_RUN/spi_sd_lpc17xx.o
+ .comment       0x00000183       0x2b FLASH_RUN/fattime.o
+ .comment       0x000001ae       0x2b FLASH_RUN/core_cm3.o
+ .comment       0x000001d9       0x2b FLASH_RUN/system_LPC17xx.o
+ .comment       0x00000204       0x2b FLASH_RUN/lpc17xx_nvic.o
+ .comment       0x0000022f       0x2b FLASH_RUN/lpc17xx_clkpwr.o
+ .comment       0x0000025a       0x2b FLASH_RUN/lpc17xx_pinsel.o
+ .comment       0x00000285       0x2b FLASH_RUN/lpc17xx_gpio.o
+ .comment       0x000002b0       0x2b FLASH_RUN/lpc17xx_uart.o
+ .comment       0x000002db       0x2b FLASH_RUN/lpc17xx_ssp.o
+ .comment       0x00000306       0x2b FLASH_RUN/lpc17xx_gpdma.o
+ .comment       0x00000331       0x2b FLASH_RUN/lpc17xx_rtc.o
+ .comment       0x0000035c       0x2b FLASH_RUN/usbhost_lpc17xx.o
+ .comment       0x00000387       0x2b FLASH_RUN/usbhost_ms.o
+
+Cross Reference Table
+
+Symbol                                            File
+ADC_IRQHandler                                    FLASH_RUN/startup_LPC17xx.o
+BOD_IRQHandler                                    FLASH_RUN/startup_LPC17xx.o
+Buff                                              FLASH_RUN/ff_test_term.o
+BusFault_Handler                                  FLASH_RUN/startup_LPC17xx.o
+CAN_IRQHandler                                    FLASH_RUN/startup_LPC17xx.o
+CLKPWR_ConfigPPWR                                 FLASH_RUN/lpc17xx_clkpwr.o
+                                                  FLASH_RUN/lpc17xx_rtc.o
+                                                  FLASH_RUN/lpc17xx_gpdma.o
+                                                  FLASH_RUN/lpc17xx_ssp.o
+                                                  FLASH_RUN/lpc17xx_uart.o
+CLKPWR_DeepPowerDown                              FLASH_RUN/lpc17xx_clkpwr.o
+CLKPWR_DeepSleep                                  FLASH_RUN/lpc17xx_clkpwr.o
+CLKPWR_GetPCLK                                    FLASH_RUN/lpc17xx_clkpwr.o
+                                                  FLASH_RUN/lpc17xx_ssp.o
+                                                  FLASH_RUN/lpc17xx_uart.o
+CLKPWR_GetPCLKSEL                                 FLASH_RUN/lpc17xx_clkpwr.o
+CLKPWR_PowerDown                                  FLASH_RUN/lpc17xx_clkpwr.o
+CLKPWR_SetPCLKDiv                                 FLASH_RUN/lpc17xx_clkpwr.o
+                                                  FLASH_RUN/spi_sd_lpc17xx.o
+CLKPWR_Sleep                                      FLASH_RUN/lpc17xx_clkpwr.o
+DMA_IRQHandler                                    FLASH_RUN/startup_LPC17xx.o
+DebugMon_Handler                                  FLASH_RUN/startup_LPC17xx.o
+Default_Handler                                   FLASH_RUN/startup_LPC17xx.o
+Dir                                               FLASH_RUN/ff_test_term.o
+EDBulkIn                                          FLASH_RUN/usbhost_ms.o
+                                                  FLASH_RUN/usbhost_lpc17xx.o
+EDBulkOut                                         FLASH_RUN/usbhost_ms.o
+                                                  FLASH_RUN/usbhost_lpc17xx.o
+EDCtrl                                            FLASH_RUN/usbhost_lpc17xx.o
+EINT0_IRQHandler                                  FLASH_RUN/startup_LPC17xx.o
+EINT1_IRQHandler                                  FLASH_RUN/startup_LPC17xx.o
+EINT2_IRQHandler                                  FLASH_RUN/startup_LPC17xx.o
+EINT3_IRQHandler                                  FLASH_RUN/startup_LPC17xx.o
+ENET_IRQHandler                                   FLASH_RUN/startup_LPC17xx.o
+FATBuffer                                         FLASH_RUN/usbhost_lpc17xx.o
+FIO_ByteClearValue                                FLASH_RUN/lpc17xx_gpio.o
+FIO_ByteReadValue                                 FLASH_RUN/lpc17xx_gpio.o
+FIO_ByteSetDir                                    FLASH_RUN/lpc17xx_gpio.o
+FIO_ByteSetMask                                   FLASH_RUN/lpc17xx_gpio.o
+FIO_ByteSetValue                                  FLASH_RUN/lpc17xx_gpio.o
+FIO_ClearValue                                    FLASH_RUN/lpc17xx_gpio.o
+                                                  FLASH_RUN/main.o
+FIO_HalfWordClearValue                            FLASH_RUN/lpc17xx_gpio.o
+FIO_HalfWordReadValue                             FLASH_RUN/lpc17xx_gpio.o
+FIO_HalfWordSetDir                                FLASH_RUN/lpc17xx_gpio.o
+FIO_HalfWordSetMask                               FLASH_RUN/lpc17xx_gpio.o
+FIO_HalfWordSetValue                              FLASH_RUN/lpc17xx_gpio.o
+FIO_ReadValue                                     FLASH_RUN/lpc17xx_gpio.o
+FIO_SetDir                                        FLASH_RUN/lpc17xx_gpio.o
+FIO_SetMask                                       FLASH_RUN/lpc17xx_gpio.o
+FIO_SetValue                                      FLASH_RUN/lpc17xx_gpio.o
+                                                  FLASH_RUN/main.o
+Fatfs                                             FLASH_RUN/ff_test_term.o
+File1                                             FLASH_RUN/ff_test_term.o
+File2                                             FLASH_RUN/ff_test_term.o
+Fill_MSCommand                                    FLASH_RUN/usbhost_ms.o
+Finfo                                             FLASH_RUN/ff_test_term.o
+GPDMA_ChannelCmd                                  FLASH_RUN/lpc17xx_gpdma.o
+GPDMA_Init                                        FLASH_RUN/lpc17xx_gpdma.o
+GPDMA_IntHandler                                  FLASH_RUN/lpc17xx_gpdma.o
+GPDMA_LUTPerAddr                                  FLASH_RUN/lpc17xx_gpdma.o
+GPDMA_LUTPerBurst                                 FLASH_RUN/lpc17xx_gpdma.o
+GPDMA_LUTPerWid                                   FLASH_RUN/lpc17xx_gpdma.o
+GPDMA_Setup                                       FLASH_RUN/lpc17xx_gpdma.o
+GPIO_ClearValue                                   FLASH_RUN/lpc17xx_gpio.o
+                                                  FLASH_RUN/spi_sd_lpc17xx.o
+GPIO_ReadValue                                    FLASH_RUN/lpc17xx_gpio.o
+GPIO_SetDir                                       FLASH_RUN/lpc17xx_gpio.o
+                                                  FLASH_RUN/spi_sd_lpc17xx.o
+                                                  FLASH_RUN/main.o
+GPIO_SetValue                                     FLASH_RUN/lpc17xx_gpio.o
+                                                  FLASH_RUN/spi_sd_lpc17xx.o
+HOST_RhscIntr                                     FLASH_RUN/usbhost_lpc17xx.o
+HOST_TDControlStatus                              FLASH_RUN/usbhost_lpc17xx.o
+HOST_WdhIntr                                      FLASH_RUN/usbhost_lpc17xx.o
+HardFault_Handler                                 FLASH_RUN/startup_LPC17xx.o
+Hcca                                              FLASH_RUN/usbhost_lpc17xx.o
+Host_CtrlRecv                                     FLASH_RUN/usbhost_lpc17xx.o
+                                                  FLASH_RUN/usbhost_ms.o
+Host_CtrlSend                                     FLASH_RUN/usbhost_lpc17xx.o
+Host_DelayMS                                      FLASH_RUN/usbhost_lpc17xx.o
+Host_DelayUS                                      FLASH_RUN/usbhost_lpc17xx.o
+Host_EDInit                                       FLASH_RUN/usbhost_lpc17xx.o
+Host_EnumDev                                      FLASH_RUN/usbhost_lpc17xx.o
+                                                  FLASH_RUN/diskio.o
+Host_FillSetup                                    FLASH_RUN/usbhost_lpc17xx.o
+Host_HCCAInit                                     FLASH_RUN/usbhost_lpc17xx.o
+Host_Init                                         FLASH_RUN/usbhost_lpc17xx.o
+                                                  FLASH_RUN/diskio.o
+Host_ProcessTD                                    FLASH_RUN/usbhost_lpc17xx.o
+                                                  FLASH_RUN/usbhost_ms.o
+Host_TDInit                                       FLASH_RUN/usbhost_lpc17xx.o
+Host_WDHWait                                      FLASH_RUN/usbhost_lpc17xx.o
+I2C0_IRQHandler                                   FLASH_RUN/startup_LPC17xx.o
+I2C1_IRQHandler                                   FLASH_RUN/startup_LPC17xx.o
+I2C2_IRQHandler                                   FLASH_RUN/startup_LPC17xx.o
+I2S_IRQHandler                                    FLASH_RUN/startup_LPC17xx.o
+Lfname                                            FLASH_RUN/ff_test_term.o
+Line                                              FLASH_RUN/ff_test_term.o
+MCPWM_IRQHandler                                  FLASH_RUN/startup_LPC17xx.o
+MMC_disk_initialize                               FLASH_RUN/spi_sd_lpc17xx.o
+                                                  FLASH_RUN/diskio.o
+MMC_disk_ioctl                                    FLASH_RUN/spi_sd_lpc17xx.o
+                                                  FLASH_RUN/diskio.o
+MMC_disk_read                                     FLASH_RUN/spi_sd_lpc17xx.o
+                                                  FLASH_RUN/diskio.o
+MMC_disk_status                                   FLASH_RUN/spi_sd_lpc17xx.o
+                                                  FLASH_RUN/diskio.o
+MMC_disk_timerproc                                FLASH_RUN/spi_sd_lpc17xx.o
+                                                  FLASH_RUN/diskio.o
+MMC_disk_write                                    FLASH_RUN/spi_sd_lpc17xx.o
+                                                  FLASH_RUN/diskio.o
+MS_BlkSize                                        FLASH_RUN/usbhost_ms.o
+MS_BulkRecv                                       FLASH_RUN/usbhost_ms.o
+                                                  FLASH_RUN/diskio.o
+MS_BulkSend                                       FLASH_RUN/usbhost_ms.o
+                                                  FLASH_RUN/diskio.o
+MS_GetMaxLUN                                      FLASH_RUN/usbhost_ms.o
+MS_GetSenseInfo                                   FLASH_RUN/usbhost_ms.o
+MS_Init                                           FLASH_RUN/usbhost_ms.o
+                                                  FLASH_RUN/diskio.o
+MS_Inquire                                        FLASH_RUN/usbhost_ms.o
+MS_ParseConfiguration                             FLASH_RUN/usbhost_ms.o
+                                                  FLASH_RUN/usbhost_lpc17xx.o
+MS_ReadCapacity                                   FLASH_RUN/usbhost_ms.o
+MS_TestUnitReady                                  FLASH_RUN/usbhost_ms.o
+MemManage_Handler                                 FLASH_RUN/startup_LPC17xx.o
+NMI_Handler                                       FLASH_RUN/startup_LPC17xx.o
+NVIC_DeInit                                       FLASH_RUN/lpc17xx_nvic.o
+                                                  FLASH_RUN/main.o
+NVIC_SCBDeInit                                    FLASH_RUN/lpc17xx_nvic.o
+                                                  FLASH_RUN/main.o
+NVIC_SetVTOR                                      FLASH_RUN/lpc17xx_nvic.o
+                                                  FLASH_RUN/main.o
+PINSEL_ConfigPin                                  FLASH_RUN/lpc17xx_pinsel.o
+                                                  FLASH_RUN/spi_sd_lpc17xx.o
+                                                  FLASH_RUN/comm.o
+                                                  FLASH_RUN/main.o
+PINSEL_ConfigTraceFunc                            FLASH_RUN/lpc17xx_pinsel.o
+PINSEL_SetI2C0Pins                                FLASH_RUN/lpc17xx_pinsel.o
+PINSEL_SetOpenDrainMode                           FLASH_RUN/lpc17xx_pinsel.o
+PINSEL_SetPinFunc                                 FLASH_RUN/lpc17xx_pinsel.o
+PINSEL_SetResistorMode                            FLASH_RUN/lpc17xx_pinsel.o
+PLL0_IRQHandler                                   FLASH_RUN/startup_LPC17xx.o
+PLL1_IRQHandler                                   FLASH_RUN/startup_LPC17xx.o
+PWM1_IRQHandler                                   FLASH_RUN/startup_LPC17xx.o
+PendSV_Handler                                    FLASH_RUN/startup_LPC17xx.o
+QEI_IRQHandler                                    FLASH_RUN/startup_LPC17xx.o
+RIT_IRQHandler                                    FLASH_RUN/startup_LPC17xx.o
+RTC_AlarmIntConfig                                FLASH_RUN/lpc17xx_rtc.o
+RTC_CalibConfig                                   FLASH_RUN/lpc17xx_rtc.o
+                                                  FLASH_RUN/rtc_cal.o
+RTC_CalibCounterCmd                               FLASH_RUN/lpc17xx_rtc.o
+                                                  FLASH_RUN/rtc_cal.o
+RTC_ClearIntPending                               FLASH_RUN/lpc17xx_rtc.o
+RTC_Cmd                                           FLASH_RUN/lpc17xx_rtc.o
+                                                  FLASH_RUN/rtc_cal.o
+RTC_CntIncrIntConfig                              FLASH_RUN/lpc17xx_rtc.o
+RTC_DeInit                                        FLASH_RUN/lpc17xx_rtc.o
+RTC_GetAlarmTime                                  FLASH_RUN/lpc17xx_rtc.o
+RTC_GetFullAlarmTime                              FLASH_RUN/lpc17xx_rtc.o
+RTC_GetFullTime                                   FLASH_RUN/lpc17xx_rtc.o
+RTC_GetIntPending                                 FLASH_RUN/lpc17xx_rtc.o
+RTC_GetTime                                       FLASH_RUN/lpc17xx_rtc.o
+RTC_IRQHandler                                    FLASH_RUN/startup_LPC17xx.o
+RTC_Init                                          FLASH_RUN/lpc17xx_rtc.o
+                                                  FLASH_RUN/rtc_cal.o
+RTC_ReadGPREG                                     FLASH_RUN/lpc17xx_rtc.o
+RTC_ResetClockTickCounter                         FLASH_RUN/lpc17xx_rtc.o
+RTC_SetAlarmTime                                  FLASH_RUN/lpc17xx_rtc.o
+RTC_SetFullAlarmTime                              FLASH_RUN/lpc17xx_rtc.o
+RTC_SetFullTime                                   FLASH_RUN/lpc17xx_rtc.o
+                                                  FLASH_RUN/rtc_cal.o
+RTC_SetTime                                       FLASH_RUN/lpc17xx_rtc.o
+RTC_WriteGPREG                                    FLASH_RUN/lpc17xx_rtc.o
+ReadBE16U                                         FLASH_RUN/usbhost_lpc17xx.o
+ReadBE32U                                         FLASH_RUN/usbhost_lpc17xx.o
+                                                  FLASH_RUN/usbhost_ms.o
+ReadLE16U                                         FLASH_RUN/usbhost_lpc17xx.o
+                                                  FLASH_RUN/usbhost_ms.o
+ReadLE32U                                         FLASH_RUN/usbhost_lpc17xx.o
+SPI_IRQHandler                                    FLASH_RUN/startup_LPC17xx.o
+SSP0_IRQHandler                                   FLASH_RUN/startup_LPC17xx.o
+SSP0_StdIntHandler                                FLASH_RUN/lpc17xx_ssp.o
+SSP1_IRQHandler                                   FLASH_RUN/startup_LPC17xx.o
+SSP1_StdIntHandler                                FLASH_RUN/lpc17xx_ssp.o
+SSP_ClearIntPending                               FLASH_RUN/lpc17xx_ssp.o
+SSP_Cmd                                           FLASH_RUN/lpc17xx_ssp.o
+                                                  FLASH_RUN/spi_sd_lpc17xx.o
+SSP_ConfigStructInit                              FLASH_RUN/lpc17xx_ssp.o
+                                                  FLASH_RUN/spi_sd_lpc17xx.o
+SSP_DMACmd                                        FLASH_RUN/lpc17xx_ssp.o
+SSP_DeInit                                        FLASH_RUN/lpc17xx_ssp.o
+                                                  FLASH_RUN/spi_sd_lpc17xx.o
+SSP_GetIntStatus                                  FLASH_RUN/lpc17xx_ssp.o
+SSP_GetRawIntStatus                               FLASH_RUN/lpc17xx_ssp.o
+SSP_GetStatus                                     FLASH_RUN/lpc17xx_ssp.o
+SSP_Init                                          FLASH_RUN/lpc17xx_ssp.o
+                                                  FLASH_RUN/spi_sd_lpc17xx.o
+SSP_IntConfig                                     FLASH_RUN/lpc17xx_ssp.o
+SSP_IntHandler                                    FLASH_RUN/lpc17xx_ssp.o
+SSP_LoopBackCmd                                   FLASH_RUN/lpc17xx_ssp.o
+SSP_ReadWrite                                     FLASH_RUN/lpc17xx_ssp.o
+SSP_ReceiveData                                   FLASH_RUN/lpc17xx_ssp.o
+SSP_SendData                                      FLASH_RUN/lpc17xx_ssp.o
+SSP_SetClock                                      FLASH_RUN/lpc17xx_ssp.o
+                                                  FLASH_RUN/spi_sd_lpc17xx.o
+SSP_SlaveOutputCmd                                FLASH_RUN/lpc17xx_ssp.o
+SVC_Handler                                       FLASH_RUN/startup_LPC17xx.o
+SysTickCnt                                        FLASH_RUN/main.o
+SysTick_Handler                                   FLASH_RUN/main.o
+                                                  FLASH_RUN/startup_LPC17xx.o
+SystemCoreClock                                   FLASH_RUN/system_LPC17xx.o
+                                                  FLASH_RUN/lpc17xx_clkpwr.o
+                                                  FLASH_RUN/main.o
+SystemCoreClockUpdate                             FLASH_RUN/system_LPC17xx.o
+SystemInit                                        FLASH_RUN/system_LPC17xx.o
+                                                  FLASH_RUN/startup_LPC17xx.o
+TDBufNonVol                                       FLASH_RUN/usbhost_lpc17xx.o
+TDBuffer                                          FLASH_RUN/usbhost_ms.o
+                                                  FLASH_RUN/usbhost_lpc17xx.o
+TDHead                                            FLASH_RUN/usbhost_lpc17xx.o
+TDTail                                            FLASH_RUN/usbhost_lpc17xx.o
+TIMER0_IRQHandler                                 FLASH_RUN/startup_LPC17xx.o
+TIMER1_IRQHandler                                 FLASH_RUN/startup_LPC17xx.o
+TIMER2_IRQHandler                                 FLASH_RUN/startup_LPC17xx.o
+TIMER3_IRQHandler                                 FLASH_RUN/startup_LPC17xx.o
+Timer                                             FLASH_RUN/ff_test_term.o
+UART0_IRQHandler                                  FLASH_RUN/comm.o
+                                                  FLASH_RUN/startup_LPC17xx.o
+UART0_StdIntHandler                               FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+UART1_IRQHandler                                  FLASH_RUN/startup_LPC17xx.o
+UART1_StdIntHandler                               FLASH_RUN/lpc17xx_uart.o
+UART2_IRQHandler                                  FLASH_RUN/startup_LPC17xx.o
+UART2_StdIntHandler                               FLASH_RUN/lpc17xx_uart.o
+UART3_IRQHandler                                  FLASH_RUN/startup_LPC17xx.o
+UART3_StdIntHandler                               FLASH_RUN/lpc17xx_uart.o
+UART_ABCmd                                        FLASH_RUN/lpc17xx_uart.o
+UART_CheckBusy                                    FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+UART_ConfigStructInit                             FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+UART_DeInit                                       FLASH_RUN/lpc17xx_uart.o
+UART_FIFOConfig                                   FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+UART_FIFOConfigStructInit                         FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+UART_ForceBreak                                   FLASH_RUN/lpc17xx_uart.o
+UART_FullModemConfigMode                          FLASH_RUN/lpc17xx_uart.o
+UART_FullModemForcePinState                       FLASH_RUN/lpc17xx_uart.o
+UART_FullModemGetStatus                           FLASH_RUN/lpc17xx_uart.o
+UART_GenIntHandler                                FLASH_RUN/lpc17xx_uart.o
+UART_GetLineStatus                                FLASH_RUN/lpc17xx_uart.o
+UART_Init                                         FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+UART_IntConfig                                    FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+UART_IrDACmd                                      FLASH_RUN/lpc17xx_uart.o
+UART_IrDAInvtInputCmd                             FLASH_RUN/lpc17xx_uart.o
+UART_IrDAPulseDivConfig                           FLASH_RUN/lpc17xx_uart.o
+UART_RS485Config                                  FLASH_RUN/lpc17xx_uart.o
+UART_RS485ReceiverCmd                             FLASH_RUN/lpc17xx_uart.o
+UART_RS485Send                                    FLASH_RUN/lpc17xx_uart.o
+UART_RS485SendData                                FLASH_RUN/lpc17xx_uart.o
+UART_RS485SendSlvAddr                             FLASH_RUN/lpc17xx_uart.o
+UART_Receive                                      FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+UART_ReceiveData                                  FLASH_RUN/lpc17xx_uart.o
+UART_Send                                         FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+UART_SendData                                     FLASH_RUN/lpc17xx_uart.o
+UART_SetupCbs                                     FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+UART_TxCmd                                        FLASH_RUN/lpc17xx_uart.o
+                                                  FLASH_RUN/comm.o
+USB_IRQHandler                                    FLASH_RUN/usbhost_lpc17xx.o
+                                                  FLASH_RUN/startup_LPC17xx.o
+UsageFault_Handler                                FLASH_RUN/startup_LPC17xx.o
+UserBuffer                                        FLASH_RUN/usbhost_lpc17xx.o
+WDT_IRQHandler                                    FLASH_RUN/startup_LPC17xx.o
+WriteBE16U                                        FLASH_RUN/usbhost_lpc17xx.o
+                                                  FLASH_RUN/usbhost_ms.o
+WriteBE32U                                        FLASH_RUN/usbhost_lpc17xx.o
+                                                  FLASH_RUN/usbhost_ms.o
+WriteLE16U                                        FLASH_RUN/usbhost_lpc17xx.o
+WriteLE32U                                        FLASH_RUN/usbhost_lpc17xx.o
+                                                  FLASH_RUN/usbhost_ms.o
+__LDREXB                                          FLASH_RUN/core_cm3.o
+__LDREXH                                          FLASH_RUN/core_cm3.o
+__LDREXW                                          FLASH_RUN/core_cm3.o
+__RBIT                                            FLASH_RUN/core_cm3.o
+__REV                                             FLASH_RUN/core_cm3.o
+__REV16                                           FLASH_RUN/core_cm3.o
+__REVSH                                           FLASH_RUN/core_cm3.o
+__STREXB                                          FLASH_RUN/core_cm3.o
+__STREXH                                          FLASH_RUN/core_cm3.o
+__STREXW                                          FLASH_RUN/core_cm3.o
+__cs3_heap_end                                    FLASH_RUN/startup_LPC17xx.o
+__cs3_heap_start                                  FLASH_RUN/startup_LPC17xx.o
+__cs3_interrupt_vector_cortex_m                   FLASH_RUN/startup_LPC17xx.o
+__cs3_reset                                       FLASH_RUN/startup_LPC17xx.o
+__cs3_reset_cortex_m                              FLASH_RUN/startup_LPC17xx.o
+__cs3_stack                                       FLASH_RUN/startup_LPC17xx.o
+__cs3_stack_mem                                   FLASH_RUN/startup_LPC17xx.o
+__cs3_stack_size                                  FLASH_RUN/startup_LPC17xx.o
+__get_BASEPRI                                     FLASH_RUN/core_cm3.o
+__get_CONTROL                                     FLASH_RUN/core_cm3.o
+__get_FAULTMASK                                   FLASH_RUN/core_cm3.o
+__get_MSP                                         FLASH_RUN/core_cm3.o
+__get_PRIMASK                                     FLASH_RUN/core_cm3.o
+__get_PSP                                         FLASH_RUN/core_cm3.o
+__set_BASEPRI                                     FLASH_RUN/core_cm3.o
+__set_CONTROL                                     FLASH_RUN/core_cm3.o
+__set_FAULTMASK                                   FLASH_RUN/core_cm3.o
+__set_MSP                                         FLASH_RUN/core_cm3.o
+__set_PRIMASK                                     FLASH_RUN/core_cm3.o
+__set_PSP                                         FLASH_RUN/core_cm3.o
+_ebss                                             FLASH_RUN/startup_LPC17xx.o
+_edata                                            FLASH_RUN/startup_LPC17xx.o
+_etext                                            FLASH_RUN/startup_LPC17xx.o
+_sbss                                             FLASH_RUN/startup_LPC17xx.o
+_sdata                                            FLASH_RUN/startup_LPC17xx.o
+acc_dirs                                          FLASH_RUN/ff_test_term.o
+acc_files                                         FLASH_RUN/ff_test_term.o
+acc_size                                          FLASH_RUN/ff_test_term.o
+blkSize                                           FLASH_RUN/diskio.o
+c_entry                                           FLASH_RUN/main.o
+clust2sect                                        FLASH_RUN/ff.o
+comm_get                                          FLASH_RUN/comm.o
+comm_init                                         FLASH_RUN/comm.o
+                                                  FLASH_RUN/main.o
+comm_put                                          FLASH_RUN/comm.o
+comm_puts                                         FLASH_RUN/comm.o
+                                                  FLASH_RUN/main.o
+comm_test                                         FLASH_RUN/comm.o
+comm_txbusy                                       FLASH_RUN/comm.o
+                                                  FLASH_RUN/main.o
+disk_initialize                                   FLASH_RUN/diskio.o
+                                                  FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+disk_ioctl                                        FLASH_RUN/diskio.o
+                                                  FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+disk_read                                         FLASH_RUN/diskio.o
+                                                  FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+disk_status                                       FLASH_RUN/diskio.o
+                                                  FLASH_RUN/ff.o
+disk_timerproc                                    FLASH_RUN/diskio.o
+                                                  FLASH_RUN/main.o
+disk_write                                        FLASH_RUN/diskio.o
+                                                  FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_chdir                                           FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_chdrive                                         FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_chmod                                           FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_close                                           FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_getfree                                         FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_gets                                            FLASH_RUN/ff.o
+f_lseek                                           FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_mkdir                                           FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_mkfs                                            FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_mount                                           FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_open                                            FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_opendir                                         FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_printf                                          FLASH_RUN/ff.o
+f_putc                                            FLASH_RUN/ff.o
+f_puts                                            FLASH_RUN/ff.o
+f_read                                            FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_readdir                                         FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_rename                                          FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_stat                                            FLASH_RUN/ff.o
+f_sync                                            FLASH_RUN/ff.o
+f_truncate                                        FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_unlink                                          FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_utime                                           FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+f_write                                           FLASH_RUN/ff.o
+                                                  FLASH_RUN/ff_test_term.o
+ff_convert                                        FLASH_RUN/ccsbcs.o
+                                                  FLASH_RUN/ff.o
+ff_test_term                                      FLASH_RUN/ff_test_term.o
+                                                  FLASH_RUN/main.o
+ff_test_term_timer_callback                       FLASH_RUN/ff_test_term.o
+                                                  FLASH_RUN/main.o
+ff_wtoupper                                       FLASH_RUN/ccsbcs.o
+                                                  FLASH_RUN/ff.o
+gUSBConnected                                     FLASH_RUN/usbhost_lpc17xx.o
+gen_numname                                       FLASH_RUN/ff.o
+getUartNum                                        FLASH_RUN/lpc17xx_uart.o
+get_fat                                           FLASH_RUN/ff.o
+get_fattime                                       FLASH_RUN/fattime.o
+                                                  FLASH_RUN/ff.o
+get_line                                          FLASH_RUN/monitor.o
+                                                  FLASH_RUN/ff_test_term.o
+inquiryResult                                     FLASH_RUN/diskio.o
+main                                              FLASH_RUN/main.o
+                                                  FLASH_RUN/startup_LPC17xx.o
+memcpy                                            c:/gccfd/codesourcery-arm-2008q1/bin/../lib/gcc/arm-none-eabi/4.2.3/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+                                                  FLASH_RUN/comm.o
+numBlks                                           FLASH_RUN/diskio.o
+pGPDMACh                                          FLASH_RUN/lpc17xx_gpdma.o
+pfnModemCbs                                       FLASH_RUN/lpc17xx_uart.o
+put_dump                                          FLASH_RUN/monitor.o
+                                                  FLASH_RUN/ff_test_term.o
+put_fat                                           FLASH_RUN/ff.o
+rtc_cal_config                                    FLASH_RUN/rtc_cal.o
+rtc_cal_gettime                                   FLASH_RUN/rtc_cal.o
+                                                  FLASH_RUN/fattime.o
+                                                  FLASH_RUN/ff_test_term.o
+rtc_cal_init                                      FLASH_RUN/rtc_cal.o
+                                                  FLASH_RUN/main.o
+rtc_cal_settime                                   FLASH_RUN/rtc_cal.o
+                                                  FLASH_RUN/ff_test_term.o
+spi_close                                         FLASH_RUN/spi_sd_lpc17xx.o
+startup_delay                                     FLASH_RUN/main.o
+                                                  FLASH_RUN/startup_LPC17xx.o
+uartCbsDat                                        FLASH_RUN/lpc17xx_uart.o
+uart_set_divisors                                 FLASH_RUN/lpc17xx_uart.o
+usb_status                                        FLASH_RUN/diskio.o
+xatoi                                             FLASH_RUN/monitor.o
+                                                  FLASH_RUN/ff_test_term.o
+xcomm_get                                         FLASH_RUN/comm.o
+                                                  FLASH_RUN/main.o
+xcomm_put                                         FLASH_RUN/comm.o
+                                                  FLASH_RUN/main.o
+xfunc_in                                          FLASH_RUN/monitor.o
+                                                  FLASH_RUN/main.o
+xfunc_out                                         FLASH_RUN/monitor.o
+                                                  FLASH_RUN/main.o
+xmemset                                           FLASH_RUN/monitor.o
+                                                  FLASH_RUN/ff_test_term.o
+xprintf                                           FLASH_RUN/monitor.o
+                                                  FLASH_RUN/ff_test_term.o
+                                                  FLASH_RUN/main.o
+xputc                                             FLASH_RUN/monitor.o
+                                                  FLASH_RUN/ff_test_term.o
+xputs                                             FLASH_RUN/monitor.o
+                                                  FLASH_RUN/ff_test_term.o
+xstrchr                                           FLASH_RUN/monitor.o
+                                                  FLASH_RUN/ff_test_term.o
+xstrcpy                                           FLASH_RUN/monitor.o
+                                                  FLASH_RUN/ff_test_term.o
+xstrlen                                           FLASH_RUN/monitor.o
+                                                  FLASH_RUN/ff_test_term.o

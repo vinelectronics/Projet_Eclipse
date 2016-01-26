@@ -1,0 +1,94 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"fattime.c"
+  21              	.Ltext0:
+  22              		.section	.text.get_fattime,"ax",%progbits
+  23              		.align	2
+  24              		.global	get_fattime
+  25              		.thumb
+  26              		.thumb_func
+  28              	get_fattime:
+  29              	.LFB31:
+  30              		.file 1 "Libraries/fat_sd/fattime.c"
+   1:Libraries/fat_sd/fattime.c **** /*
+   2:Libraries/fat_sd/fattime.c ****  * fattime.c
+   3:Libraries/fat_sd/fattime.c ****  *
+   4:Libraries/fat_sd/fattime.c ****  *  Created on: 09.07.2010
+   5:Libraries/fat_sd/fattime.c ****  *      Author: mthomas
+   6:Libraries/fat_sd/fattime.c ****  */
+   7:Libraries/fat_sd/fattime.c **** 
+   8:Libraries/fat_sd/fattime.c **** #define RTC_CAL_AVAILABLE     1
+   9:Libraries/fat_sd/fattime.c **** 
+  10:Libraries/fat_sd/fattime.c **** #include "integer.h"
+  11:Libraries/fat_sd/fattime.c **** 
+  12:Libraries/fat_sd/fattime.c **** #if RTC_CAL_AVAILABLE
+  13:Libraries/fat_sd/fattime.c **** 
+  14:Libraries/fat_sd/fattime.c **** #include "rtc_cal.h"
+  15:Libraries/fat_sd/fattime.c **** 
+  16:Libraries/fat_sd/fattime.c **** DWORD get_fattime (void)
+  17:Libraries/fat_sd/fattime.c **** {
+  31              	end = 0, frame = 32
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		push	{lr}
+  34 0000 00B5     	.LCFI0:
+  35              		sub	sp, sp, #36
+  36 0002 89B0     	.LCFI1:
+  37              		.loc 1 21 0
+  18:Libraries/fat_sd/fattime.c **** 	RTC_TIME_Type time_curr;
+  19:Libraries/fat_sd/fattime.c **** 	DWORD ret;
+  20:Libraries/fat_sd/fattime.c **** 
+  21:Libraries/fat_sd/fattime.c **** 	rtc_cal_gettime(&time_curr);
+  38              	, sp
+  39 0004 6846     		bl	rtc_cal_gettime
+  40 0006 FFF7FEFF 		ldr	r3, [sp, #24]
+  41 000a 069B     		ldr	r2, [sp, #12]
+  42 000c 039A     		lsls	r3, r3, #21
+  43 000e 5B05     		orr	r3, r3, r2, lsl #16
+  44 0010 43EA0243 		ldr	r2, [sp, #8]
+  45 0014 029A     		ldr	r0, [sp, #28]
+  46 0016 0798     		orr	r3, r3, r2, lsl #11
+  47 0018 43EAC223 		ldr	r2, [sp, #4]
+  48 001c 019A     		sub	r0, r0, #1968
+  49 001e A0F5F660 		orr	r3, r3, r2, lsl #5
+  50 0022 43EA4213 		ldr	r2, [sp, #0]
+  51 0026 009A     		subs	r0, r0, #12
+  52 0028 0C38     		orr	r3, r3, r2, lsr #1
+  53 002a 43EA5203 		.loc 1 33 0
+  22:Libraries/fat_sd/fattime.c **** 
+  23:Libraries/fat_sd/fattime.c **** 	/* Pack date and time into a DWORD variable */
+  24:Libraries/fat_sd/fattime.c **** 	ret =
+  25:Libraries/fat_sd/fattime.c **** 		((DWORD)(time_curr.YEAR - 1980) << 25)
+  26:Libraries/fat_sd/fattime.c **** 		| ((DWORD)time_curr.MONTH << 21)
+  27:Libraries/fat_sd/fattime.c **** 		| ((DWORD)time_curr.DOM << 16)
+  28:Libraries/fat_sd/fattime.c **** 		| ((DWORD)time_curr.HOUR << 11)
+  29:Libraries/fat_sd/fattime.c **** 		| ((DWORD)time_curr.MIN << 5)
+  30:Libraries/fat_sd/fattime.c **** 		| ((DWORD)time_curr.SEC >> 1);
+  31:Libraries/fat_sd/fattime.c **** 
+  32:Libraries/fat_sd/fattime.c **** 	return ret;
+  33:Libraries/fat_sd/fattime.c **** }
+  54              	 lsl #25
+  55 002e 43EA4060 		add	sp, sp, #36
+  56 0032 09B0     		pop	{pc}
+  57 0034 00BD     	.LFE31:
+  59              		.section	.debug_frame,"",%progbits
+  94              		.section	.debug_loc,"",%progbits
+DEFINED SYMBOLS
+                            *ABS*:00000000 fattime.c
+                            .text:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccc5caaa.s:28     .text.get_fattime:00000000 get_fattime
+C:\Users\KVIN~1\AppData\Local\Temp/ccc5caaa.s:25     .text.get_fattime:00000000 $t
+C:\Users\KVIN~1\AppData\Local\Temp/ccc5caaa.s:62     .debug_frame:00000000 $d
+C:\Users\KVIN~1\AppData\Local\Temp/ccc5caaa.s:98     .debug_loc:00000000 $d
+
+UNDEFINED SYMBOLS
+rtc_cal_gettime
